@@ -10,10 +10,9 @@ It features a StateMachine based on nodes, nested state machines, pushdown autom
 
 You can either:
 
-- Browse for StateGraph in the AssetLib tab inside Godot, and install it from there, using the Godot's plugin install interface. 
+- Browse for StateGraph in the AssetLib tab inside Godot, and install it from there, using the Godot's plugin install interface.
 - Clone this repo in a folder `addons/StateGraph` a the root of your project; then activate the plugin in ProjectSettings -> Plugins
 
-<br>
 <br>
 
 # 📃 Documentation 📃
@@ -21,14 +20,13 @@ You can either:
 You can find a detailed, by class documentation, as well as a tutorial on how to use the **GraphEditor** [here](some-link.com).
 
 <br>
-<br>
 
 # 🕵️ Overview 🕵️
 
 
 ## Basic use
 
-**StateGraph** is an implementation of the **[State](https://refactoring.guru/design-patterns/state)** -also known as **Finite State Machine** design pattern. 
+**StateGraph** is an implementation of the **[State](https://refactoring.guru/design-patterns/state)** -also known as **Finite State Machine**- design pattern. 
 
 It uses basically two types of nodes: a `StateMachine` node that handles its `State` children, like in this exemple bellow.
 
@@ -36,14 +34,14 @@ It uses basically two types of nodes: a `StateMachine` node that handles its `St
 
 You can inherit the `State` class to associate it with your own logic, or just use basic `State` nodes if you are doing a StateMachine dedicated to animation for exemple.
 
-If you override the `State` class, be aware that your scripts must have the `tool` keyword for it to work with the **GraphEditor**.
-You can find more informations about how to use the `State` class and every other in the [Documentation](some-link.com).
+If you inherit the `State` class, be aware that your scripts must have the `tool` keyword for it to work with the **GraphEditor**.
+You can find more informations about how to use the `State` class and every others in the [Documentation](some-link.com).
 
 <br>
 
 ## Graph Editor
 
-The **Graph Editor** is a tool that runs inside the Godot's editor and allows you to manage & edit the **connexion** between states as well as **standalone triggers**.
+The **Graph Editor** is a tool that runs inside the Godot's editor and allows you to manage & edit the **connexions** between states as well as **standalone triggers**.
 
 Connexions can be triggered either by signals or in the `_physics_process()` of the StateMachine.
 Additionaly it can take any amount of conditions that must all return true for the change of state to operate.
