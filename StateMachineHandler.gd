@@ -2,7 +2,7 @@ tool
 extends EditorPlugin
 class_name StateMachineHandler
 
-var fsm_editor_scene = preload("res://addons/StateMachineHandler/FSM_Editor/FSM_Editor.tscn")
+var fsm_editor_scene = preload("res://addons/StateGraph/FSM_Editor/FSM_Editor.tscn")
 
 var edited_scene_path = ""
 
