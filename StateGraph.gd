@@ -1,6 +1,6 @@
 tool
 extends EditorPlugin
-class_name StateMachineHandler
+class_name StateGraph
 
 var fsm_editor_scene = preload("res://addons/StateGraph/FSM_Editor/FSM_Editor.tscn")
 
