@@ -1,0 +1,220 @@
+[gd_scene load_steps=7 format=2]
+
+[ext_resource path="res://addons/StateMachineHandler/FSM_Editor/ConditionEditor.gd" type="Script" id=1]
+[ext_resource path="res://addons/StateMachineHandler/FSM_Editor/FSM_Editor.gd" type="Script" id=2]
+
+[sub_resource type="Theme" id=1]
+
+[sub_resource type="Image" id=5]
+data = {
+"data": PoolByteArray( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ),
+"format": "LumAlpha8",
+"height": 16,
+"mipmaps": false,
+"width": 16
+}
+
+[sub_resource type="ImageTexture" id=3]
+flags = 4
+flags = 4
+image = SubResource( 5 )
+size = Vector2( 16, 16 )
+
+[sub_resource type="StyleBoxTexture" id=4]
+texture = SubResource( 3 )
+region_rect = Rect2( 0, 0, 16, 16 )
+margin_left = 2.0
+margin_right = 2.0
+margin_top = 2.0
+margin_bottom = 2.0
+
+[node name="FSM_Editor" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+rect_min_size = Vector2( 0, 200 )
+rect_clip_content = true
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme = SubResource( 1 )
+script = ExtResource( 2 )
+
+[node name="Panel" type="Panel" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+custom_styles/panel = SubResource( 4 )
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="HSplitContainer" type="HSplitContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+split_offset = 237
+
+[node name="NodesEditor" type="PanelContainer" parent="HSplitContainer"]
+margin_right = 711.0
+margin_bottom = 540.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Panel" type="Panel" parent="HSplitContainer/NodesEditor"]
+margin_left = 7.0
+margin_top = 7.0
+margin_right = 704.0
+margin_bottom = 533.0
+mouse_filter = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HSplitContainer/NodesEditor"]
+margin_left = 7.0
+margin_top = 7.0
+margin_right = 704.0
+margin_bottom = 533.0
+
+[node name="Header" type="HBoxContainer" parent="HSplitContainer/NodesEditor/VBoxContainer"]
+margin_right = 697.0
+margin_bottom = 20.0
+rect_min_size = Vector2( 0, 20 )
+
+[node name="AddStandaloneTrigger" type="Button" parent="HSplitContainer/NodesEditor/VBoxContainer/Header"]
+visible = false
+margin_right = 156.0
+margin_bottom = 20.0
+text = "Add standalone trigger"
+
+[node name="NodeEditorContainer" type="Control" parent="HSplitContainer/NodesEditor/VBoxContainer"]
+margin_top = 24.0
+margin_right = 697.0
+margin_bottom = 526.0
+size_flags_vertical = 3
+
+[node name="ConnexionsContainer" type="Node2D" parent="HSplitContainer/NodesEditor/VBoxContainer/NodeEditorContainer"]
+
+[node name="NodesContainer" type="Control" parent="HSplitContainer/NodesEditor/VBoxContainer/NodeEditorContainer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="ConditionEditor" type="PanelContainer" parent="HSplitContainer"]
+margin_left = 723.0
+margin_right = 960.0
+margin_bottom = 540.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource( 1 )
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HSplitContainer/ConditionEditor"]
+margin_left = 7.0
+margin_top = 7.0
+margin_right = 230.0
+margin_bottom = 533.0
+rect_min_size = Vector2( 10, 0 )
+size_flags_horizontal = 3
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.3
+
+[node name="Toolbar" type="HBoxContainer" parent="HSplitContainer/ConditionEditor/VBoxContainer"]
+margin_right = 223.0
+margin_bottom = 20.0
+
+[node name="AddEvent" type="Button" parent="HSplitContainer/ConditionEditor/VBoxContainer/Toolbar"]
+margin_right = 77.0
+margin_bottom = 20.0
+text = "Add event"
+
+[node name="AddCondition" type="Button" parent="HSplitContainer/ConditionEditor/VBoxContainer/Toolbar"]
+visible = false
+margin_left = 81.0
+margin_right = 182.0
+margin_bottom = 20.0
+text = "Add condition"
+
+[node name="AddAnimFinishedEvent" type="Button" parent="HSplitContainer/ConditionEditor/VBoxContainer/Toolbar"]
+visible = false
+margin_right = 77.0
+margin_bottom = 20.0
+text = "Add Animation Finished Event"
+
+[node name="Panel" type="PanelContainer" parent="HSplitContainer/ConditionEditor/VBoxContainer"]
+margin_top = 24.0
+margin_right = 223.0
+margin_bottom = 522.0
+size_flags_vertical = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HSplitContainer/ConditionEditor/VBoxContainer/Panel"]
+margin_left = 7.0
+margin_top = 7.0
+margin_right = 216.0
+margin_bottom = 491.0
+
+[node name="OriginState" type="HBoxContainer" parent="HSplitContainer/ConditionEditor/VBoxContainer/Panel/VBoxContainer"]
+margin_right = 209.0
+margin_bottom = 24.0
+
+[node name="Label" type="Label" parent="HSplitContainer/ConditionEditor/VBoxContainer/Panel/VBoxContainer/OriginState"]
+margin_top = 5.0
+margin_right = 102.0
+margin_bottom = 19.0
+size_flags_horizontal = 3
+text = "Origin State:"
+valign = 1
+
+[node name="LineEdit" type="LineEdit" parent="HSplitContainer/ConditionEditor/VBoxContainer/Panel/VBoxContainer/OriginState"]
+margin_left = 106.0
+margin_right = 209.0
+margin_bottom = 24.0
+size_flags_horizontal = 3
+text = "../.."
+align = 1
+editable = false
+
+[node name="DestState" type="HBoxContainer" parent="HSplitContainer/ConditionEditor/VBoxContainer/Panel/VBoxContainer"]
+margin_top = 28.0
+margin_right = 209.0
+margin_bottom = 52.0
+
+[node name="Label" type="Label" parent="HSplitContainer/ConditionEditor/VBoxContainer/Panel/VBoxContainer/DestState"]
+margin_top = 5.0
+margin_right = 114.0
+margin_bottom = 19.0
+size_flags_horizontal = 3
+text = "Destination State:"
+valign = 1
+
+[node name="LineEdit" type="LineEdit" parent="HSplitContainer/ConditionEditor/VBoxContainer/Panel/VBoxContainer/DestState"]
+margin_left = 118.0
+margin_right = 209.0
+margin_bottom = 24.0
+size_flags_horizontal = 3
+text = "../.."
+align = 1
+editable = false
+
+[node name="Tree" type="Tree" parent="HSplitContainer/ConditionEditor/VBoxContainer/Panel/VBoxContainer"]
+margin_top = 56.0
+margin_right = 209.0
+margin_bottom = 484.0
+size_flags_vertical = 3
+
+[node name="Footer" type="HBoxContainer" parent="HSplitContainer/ConditionEditor/VBoxContainer"]
+margin_top = 526.0
+margin_right = 223.0
+margin_bottom = 526.0
+
+[node name="DeleteConnexion" type="Button" parent="HSplitContainer/ConditionEditor/VBoxContainer/Footer"]
+visible = false
+margin_right = 126.0
+margin_bottom = 20.0
+custom_colors/font_color = Color( 1, 0, 0, 1 )
+text = "Delete Connexion"
+
+[node name="DeleteStandaloneTrigger" type="Button" parent="HSplitContainer/ConditionEditor/VBoxContainer/Footer"]
+visible = false
+margin_right = 176.0
+margin_bottom = 20.0
+custom_colors/font_color = Color( 1, 0, 0, 1 )
+text = "Delete Standalone Trigger"
