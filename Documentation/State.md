@@ -12,6 +12,7 @@ Please read the Godot's article [here](https://docs.godotengine.org/en/stable/tu
 
 <br>
 
+---
 
 ### Properties
 
@@ -40,6 +41,7 @@ Defines the position of the StateNode in the StateGraph. Expressed in ratio of t
 A reference to the parent of this State -its StateMachine.
 This property will be null if the parent of this State isn't a StateMachine.
 
+---
 
 ### Signals
 
@@ -80,6 +82,7 @@ Override it with your own gameplay/physics logic.
 
 <br>
 
+---
 
 ### Methods
 
