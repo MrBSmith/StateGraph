@@ -18,7 +18,7 @@ Note that nested StateMachines that are not the current_state of their parent sh
 That is why the exit_state function of the StateMachine is setting the current state to null.
 
 
-### Properties
+## Properties
 
 `NodePath default_state_path`
 
@@ -53,7 +53,7 @@ When this state is entered, if this bool is true, reset the child state to the d
 
 ---
 
-# Signals
+## Signals
 
 
 `state_entered(State state)`
@@ -87,7 +87,7 @@ Emitted when a State is removed from the scene tree as a child of this StateMach
 
 ---
 
-# Methods
+## Methods
 
 `State get_state()`
 
