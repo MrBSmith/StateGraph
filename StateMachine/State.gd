@@ -22,7 +22,7 @@ signal state_animation_finished
 signal standalone_trigger_added
 signal standalone_trigger_removed
 
-# Abstract base class for a state in a statemachine
+# Abstract base class for a State in a StateMachine
 
 # Defines the behaviour of the entity possesing the statemachine 
 # when the entity is in this state
@@ -46,11 +46,12 @@ func _ready() -> void:
 	get_script().set_local_to_scene(true)
 
 
-#### CALLBACKS ####
-
 func _exit_tree() -> void:
 	if states_machine != null && states_machine.is_class("StateMachine"):
 		states_machine.emit_signal("state_removed", self)
+
+
+#### CALLBACKS ####
 
 
 # Called when the current state of the state machine is set to this node
@@ -66,6 +67,20 @@ func exit_state() -> void:
 func update_state(_delta: float) -> void:
 	pass
 
+
+
+#### LOGIC ###
+
+# Check if the entity is in this state. Check reccursivly in cas of nested StateMachines/PushdownAutomata
+func is_current_state() -> bool:
+	if states_machine.has_method("is_current_state"):
+		return states_machine.current_state == self && states_machine.is_current_state()
+	else:
+		return states_machine.current_state == self
+
+
+
+#### CONDITIONS & TRIGGER LOGIC ####
 
 func check_exit_conditions(event_trigger: String = "process") -> Object:
 	for connexion in connexions_array:
@@ -100,28 +115,6 @@ func connect_connexions_events(listener: Node, disconnect: bool = false) -> void
 						var __ = emitter.connect(trigger, listener, "_on_current_state_event", [self, connexion, event], CONNECT_REFERENCE_COUNTED)
 				else:
 					push_error("The emitter found a path %s has no signal named %s" % [emitter_path, trigger])
-
-
-#### LOGIC ###
-
-func exit() -> void:
-	match(mode):
-		MODE.TOGGLE: 
-			if states_machine.is_class("PushdownAutomata"):
-				states_machine.go_to_previous_non_toggle_state()
-			else:
-				states_machine.set_state(states_machine.previous_state)
-		
-		MODE.NON_INTERRUPTABLE: 
-			emit_signal("state_animation_finished")
-
-
-# Check if the entity is in this state. Check reccursivly in cas of nested StateMachines/PushdownAutomata
-func is_current_state() -> bool:
-	if states_machine.has_method("is_current_state"):
-		return states_machine.current_state == self && states_machine.is_current_state()
-	else:
-		return states_machine.current_state == self
 
 
 func add_connexion(to: State) -> void:
