@@ -1,6 +1,6 @@
 tool
 extends Control
-class_name FSM_Editor
+class_name GraphEditor
 
 onready var nodes_editor = $HSplitContainer/NodesEditor
 onready var condition_editor = $HSplitContainer/ConditionEditor
@@ -18,9 +18,9 @@ var edited_scene_path : String = ""
 
 var fsm : StateMachine = null
 
-var state_node_scene = preload("res://addons/StateGraph/FSM_Editor/FSM_EditorStateNode.tscn")
-var node_connexion_scene = preload("res://addons/StateGraph/FSM_Editor/FSM_Connexion.tscn")
-var fsm_connexion_container_scene = preload("res://addons/StateGraph/FSM_Editor/FSM_ConnexionContainer.tscn")
+var state_node_scene = preload("res://addons/StateGraph/GraphEditor/FSM_EditorStateNode.tscn")
+var node_connexion_scene = preload("res://addons/StateGraph/GraphEditor/FSM_Connexion.tscn")
+var fsm_connexion_container_scene = preload("res://addons/StateGraph/GraphEditor/FSM_ConnexionContainer.tscn")
 
 var states_array = []
 
