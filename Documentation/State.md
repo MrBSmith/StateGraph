@@ -58,6 +58,8 @@ Emitted when a standalone_trigger is removed from this state. (Only emitted in t
 
 <br>
 
+---
+
 ### Callbacks
 
 
