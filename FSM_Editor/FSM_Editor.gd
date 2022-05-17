@@ -341,6 +341,7 @@ func _on_connection_removed(connexion: FSM_Connexion) -> void:
 
 func _on_connection_selected(connexion: FSM_Connexion) -> void:
 	unselect_all_connexions(connexion)
+	unselect_all_nodes()
 	set_selected_trigger(connexion)
 
 	set_selected_trigger_dict(fsm_connexion_get_connexion_dict(connexion))
@@ -470,6 +471,8 @@ func _on_node_editor_header_button_pressed(button: Button) -> void:
 func _on_selected_node_changed() -> void:
 	var add_button_needed = selected_node != null && !selected_node.has_standalone_trigger
 	add_standalone_trigger_button.set_visible(add_button_needed)
+	
+	unselect_all_connexions()
 
 
 func _on_selected_trigger_dict_changed(dict: Dictionary) -> void:
