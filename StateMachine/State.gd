@@ -2,18 +2,6 @@ tool
 extends Node
 class_name State
 
-func get_class() -> String : return "State"
-func is_class(value: String) -> bool: return value == "State" or .is_class(value)
-
-export var connexions_array : Array
-export var standalone_trigger : Dictionary
-
-export var graph_position := Vector2.ZERO
-
-signal state_animation_finished
-signal standalone_trigger_added
-signal standalone_trigger_removed
-
 # Abstract base class for a State in a StateMachine
 
 # Defines the behaviour of the entity possesing the statemachine 
@@ -23,7 +11,22 @@ signal standalone_trigger_removed
 # the update_state method of the currrent state is called every physics tick,  
 # by the physics_process of the StateMachine 
 
-onready var states_machine = get_parent()
+onready var states_machine = get_parent() if get_parent().is_class("StateMachine") else null
+
+export var connexions_array : Array
+export var standalone_trigger : Dictionary
+
+# Defines the position of the StateNode in the StateGraph. Expressed in ratio of the container size.
+export var graph_position := Vector2.ZERO
+
+signal standalone_trigger_added
+signal standalone_trigger_removed
+
+
+#### ACCESSORS ####
+
+func get_class() -> String : return "State"
+func is_class(value: String) -> bool: return value == "State" or .is_class(value)
 
 
 #### BUILT-IN ####
@@ -58,7 +61,8 @@ func update_state(_delta: float) -> void:
 
 #### LOGIC ###
 
-# Check if the entity is in this state. Check reccursivly in cas of nested StateMachines/PushdownAutomata
+# Returns true if the StateMachine is in this state. 
+# Check reccursivly in case of nested StateMachines/PushdownAutomata
 func is_current_state() -> bool:
 	if states_machine.has_method("is_current_state"):
 		return states_machine.current_state == self && states_machine.is_current_state()
