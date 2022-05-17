@@ -4,42 +4,38 @@ class_name StateMachine
 
 # An implementation of the Finite State Machine design pattern
 # Each state must inherit State and be a child node of a StateMachine node
-# The states are distinguished by the name of their corresponding node
 
-# Each state defines the behaviour of the entity possesing this statemachine when the entity is in this state
+# Each state defines the behaviour of the entity possesing this StateMachine when the StateMachine is in this state
 # You can refer to the main node using the keyword owner
 # In that case the main node must be the root of the scene
 
-# The default state is always the first in the tree unless the owner of the scene 
-# has a default_state property (Must be a String corresponding to the name of a State node)
+# The default state is always the first child of this node, unless default_state_path has a value
 
-# States Machines can also be nested (Its children are also StateMachines)
+# StatesMachines can also be nested
 # In that case the StateMachine behave also as a state, and the enter_state callback is called recursivly
-# Note that nested StateMachines that are not the current_state of their parent should have their current_state to null
-# That is why the exit_state function is setting the current state to null
 
 export var default_state_path : NodePath
+
+# Set this to true if you want the default state to be null, no matter what the default_state_path value is
+export var no_default_state : bool = false
 
 var current_state : State = null
 var previous_state : State = null
 var default_state : State = null
 
-# Set this to true if you want the default state to be null, no matter what the default_state_path value is
-export var no_default_state : bool = false
-
 # Contains the reference of the states that have a standalone trigger
-var standalone_triggers_states = []
+var standalone_triggers_states : Array = []
 
 # Usefull only if this instance of StateMachine is nested (ie its parent is also a StateMachine)
 # When this state is entered, if this bool is true, reset the child state to the default one
 export var reset_to_default : bool = false
 
-# Called after the exit_state of the previous_state and before the enter_state of the current_state
-signal state_changing(from_state, to_state)
-
 # Called after the state have changed (After the enter_state callback)
 signal state_entered(state)
 signal state_entered_recursive(state)
+
+# Called after the exit_state of the previous_state and before the enter_state of the current_state
+signal state_changing(from_state, to_state)
 
 signal state_exited(state)
 
@@ -48,12 +44,16 @@ signal state_added(state)
 #warning-ignore:unused_signal
 signal state_removed(state)
 
+
+#### ACCESSORS ####
+
 func is_class(value: String): return value == "StateMachine" or .is_class(value)
 func get_class() -> String: return "StateMachine"
 
+
 #### BUILT-IN ####
 
-# Set the state to the first of the list
+
 func _ready():
 	if Engine.editor_hint:
 		set_physics_process(false)
@@ -167,28 +167,28 @@ func set_state_by_id(state_id: int):
 
 
 func get_state_by_name(state_name: String) -> Node:
-	return get_node(state_name)
+	var state = get_node_or_null(state_name)
+	
+	if state is State:
+		return state
+	else:
+		return null
 
 
 # Returns true if a state with the given name is a direct child of the statemachine, and inherit State
 func has_state(state_name: String) -> bool:
-	for state in get_children():
-		if state.is_class("State") && state.name == state_name:
-			return true
-	return false
+	return get_state_by_name(state_name) != null
 
 
-# Returns an array containing all the states children of this FSM
+# Fills the given array with all the states children of this FSM
 # If the recursive argument is true, this function will fetch states recursivly, meaning also nested states 
-func fetch_states(array: Array, recursive: bool = false):
+func fetch_states(array: Array, recursive: bool = false) -> void:
 	for child in get_children():
 		if child is State && not child in array:
 			array.append(child)
 			
 			if recursive && child.is_class("StateMachine"):
 				child.fetch_states(array, true)
-	
-	return array
 
 
 func is_nested() -> bool:
@@ -196,7 +196,7 @@ func is_nested() -> bool:
 
 
 # Set state by incrementing its id (id of the node, ie position in the hierachy)
-func increment_state(increment: int = 1, wrapping : bool = true):
+func increment_state(increment: int = 1, wrapping : bool = true) -> void:
 	var current_state_id = get_state().get_index()
 	var id = wrapi(current_state_id + increment, 0, get_child_count()) if wrapping else current_state_id + increment 
 	var state = get_child(id)
@@ -229,18 +229,18 @@ func get_animation_handler() -> StateAnimationHandler:
 #### NESTED STATES MACHINES LOGIC ####
 # Applies only if this StateMachine instance is nested (ie if it has a StateMachine as a parent)
 
-func enter_state():
+func enter_state() -> void:
 	if (reset_to_default && current_state != default_state) or current_state == null:
 		set_state(default_state)
 	else:
 		current_state.enter_state()
 
 
-func exit_state():
+func exit_state() -> void:
 	set_state(null)
 
 
-func update_state(delta: float):
+func update_state(delta: float) -> void:
 	if current_state != null:
 		current_state.update_state(delta)
 

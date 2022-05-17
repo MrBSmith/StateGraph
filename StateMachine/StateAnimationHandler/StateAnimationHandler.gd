@@ -83,9 +83,6 @@ func _update_animation(state: Node) -> void:
 	else:
 		if sprite_frames.has_animation(anim_name):
 			animated_sprite.play(anim_name)
-		else:
-			yield(get_tree(), "idle_frame")
-			state.exit()
 
 
 
@@ -132,7 +129,3 @@ func _on_animation_finished():
 func _on_StateMachine_state_entered(new_state: Node) -> void:
 	_update_animation(new_state)
 
-
-func _on_direction_changed(dir: Vector2) -> void:
-	object_direction = dir
-	_update_animation(states_machine.get_state())
