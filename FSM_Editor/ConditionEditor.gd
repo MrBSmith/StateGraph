@@ -6,6 +6,7 @@ enum BUTTON_TYPE {
 	REMOVE
 }
 
+onready var add_event_button = $VBoxContainer/Toolbar/AddEvent
 onready var delete_trigger_button = $VBoxContainer/Footer/DeleteStandaloneTrigger
 onready var delete_connexion_button = $VBoxContainer/Footer/DeleteConnexion
 onready var add_anim_event_button = $VBoxContainer/Toolbar/AddAnimFinishedEvent
@@ -65,15 +66,39 @@ func _ready() -> void:
 
 #### LOGIC ####
 
+func clear() -> void:
+	hide_all_buttons()
+	tree.clear()
+	
+	origin_state_line_edit.set_editable(false)
+	dest_state_line_edit.set_editable(false)
+	
+	origin_state_line_edit.set_text("None")
+	dest_state_line_edit.set_text("None")
+
+
+func hide_all_buttons() -> void:
+	for button in $VBoxContainer/Toolbar.get_children():
+		button.set_visible(false)
+	
+	for button in $VBoxContainer/Footer.get_children():
+		button.set_visible(false)
+
+
 
 func update_content(origin_state_path: String, trigger: Dictionary) -> void:
 	edited_trigger_dict = trigger
+	
 	var is_connection = trigger["type"] == "connexion"
 	
 	delete_connexion_button.set_visible(is_connection)
 	delete_trigger_button.set_visible(!is_connection)
 	
 	update_state_path_line_edits(origin_state_path)
+	
+	add_event_button.set_visible(true)
+	add_anim_event_button.set_visible(true)
+	
 	update_tree()
 
 

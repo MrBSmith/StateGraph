@@ -110,7 +110,6 @@ func connect_connexions_events(listener: Node, disconnect: bool = false) -> void
 
 func add_connexion(to: State) -> void:
 	if !find_connexion(to).empty():
-		print("connexion already exists, aborting")
 		return
 	
 	var connexion = {
@@ -123,8 +122,6 @@ func add_connexion(to: State) -> void:
 		connexions_array = [connexion]
 	else:
 		connexions_array.append(connexion)
-	
-	print("connexion added. %s -> %s" % [name, to.name])
 
 
 func remove_connexion(to: State) -> void:

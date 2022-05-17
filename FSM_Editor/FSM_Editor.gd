@@ -161,8 +161,12 @@ func _update_nodes_position() -> void:
 
 
 func update_connexion_editor() -> void:
-	var from_path = "" if selected_trigger_dict["type"] == "standalone_trigger" else selected_trigger_dict["to"]
-	condition_editor.update_content(from_path, selected_trigger_dict)
+	if selected_trigger_dict.empty():
+		condition_editor.clear()
+	else:
+		var from = selected_trigger.from if selected_trigger != null else null
+		var from_path = fsm.name + "/" + from.name if from != null else ""
+		condition_editor.update_content(from_path, selected_trigger_dict)
 
 
 func update_line_containers() -> void:
@@ -253,6 +257,9 @@ func inspect_connexion(connexion: FSM_Connexion) -> void:
 
 
 func fsm_connexion_get_connexion_dict(connexion: FSM_Connexion) -> Dictionary:
+	if connexion == null:
+		return {}
+	
 	var from_state = fsm.get_state_by_name(connexion.from.name)
 	var to_state = fsm.get_state_by_name(connexion.to.name)
 
@@ -340,28 +347,22 @@ func _on_connection_removed(connexion: FSM_Connexion) -> void:
 
 
 func _on_connection_selected(connexion: FSM_Connexion) -> void:
-	unselect_all_connexions(connexion)
 	unselect_all_nodes()
+	unselect_all_connexions(connexion)
+	unselect_all_triggers()
+	
 	set_selected_trigger(connexion)
 
-	set_selected_trigger_dict(fsm_connexion_get_connexion_dict(connexion))
-
 	condition_editor.animation_handler = fsm.get_animation_handler()
-	unselect_all_triggers()
 
 
 func _on_connection_unselected(connexion: FSM_Connexion) -> void:
-	set_selected_trigger(null)
+	if selected_trigger == connexion:
+		set_selected_trigger(null)
 
 
 func _on_selected_trigger_changed(fsm_connexion: FSM_Connexion) -> void:
-	if fsm_connexion == null:
-		return
-
-	var from_state = fsm.get_state_by_name(selected_trigger.from.name)
-	var from_state_path = from_state.owner.get_path_to(from_state)
-	var to_state = fsm.get_state_by_name(selected_trigger.to.name)
-	set_selected_trigger_dict(from_state.find_connexion(to_state))
+	set_selected_trigger_dict(fsm_connexion_get_connexion_dict(fsm_connexion))
 
 
 func _on_toolbar_button_pressed(button: Button) -> void:
@@ -472,8 +473,9 @@ func _on_selected_node_changed() -> void:
 	var add_button_needed = selected_node != null && !selected_node.has_standalone_trigger
 	add_standalone_trigger_button.set_visible(add_button_needed)
 	
-	unselect_all_connexions()
+	if selected_node != null:
+		unselect_all_connexions()
 
 
-func _on_selected_trigger_dict_changed(dict: Dictionary) -> void:
+func _on_selected_trigger_dict_changed(_dict: Dictionary) -> void:
 	update_connexion_editor()
