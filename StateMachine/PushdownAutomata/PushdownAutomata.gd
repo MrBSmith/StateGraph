@@ -83,23 +83,6 @@ func go_to_previous_state():
 	
 	go_to_queued_state_by_index(state_index - 1)
 
-
-func go_to_previous_non_toggle_state() -> void:
-	if state_index == 0:
-		push_warning("There is no previous state - state_index is currently 0")
-		return
-	
-	for i in range(state_index - 1, 1, -1):
-		var state = state_queue[i]
-		
-		if state.mode == MODE.TOGGLE:
-			continue
-		
-		go_to_queued_state_by_index(i)
-		break
-
-
-
 # Set the state to the next one in the queue
 func go_to_next_state():
 	if state_index == state_queue.size() - 1:
