@@ -18,15 +18,16 @@ class_name StateMachine
 # Note that nested StateMachines that are not the current_state of their parent should have their current_state to null
 # That is why the exit_state function is setting the current state to null
 
-var current_state : Object = null
-var previous_state : Object = null
-var default_state : Object = null
+export var default_state_path : NodePath
+
+var current_state : State = null
+var previous_state : State = null
+var default_state : State = null
+
+# Set this to true if you want the default state to be null, no matter what the default_state_path value is
 export var no_default_state : bool = false
 
-# If a state is not interruptable; the set_state call will buffer the state instead of changing it
-# Whenever the state is exited, the state will be changed to the buffered one
-var buffered_state : Object = null
-
+# Contains the reference of the states that have a standalone trigger
 var standalone_triggers_states = []
 
 # Usefull only if this instance of StateMachine is nested (ie its parent is also a StateMachine)
@@ -58,21 +59,17 @@ func _ready():
 		set_physics_process(false)
 		return
 	
-	yield(owner, "ready")
-	
 	var __ = connect("state_entered", self, "_on_state_entered")
 	
 	if get_parent().is_class("StateMachine"):
 		__ = connect("state_entered_recursive", get_parent(), "_on_State_state_entered_recursive")
 	
-	# Get the default_state
-	var owner_default_state_name = owner.get("default_state")
-	var owner_default_state = get_node_or_null(owner_default_state_name) if owner_default_state_name != null else null
-	default_state = get_child(0) if owner_default_state == null else owner_default_state
-	
 	# Set the state to be the default one, unless we are in a nested StateMachine
 	# Nested StateMachines shouldn't have a current_state if they are not the current_state of its parent
-	if !is_nested() && !no_default_state:
+	if is_nested() or no_default_state:
+		set_state(null)
+	else:
+		default_state = get_child(0) if default_state_path.is_empty() else get_node_or_null(default_state_path)
 		set_state(default_state)
 	
 	# Connect all state's standalone triggers
@@ -124,7 +121,7 @@ func get_state_name() -> String:
 # Set current_state at a new state, also set previous state, 
 # and emit a signal to notify the change, to anybody needing it
 # The new_state argument can either be a State or a String representing the name of the targeted State
-func set_state(new_state, force: bool = false):
+func set_state(new_state):
 	# This method can handle only String and States
 	if not new_state is State and not new_state is String and new_state != null:
 		return 
@@ -136,16 +133,6 @@ func set_state(new_state, force: bool = false):
 	# Discard the method if the new_state is the current_state
 	if new_state == current_state:
 		return
-	
-	# Check if the change of state is forced or not; meaning, it we should ignore non-interuptable states
-	if !force:
-		
-		# If we are trying to change the state but the current_state isn't interuptable
-		# We buffer the state instead and connect the state_animation_finished of the current state
-		# Then when the state_animation_finished signal will be received, the buffered state shall be applied
-		if current_state != null && current_state.mode == MODE.NON_INTERRUPTABLE:
-			buffered_state = new_state
-			return
 	
 	# Use the exit state function of the current state
 	if current_state != null:
@@ -274,12 +261,6 @@ func _on_state_entered(_state: Node) -> void:
 
 func _on_State_state_entered_recursive(_state: Node) -> void:
 	emit_signal("state_entered_recursive", current_state)
-
-
-func _on_non_interuptable_state_animation_finished() -> void:
-	if buffered_state != null:
-		set_state(buffered_state, true)
-		buffered_state = null
 
 
 func _on_current_state_event(state: State, connexion: Dictionary, event: Dictionary) -> void:

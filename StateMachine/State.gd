@@ -2,16 +2,8 @@ tool
 extends Node
 class_name State
 
-enum MODE {
-	DEFAULT,
-	TOGGLE,
-	NON_INTERRUPTABLE
-}
-
 func get_class() -> String : return "State"
 func is_class(value: String) -> bool: return value == "State" or .is_class(value)
-
-export(MODE) var mode = MODE.DEFAULT
 
 export var connexions_array : Array
 export var standalone_trigger : Dictionary
@@ -37,13 +29,8 @@ onready var states_machine = get_parent()
 #### BUILT-IN ####
 
 func _ready() -> void:
-	if mode == MODE.NON_INTERRUPTABLE:
-		var __ = connect("state_animation_finished", states_machine, "_on_non_interuptable_state_animation_finished")
-	
 	if states_machine != null && states_machine.is_class("StateMachine"):
 		states_machine.emit_signal("state_added", self)
-	
-	get_script().set_local_to_scene(true)
 
 
 func _exit_tree() -> void:
