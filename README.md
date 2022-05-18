@@ -8,6 +8,7 @@ It features:
 - Pushdown Automatas
 - Automatic animation triggering directly AnimatedSprite
 - A powerful GraphEditor to handle state transitions
+- State change based on signals and/or as many conditions you want
 
 <br>
 
