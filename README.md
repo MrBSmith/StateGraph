@@ -10,6 +10,11 @@ It features:
 - A powerful GraphEditor to handle state transitions
 - State change based on signals and/or as many conditions you want
 
+
+This addon is under MIT license which means its free to use/copy/modify etc.
+If you want to help financally his creator, you can tip him [here](https://ko-fi.com/babadesbois)
+
+
 <br>
 
 # 💾 Install 💾
