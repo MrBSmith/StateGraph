@@ -17,7 +17,7 @@ You can either:
 
 # 📃 Documentation 📃
 
-You can find a detailed, by class documentation, as well as a tutorial on how to use the **GraphEditor** [here](some-link.com).
+You can find a detailed, by class documentation, as well as a tutorial on how to use the **GraphEditor** [here](https://github.com/MrBSmith/StateGraph/wiki).
 
 <br>
 
