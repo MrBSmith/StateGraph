@@ -2,7 +2,12 @@
 A Godot plugin that manages state machines &amp; state transitions.
 
 
-It features a StateMachine based on nodes, nested state machines, pushdown automatas, automatic animation triggering, and a powerful graph editor to handle state transitions.
+It features:
+- A StateMachine based on nodes
+- Nested StateMachines
+- Pushdown Automatas
+- Automatic animation triggering directly AnimatedSprite
+- A powerful GraphEditor to handle state transitions
 
 <br>
 
