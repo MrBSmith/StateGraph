@@ -22,12 +22,12 @@ func _ready() -> void:
 
 func _update_text(state: Node) -> void:
 	if state != null:
-		set_text(get_state_name_recursive(state))
+		set_text(_get_state_name_recursive(state))
 
 
-func get_state_name_recursive(state: Node) -> String:
+func _get_state_name_recursive(state: Node) -> String:
 	if state is StateMachine:
-		return state.name + " -> " +  get_state_name_recursive(state.get_state())
+		return state.name + " -> " +  _get_state_name_recursive(state.get_state())
 	else:
 		if state == null:
 			return ""

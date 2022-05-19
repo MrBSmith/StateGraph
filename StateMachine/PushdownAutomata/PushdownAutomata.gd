@@ -1,8 +1,6 @@
 extends StateMachine
 class_name PushdownAutomata
 
-export var debug : bool = false
-
 var state_queue : Array = []
 var state_index : int = -1
 
@@ -24,7 +22,7 @@ func get_class() -> String: return "PushdownAutomata"
 
 #### LOGIC ####
 
-func set_state(state, force: bool = false):
+func set_state(state) -> void:
 	if state is String:
 		state = get_node(state)
 	
@@ -39,9 +37,6 @@ func set_state(state, force: bool = false):
 			state_queue.remove(i)
 	
 	_append_state_to_queue(state)
-	
-	if debug:
-		_print_queue()
 
 
 func _append_state_to_queue(state: Object) -> void:
@@ -63,8 +58,8 @@ func _print_queue() -> void:
 		print(state.name + sufix)
 
 
-# Set the state that is at the id position of the queue
-func go_to_queued_state_by_index(id: int):
+# Sets the state with the state at the id position of the queue
+func go_to_queued_state_by_index(id: int) -> void:
 	if id == state_index : return
 	
 	if id < 0 or id > state_queue.size() - 1:
@@ -75,16 +70,17 @@ func go_to_queued_state_by_index(id: int):
 	.set_state(state_queue[id])
 
 
-# Set the state to the previous one in the queue
-func go_to_previous_state():
+# Sets the state to the previous one in the queue
+func go_to_previous_state() -> void:
 	if state_index == 0:
 		push_warning("There is no previous state - state_index is currently 0")
 		return
 	
 	go_to_queued_state_by_index(state_index - 1)
 
-# Set the state to the next one in the queue
-func go_to_next_state():
+
+# Sets the state to the next one in the queue
+func go_to_next_state() -> void:
 	if state_index == state_queue.size() - 1:
 		push_warning("There is no next state - the current index is the last of the queue")
 		return
