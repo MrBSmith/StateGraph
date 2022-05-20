@@ -13,7 +13,7 @@ It features:
 <br>
 
 This addon is under MIT license which means its free to use/copy/modify etc.
-If you want to help financally his creator, you can tip him [here](https://ko-fi.com/babadesbois)
+If you want to help financally its creator, you can tip him [here](https://ko-fi.com/babadesbois)
 
 
 <br>
