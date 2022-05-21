@@ -24,6 +24,8 @@ signal remove_event(dict)
 signal remove_condition(dict)
 signal animation_handler_changed()
 signal edited_event_changed()
+signal connexion_path_changed_query(key, path)
+
 
 class DataDict:
 	var dict : Dictionary = {}
@@ -59,6 +61,10 @@ func _ready() -> void:
 	__ = connect("edited_event_changed", self, "_on_edited_event_changed")
 	__ = connect("animation_handler_changed", self, "_on_animation_handler_changed")
 	__ = connect("remove_event", self, "_on_remove_event")
+	
+	origin_state_line_edit.connect("text_entered", self, "_on_text_entered", ["from"])
+	dest_state_line_edit.connect("text_entered", self, "_on_text_entered", ["to"])
+
 
 #### VIRTUALS ####
 
@@ -85,11 +91,10 @@ func hide_all_buttons() -> void:
 		button.set_visible(false)
 
 
-
 func update_content(origin_state_path: String, trigger: Dictionary) -> void:
 	edited_trigger_dict = trigger
 	
-	var is_connection = trigger["type"] == "connexion"
+	var is_connection : bool = trigger["type"] == "connexion"
 	
 	delete_connexion_button.set_visible(is_connection)
 	delete_trigger_button.set_visible(!is_connection)
@@ -105,8 +110,8 @@ func update_content(origin_state_path: String, trigger: Dictionary) -> void:
 func update_state_path_line_edits(origin_state_path: String) -> void:
 	var is_connexion : bool = edited_trigger_dict["type"] == "connexion"
 	
-#	origin_state_line_edit.set_editable(is_connexion)
-#	dest_state_line_edit.set_editable(is_connexion)
+	origin_state_line_edit.set_editable(is_connexion)
+	dest_state_line_edit.set_editable(is_connexion)
 	
 	var origin_path = origin_state_path if is_connexion else "None"
 	var dest_path = edited_trigger_dict["to"] if is_connexion else "None"
@@ -194,3 +199,8 @@ func _on_edited_event_changed() -> void:
 
 func _on_remove_event(_event_dict: Dictionary) -> void:
 	set_edited_event({})
+
+
+# Key is either "from" or "to" here
+func _on_text_entered(path: String, key: String) -> void:
+	emit_signal("connexion_path_changed_query", key, path)

@@ -61,13 +61,13 @@ func _ready() -> void:
 	connect("selected_trigger_dict_changed", self, "_on_selected_trigger_dict_changed")
 	connect("selected_node_changed", self, "_on_selected_node_changed")
 
-
 	nodes_container.connect("item_rect_changed", self, "_on_NodesContainer_item_rect_changed")
 
 	$Panel.add_stylebox_override("panel", get_stylebox("Content", "EditorStyles"))
 
 	condition_editor.connect("remove_condition", self, "_on_ConditionEditor_remove_condition")
 	condition_editor.connect("remove_event", self, "_on_ConditionEditor_remove_event")
+	condition_editor.connect("connexion_path_changed_query", self, "_on_connexion_path_changed_query")
 
 	for button in node_editor_header.get_children():
 		button.connect("pressed", self, "_on_node_editor_header_button_pressed", [button])
@@ -300,6 +300,39 @@ func unselect_all_nodes(exeption: Control = null) -> void:
 			node.set_selected(false)
 
 
+# The key must be "from" or "to"
+func selected_connexion_change_state(key: String, new_state: State) -> void:
+	if selected_trigger == null:
+		push_error("Can't change the selected connexion %s state, the selected_trigger is null" % key)
+		return
+	
+	if not selected_trigger is FSM_Connexion:
+		push_error("Can't change the connexion state, the selected trigger is not a connexion")
+	
+	# Change the backend connexion
+	match(key):
+		"from":
+			var from_state = fsm.get_state_by_name(selected_trigger.from.name)
+			var to_state = fsm.get_state_by_name(selected_trigger.to.name)
+			var connexion_dict = from_state.find_connexion(to_state)
+			
+			from_state.remove_connexion(to_state)
+			new_state.add_connexion(to_state, connexion_dict)
+		
+		"to":
+			var connexion_dict = fsm_connexion_get_connexion_dict(selected_trigger)
+			connexion_dict["to"] = str(fsm.owner.get_path_to(new_state))
+	
+	# Change the frontend connexion
+	selected_trigger.set(key, nodes_container.get_node(new_state.name))
+	var from_node = selected_trigger.from
+	var to_node = selected_trigger.to
+	
+	selected_trigger.queue_free()
+	add_node_connexion(from_node, to_node)
+
+
+
 #### INPUTS ####
 
 func _input(event: InputEvent) -> void:
@@ -486,3 +519,12 @@ func _on_state_renamed(state: State, node: Control) -> void:
 	node.set_name(state.name)
 	update_connexion_editor()
 
+
+func _on_connexion_path_changed_query(key: String, path: String) -> void:
+	var state = fsm.owner.get_node_or_null(path)
+	
+	if state == null or not state is State:
+		push_error("No State could be found at the given path. The path must be relative to the root of the scene, and to designated node must be a State.")
+		return
+	
+	selected_connexion_change_state(key, state)

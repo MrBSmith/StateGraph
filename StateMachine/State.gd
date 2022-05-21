@@ -108,15 +108,16 @@ func connect_connexions_events(listener: Node, disconnect: bool = false) -> void
 					push_error("The emitter found a path %s has no signal named %s" % [emitter_path, trigger])
 
 
-func add_connexion(to: State) -> void:
+func add_connexion(to: State, connexion : Dictionary = {}) -> void:
 	if !find_connexion(to).empty():
 		return
 	
-	var connexion = {
-		"type": "connexion",
-		"to": str(owner.get_path_to(to)),
-		"events": []
-	}
+	if connexion.empty():
+		connexion = {
+			"type": "connexion",
+			"to": str(owner.get_path_to(to)),
+			"events": []
+		}
 	
 	if connexions_array.empty():
 		connexions_array = [connexion]
