@@ -216,3 +216,4 @@ func is_condition_verified(condition_dict: Dictionary) -> bool:
 	var target = get_node(condition_dict["target_path"])
 	var condition = condition_dict["condition"]
 	return ConditionInterpretor.inquire_condition(condition, target)
+

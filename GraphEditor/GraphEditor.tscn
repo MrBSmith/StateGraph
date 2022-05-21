@@ -5,7 +5,7 @@
 
 [sub_resource type="Theme" id=1]
 
-[sub_resource type="Image" id=2]
+[sub_resource type="Image" id=5]
 data = {
 "data": PoolByteArray( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ),
 "format": "LumAlpha8",
@@ -17,7 +17,7 @@ data = {
 [sub_resource type="ImageTexture" id=3]
 flags = 4
 flags = 4
-image = SubResource( 2 )
+image = SubResource( 5 )
 size = Vector2( 16, 16 )
 
 [sub_resource type="StyleBoxTexture" id=4]
@@ -52,26 +52,26 @@ anchor_bottom = 1.0
 split_offset = 237
 
 [node name="NodesEditor" type="PanelContainer" parent="HSplitContainer"]
-margin_right = 711.0
-margin_bottom = 540.0
+margin_right = 743.0
+margin_bottom = 600.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="Panel" type="Panel" parent="HSplitContainer/NodesEditor"]
 margin_left = 7.0
 margin_top = 7.0
-margin_right = 704.0
-margin_bottom = 533.0
+margin_right = 736.0
+margin_bottom = 593.0
 mouse_filter = 2
 
 [node name="VBoxContainer" type="VBoxContainer" parent="HSplitContainer/NodesEditor"]
 margin_left = 7.0
 margin_top = 7.0
-margin_right = 704.0
-margin_bottom = 533.0
+margin_right = 736.0
+margin_bottom = 593.0
 
 [node name="Header" type="HBoxContainer" parent="HSplitContainer/NodesEditor/VBoxContainer"]
-margin_right = 697.0
+margin_right = 729.0
 margin_bottom = 20.0
 rect_min_size = Vector2( 0, 20 )
 
@@ -83,8 +83,8 @@ text = "Add standalone trigger"
 
 [node name="NodeEditorContainer" type="Control" parent="HSplitContainer/NodesEditor/VBoxContainer"]
 margin_top = 24.0
-margin_right = 697.0
-margin_bottom = 526.0
+margin_right = 729.0
+margin_bottom = 586.0
 size_flags_vertical = 3
 
 [node name="ConnexionsContainer" type="Node2D" parent="HSplitContainer/NodesEditor/VBoxContainer/NodeEditorContainer"]
@@ -100,9 +100,9 @@ __meta__ = {
 }
 
 [node name="ConditionEditor" type="PanelContainer" parent="HSplitContainer"]
-margin_left = 723.0
-margin_right = 960.0
-margin_bottom = 540.0
+margin_left = 755.0
+margin_right = 1024.0
+margin_bottom = 600.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource( 2 )
@@ -110,15 +110,15 @@ script = ExtResource( 2 )
 [node name="VBoxContainer" type="VBoxContainer" parent="HSplitContainer/ConditionEditor"]
 margin_left = 7.0
 margin_top = 7.0
-margin_right = 230.0
-margin_bottom = 533.0
+margin_right = 262.0
+margin_bottom = 593.0
 rect_min_size = Vector2( 10, 0 )
 size_flags_horizontal = 3
 size_flags_vertical = 3
 size_flags_stretch_ratio = 0.3
 
 [node name="Toolbar" type="HBoxContainer" parent="HSplitContainer/ConditionEditor/VBoxContainer"]
-margin_right = 223.0
+margin_right = 255.0
 margin_bottom = 20.0
 
 [node name="AddEvent" type="Button" parent="HSplitContainer/ConditionEditor/VBoxContainer/Toolbar"]
@@ -141,31 +141,31 @@ text = "Add Animation Finished Event"
 
 [node name="Panel" type="PanelContainer" parent="HSplitContainer/ConditionEditor/VBoxContainer"]
 margin_top = 24.0
-margin_right = 223.0
-margin_bottom = 522.0
+margin_right = 255.0
+margin_bottom = 582.0
 size_flags_vertical = 3
 
 [node name="VBoxContainer" type="VBoxContainer" parent="HSplitContainer/ConditionEditor/VBoxContainer/Panel"]
 margin_left = 7.0
 margin_top = 7.0
-margin_right = 216.0
-margin_bottom = 491.0
+margin_right = 248.0
+margin_bottom = 551.0
 
 [node name="OriginState" type="HBoxContainer" parent="HSplitContainer/ConditionEditor/VBoxContainer/Panel/VBoxContainer"]
-margin_right = 209.0
+margin_right = 241.0
 margin_bottom = 24.0
 
 [node name="Label" type="Label" parent="HSplitContainer/ConditionEditor/VBoxContainer/Panel/VBoxContainer/OriginState"]
 margin_top = 5.0
-margin_right = 102.0
+margin_right = 118.0
 margin_bottom = 19.0
 size_flags_horizontal = 3
 text = "Origin State:"
 valign = 1
 
 [node name="LineEdit" type="LineEdit" parent="HSplitContainer/ConditionEditor/VBoxContainer/Panel/VBoxContainer/OriginState"]
-margin_left = 106.0
-margin_right = 209.0
+margin_left = 122.0
+margin_right = 241.0
 margin_bottom = 24.0
 size_flags_horizontal = 3
 text = "../.."
@@ -174,20 +174,20 @@ editable = false
 
 [node name="DestState" type="HBoxContainer" parent="HSplitContainer/ConditionEditor/VBoxContainer/Panel/VBoxContainer"]
 margin_top = 28.0
-margin_right = 209.0
+margin_right = 241.0
 margin_bottom = 52.0
 
 [node name="Label" type="Label" parent="HSplitContainer/ConditionEditor/VBoxContainer/Panel/VBoxContainer/DestState"]
 margin_top = 5.0
-margin_right = 114.0
+margin_right = 118.0
 margin_bottom = 19.0
 size_flags_horizontal = 3
 text = "Destination State:"
 valign = 1
 
 [node name="LineEdit" type="LineEdit" parent="HSplitContainer/ConditionEditor/VBoxContainer/Panel/VBoxContainer/DestState"]
-margin_left = 118.0
-margin_right = 209.0
+margin_left = 122.0
+margin_right = 241.0
 margin_bottom = 24.0
 size_flags_horizontal = 3
 text = "../.."
@@ -196,14 +196,14 @@ editable = false
 
 [node name="Tree" type="Tree" parent="HSplitContainer/ConditionEditor/VBoxContainer/Panel/VBoxContainer"]
 margin_top = 56.0
-margin_right = 209.0
-margin_bottom = 484.0
+margin_right = 241.0
+margin_bottom = 544.0
 size_flags_vertical = 3
 
 [node name="Footer" type="HBoxContainer" parent="HSplitContainer/ConditionEditor/VBoxContainer"]
-margin_top = 526.0
-margin_right = 223.0
-margin_bottom = 526.0
+margin_top = 586.0
+margin_right = 255.0
+margin_bottom = 586.0
 
 [node name="DeleteConnexion" type="Button" parent="HSplitContainer/ConditionEditor/VBoxContainer/Footer"]
 visible = false

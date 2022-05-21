@@ -140,7 +140,8 @@ func _update() -> void:
 			__ = node.connect("selected_changed", self, "_on_node_selected_changed", [node])
 			__ = state.connect("standalone_trigger_added", node, "_on_standalone_trigger_added")
 			__ = state.connect("standalone_trigger_removed", node, "_on_standalone_trigger_removed")
-
+			__ = state.connect("renamed", self, "_on_state_renamed", [state, node])
+	
 	# Update connexions
 	for state in states_array:
 		var from_node = nodes_container.get_node(state.name)
@@ -479,3 +480,9 @@ func _on_selected_node_changed() -> void:
 
 func _on_selected_trigger_dict_changed(_dict: Dictionary) -> void:
 	update_connexion_editor()
+
+
+func _on_state_renamed(state: State, node: Control) -> void:
+	node.set_name(state.name)
+	update_connexion_editor()
+

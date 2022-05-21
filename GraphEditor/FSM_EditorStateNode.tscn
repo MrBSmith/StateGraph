@@ -78,10 +78,10 @@ __meta__ = {
 }
 
 [node name="Label" type="Label" parent="CenterContainer"]
-margin_left = 37.0
-margin_top = 18.0
-margin_right = 103.0
-margin_bottom = 32.0
+margin_left = 41.0
+margin_top = 20.0
+margin_right = 107.0
+margin_bottom = 34.0
 rect_min_size = Vector2( 0, 14 )
 custom_colors/font_color = Color( 0, 0, 0, 1 )
 text = "StateNode"
