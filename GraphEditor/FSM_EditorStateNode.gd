@@ -49,7 +49,6 @@ func _ready() -> void:
 	connect("dragged_changed", self, "_on_dragged_changed")
 	connect("selected_changed", self, "_on_selected_changed")
 	connect("has_standalone_trigger_changed", self, "_on_has_standalone_trigger_changed")
-	connect("renamed", self, "_on_renamed")
 	trigger_button.connect("pressed", self, "_on_trigger_button_pressed")
 	
 	label.set_text(name)
@@ -151,5 +150,6 @@ func _on_has_standalone_trigger_changed(value: bool) -> void:
 	$TriggerButton.set_visible(value)
 
 
-func _on_renamed() -> void:
+func _on_state_renamed(state: State) -> void:
+	set_name(state.name)
 	label.set_text(name)

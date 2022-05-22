@@ -103,7 +103,7 @@ func _input(event: InputEvent) -> void:
 
 #### SIGNAL RESPONSES ####
 
-func _on_node_exit_tree() -> void:
+func _on_node_tree_exited() -> void:
 	queue_free()
 
 

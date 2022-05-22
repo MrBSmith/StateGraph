@@ -90,20 +90,19 @@ func feed(state_machine: StateMachine) -> void:
 	if state_machine == fsm:
 		return
 
-	if fsm != null && !is_instance_valid(fsm):
+	if fsm != null && is_instance_valid(fsm):
 		var __ = fsm.disconnect("state_added", self, "_on_fsm_state_added")
 		__ = fsm.disconnect("state_removed", self, "_on_fsm_state_removed")
-
+	
 	_clear()
-
+	fsm = state_machine
+	
 	if state_machine != null:
-		state_machine.fetch_states(states_array)
-		fsm = state_machine
-
+		fsm.fetch_states(states_array)
+		
 		var __ = fsm.connect("state_added", self, "_on_fsm_state_added")
 		__ = fsm.connect("state_removed", self, "_on_fsm_state_removed")
 
-		yield(get_tree(), "idle_frame")
 		_update()
 
 
@@ -111,6 +110,9 @@ func _clear() -> void:
 	states_array = []
 
 	for child in nodes_container.get_children():
+		child.queue_free()
+	
+	for child in connexions_container.get_children():
 		child.queue_free()
 
 
@@ -140,7 +142,7 @@ func _update() -> void:
 			__ = node.connect("selected_changed", self, "_on_node_selected_changed", [node])
 			__ = state.connect("standalone_trigger_added", node, "_on_standalone_trigger_added")
 			__ = state.connect("standalone_trigger_removed", node, "_on_standalone_trigger_removed")
-			__ = state.connect("renamed", self, "_on_state_renamed", [state, node])
+			__ = state.connect("renamed", node, "_on_state_renamed", [state])
 	
 	# Update connexions
 	for state in states_array:
@@ -512,11 +514,6 @@ func _on_selected_node_changed() -> void:
 
 
 func _on_selected_trigger_dict_changed(_dict: Dictionary) -> void:
-	update_connexion_editor()
-
-
-func _on_state_renamed(state: State, node: Control) -> void:
-	node.set_name(state.name)
 	update_connexion_editor()
 
 

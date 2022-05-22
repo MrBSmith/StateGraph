@@ -63,7 +63,10 @@ func edit(obj: Object) -> void:
 #### SIGNAL RESPONSES ####
 
 func _on_scene_changed(scene_root: Node) -> void:
-	edited_scene_path = scene_root.filename
+	if scene_root == null:
+		edited_scene_path = ""
+	else:
+		edited_scene_path = scene_root.filename
 
 
 func _on_inspect_node_query(node: Node) -> void:
