@@ -37,7 +37,7 @@ func _exit_tree() -> void:
 #### VIRTUALS ####
 
 func handles(obj: Object) -> bool:
-	var handled = obj is StateMachine
+	var handled = obj is StateMachine or (obj is State && obj.get_parent() is StateMachine)
 
 	fsm_editor_button.set_visible(obj is State)
 
@@ -48,7 +48,8 @@ func handles(obj: Object) -> bool:
 
 
 func edit(obj: Object) -> void:
-	fsm_editor.feed(obj)
+	var handled_fsm = obj if obj is StateMachine else obj.get_parent()
+	fsm_editor.feed(handled_fsm)
 
 
 #### LOGIC ####
