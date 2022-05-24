@@ -11,3 +11,7 @@ corner_radius_top_left = 10
 corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
+expand_margin_left = 30.0
+expand_margin_top = 5.0
+shadow_color = Color( 1, 0, 0, 0.6 )
+shadow_size = 5

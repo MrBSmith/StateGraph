@@ -5,8 +5,8 @@ class_name GraphEditor
 onready var nodes_editor = $HSplitContainer/NodesEditor
 onready var condition_editor = $HSplitContainer/ConditionEditor
 
-onready var nodes_container = nodes_editor.get_node("VBoxContainer/NodeEditorContainer/NodesContainer")
-onready var connexions_container = nodes_editor.get_node("VBoxContainer/NodeEditorContainer/ConnexionsContainer")
+onready var graph_edit = nodes_editor.get_node("VBoxContainer/GraphEdit")
+onready var connexions_container = graph_edit.get_node("ConnexionsContainer")
 
 onready var node_editor_header = nodes_editor.get_node("VBoxContainer/Header")
 onready var toolbar = condition_editor.get_node("VBoxContainer/Toolbar")
@@ -61,8 +61,9 @@ func _ready() -> void:
 	connect("selected_trigger_dict_changed", self, "_on_selected_trigger_dict_changed")
 	connect("selected_node_changed", self, "_on_selected_node_changed")
 
-	nodes_container.connect("item_rect_changed", self, "_on_NodesContainer_item_rect_changed")
-
+	graph_edit.connect("item_rect_changed", self, "_on_NodesContainer_item_rect_changed")
+	OS.low_processor_usage_mode = true
+	
 	$Panel.add_stylebox_override("panel", get_stylebox("Content", "EditorStyles"))
 
 	condition_editor.connect("remove_condition", self, "_on_ConditionEditor_remove_condition")
@@ -109,8 +110,9 @@ func feed(state_machine: StateMachine) -> void:
 func _clear() -> void:
 	states_array = []
 
-	for child in nodes_container.get_children():
-		child.queue_free()
+	for child in graph_edit.get_children():
+		if child is GraphNode:
+			child.queue_free()
 	
 	for child in connexions_container.get_children():
 		child.queue_free()
@@ -123,8 +125,8 @@ func _update_states_array() -> void:
 
 func _update() -> void:
 	# Remove useless state nodes
-	for child in nodes_container.get_children():
-		if !fsm.has_state(child.name):
+	for child in graph_edit.get_children():
+		if child is GraphNode && !fsm.has_state(child.name):
 			child.queue_free()
 
 	# Add missing state nodes
@@ -132,10 +134,12 @@ func _update() -> void:
 		if !_has_state_node(state.name):
 			var node = state_node_scene.instance()
 			node.name = state.name
+			node.set_title(state.name)
 			node.has_standalone_trigger = !state.standalone_trigger.empty()
-			node.set_position(state.graph_position * nodes_container.get_size())
-			nodes_container.add_child(node)
-
+			node.set_position(state.graph_position * graph_edit.get_size())
+			graph_edit.add_child(node)
+			node.rect_min_size = Vector2(50.0, 20.0)
+			
 			var __ = node.connect("item_rect_changed", self, "_on_state_node_item_rect_changed", [node])
 			__ = node.connect("connexion_attempt", self, "_on_state_node_connexion_attempt", [node])
 			__ = node.connect("trigger_selected", self, "_on_node_trigger_selected", [node])
@@ -143,24 +147,25 @@ func _update() -> void:
 			__ = state.connect("standalone_trigger_added", node, "_on_standalone_trigger_added")
 			__ = state.connect("standalone_trigger_removed", node, "_on_standalone_trigger_removed")
 			__ = state.connect("renamed", node, "_on_state_renamed", [state])
-	
+
 	# Update connexions
 	for state in states_array:
-		var from_node = nodes_container.get_node(state.name)
+		var from_node = graph_edit.get_node(state.name)
 
 		for con in state.connexions_array:
 			var to_state_path = str(fsm.owner.get_path()) + "/" + str(con["to"])
 			var to_state = get_node(to_state_path)
-			var to_node = nodes_container.get_node(to_state.name)
+			var to_node = graph_edit.get_node(to_state.name)
 
 			if !has_connexion(from_node, to_node):
 				add_node_connexion(from_node, to_node)
 
 
 func _update_nodes_position() -> void:
-	for node in nodes_container.get_children():
-		var state = fsm.get_state_by_name(node.name)
-		node.set_position(state.graph_position * nodes_container.get_size())
+	for node in graph_edit.get_children():
+		if node is GraphNode:
+			var state = fsm.get_state_by_name(node.name)
+			node.set_position(state.graph_position * graph_edit.get_size())
 
 
 func update_connexion_editor() -> void:
@@ -190,19 +195,20 @@ func update_line_containers() -> void:
 
 
 func _has_state_node(state_name: String) -> bool:
-	for child in nodes_container.get_children():
-		if child.name == state_name:
+	for child in graph_edit.get_children():
+		if child is GraphNode && child.name == state_name:
 			return true
 	return false
 
 
 func _find_hovered_node() -> Control:
 	var mouse_pos = get_global_mouse_position()
-	for node in nodes_container.get_children():
-		var rect = node.get_global_rect()
+	for node in graph_edit.get_children():
+		if node is GraphNode:
+			var rect = node.get_global_rect()
 
-		if rect.has_point(mouse_pos):
-			return node
+			if rect.has_point(mouse_pos):
+				return node
 	return null
 
 
@@ -291,14 +297,14 @@ func unselect_all_connexions(exeption: FSM_Connexion = null) -> void:
 
 
 func unselect_all_triggers(exeption: Control = null) -> void:
-	for node in nodes_container.get_children():
-		if node != exeption:
+	for node in graph_edit.get_children():
+		if node is GraphNode && node != exeption:
 			node.unselect_trigger()
 
 
 func unselect_all_nodes(exeption: Control = null) -> void:
-	for node in nodes_container.get_children():
-		if node != exeption:
+	for node in graph_edit.get_children():
+		if node is GraphNode && node != exeption:
 			node.set_selected(false)
 
 
@@ -326,7 +332,7 @@ func selected_connexion_change_state(key: String, new_state: State) -> void:
 			connexion_dict["to"] = str(fsm.owner.get_path_to(new_state))
 	
 	# Change the frontend connexion
-	selected_trigger.set(key, nodes_container.get_node(new_state.name))
+	selected_trigger.set(key, graph_edit.get_node(new_state.name))
 	var from_node = selected_trigger.from
 	var to_node = selected_trigger.to
 	
@@ -363,7 +369,7 @@ func _on_fsm_state_removed(_state: State) -> void:
 
 func _on_state_node_item_rect_changed(node: Control) -> void:
 	var state = fsm.get_state_by_name(node.name)
-	state.graph_position = node.get_position() / nodes_container.get_size()
+	state.graph_position = node.get_position() / graph_edit.get_size()
 
 	update_line_containers()
 

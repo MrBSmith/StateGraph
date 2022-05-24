@@ -1,21 +1,16 @@
 tool
-extends Control
+extends GraphNode
 
 onready var line = $Line2D
-onready var label = $CenterContainer/Label
 onready var trigger_button = $TriggerButton
 
 var drawing_line : bool = false setget set_drawing_line
-var dragged : bool = false setget set_dragged
 var mouse_offset := Vector2.ZERO
 var has_standalone_trigger : bool = false setget set_has_standalone_trigger
-
-var selected : bool = false setget set_selected, is_selected
 
 signal selected_changed(value)
 signal connexion_attempt()
 signal drawing_line_changed(value)
-signal dragged_changed(value)
 signal trigger_selected()
 signal has_standalone_trigger_changed(value)
 
@@ -25,11 +20,6 @@ func set_drawing_line(value: bool) -> void:
 	if drawing_line != value:
 		drawing_line = value
 		emit_signal("drawing_line_changed", drawing_line)
-
-func set_dragged(value: bool) -> void:
-	if dragged != value:
-		dragged = value
-		emit_signal("dragged_changed", dragged)
 
 func set_selected(value: bool) -> void:
 	if value != selected:
@@ -46,26 +36,15 @@ func set_has_standalone_trigger(value: bool) -> void:
 
 func _ready() -> void:
 	connect("drawing_line_changed", self, "_on_drawing_line_changed")
-	connect("dragged_changed", self, "_on_dragged_changed")
 	connect("selected_changed", self, "_on_selected_changed")
 	connect("has_standalone_trigger_changed", self, "_on_has_standalone_trigger_changed")
 	trigger_button.connect("pressed", self, "_on_trigger_button_pressed")
-	
-	label.set_text(name)
 	
 	trigger_button.set_button_icon(get_icon("Signals", "EditorIcons"))
 	trigger_button.set_visible(has_standalone_trigger)
 
 
 func _process(delta: float) -> void:
-	if dragged:
-		var mouse_pos = get_parent().get_local_mouse_position()
-		var node_pos = mouse_pos - mouse_offset
-		node_pos = Vector2(clamp(node_pos.x, 0.0, get_parent().rect_size.x - rect_size.x),
-						clamp(node_pos.y, 0.0, get_parent().rect_size.y - rect_size.y))
-		
-		set_position(node_pos)
-	
 	if drawing_line:
 		line.set_points([get_size() / 2, get_local_mouse_position()])
 	else:
@@ -89,7 +68,6 @@ func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton && event.is_pressed() && !event.is_echo():
 		match(event.button_index):
 			BUTTON_LEFT: 
-				set_dragged(true)
 				set_selected(true)
 
 			BUTTON_RIGHT: 
@@ -99,7 +77,6 @@ func _gui_input(event: InputEvent) -> void:
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton && !event.is_pressed():
 		match(event.button_index):
-			BUTTON_LEFT: set_dragged(false)
 			BUTTON_RIGHT: set_drawing_line(false)
 	
 	elif event is InputEventKey && event.is_pressed() && !event.is_echo():
@@ -115,13 +92,6 @@ func _input(event: InputEvent) -> void:
 func _on_drawing_line_changed(_value: bool) -> void:
 	if !drawing_line:
 		emit_signal("connexion_attempt")
-
-
-func _on_dragged_changed(_value: bool) -> void:
-	if dragged:
-		mouse_offset = get_local_mouse_position()
-	else:
-		mouse_offset = Vector2.ZERO
 
 
 func _on_trigger_button_pressed() -> void:
@@ -140,7 +110,6 @@ func _on_standalone_trigger_removed() -> void:
 
 
 func _on_selected_changed(_value: bool) -> void:
-	$SelectedPanel.set_visible(selected)
 	if !selected:
 		$TriggerButton.pressed = false
 
@@ -152,4 +121,4 @@ func _on_has_standalone_trigger_changed(value: bool) -> void:
 
 func _on_state_renamed(state: State) -> void:
 	set_name(state.name)
-	label.set_text(name)
+	set_title(name)
