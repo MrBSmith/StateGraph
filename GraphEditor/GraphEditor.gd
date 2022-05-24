@@ -36,6 +36,7 @@ signal selected_trigger_changed(con)
 signal selected_trigger_dict_changed(dict)
 signal selected_node_changed()
 
+
 #### ACCESSORS ####
 
 func is_class(value: String): return value == "FSM_Editor" or .is_class(value)
@@ -62,6 +63,7 @@ func _ready() -> void:
 	connect("selected_trigger_changed", self, "_on_selected_trigger_changed")
 	connect("selected_trigger_dict_changed", self, "_on_selected_trigger_dict_changed")
 	connect("selected_node_changed", self, "_on_selected_node_changed")
+	connect("visibility_changed", self, "_on_visibility_changed")
 	
 	graph_edit.connect("item_rect_changed", self, "_on_GraphEdit_item_rect_changed")
 	graph_edit.connect("scroll_offset_changed", self, "_on_GraphEdit_scroll_offset_changed")
@@ -140,7 +142,6 @@ func _update() -> void:
 			node.name = state.name
 			node.set_title(state.name)
 			node.has_standalone_trigger = !state.standalone_trigger.empty()
-			node.set_position(state.graph_position * graph_edit.get_size())
 			graph_edit.add_child(node)
 			node.rect_min_size = Vector2(50.0, 20.0)
 			
@@ -163,20 +164,18 @@ func _update() -> void:
 
 			if !has_connexion(from_node, to_node):
 				add_node_connexion(from_node, to_node)
+	
+	yield(get_tree(), "idle_frame")
+	
+	# Update state nodes graph position
+	for state in states_array:
+		var node = graph_edit.get_node(state.name)
+		node.set_offset(state.graph_position * graph_edit.get_size())
 
 
 func _update_graph_display() -> void:
-	_update_nodes_position()
 	force_connexions_update()
 	update_line_containers()
-
-
-
-func _update_nodes_position() -> void:
-	for node in graph_edit.get_children():
-		if node is GraphNode:
-			var state = fsm.get_state_by_name(node.name)
-			node.set_position(state.graph_position * graph_edit.get_size())
 
 
 func update_connexion_editor() -> void:
@@ -379,9 +378,14 @@ func _on_fsm_state_removed(_state: State) -> void:
 
 
 func _on_state_node_item_rect_changed(node: Control) -> void:
+	if !node.selected:
+		return
+	
 	var state = fsm.get_state_by_name(node.name)
 	state.graph_position = node.get_position() / graph_edit.get_size()
-
+	
+	if logs: print(node.name + " changed position: " + String(node.rect_position))
+	
 	update_line_containers()
 
 
@@ -554,3 +558,7 @@ func _on_connexion_path_changed_query(key: String, path: String) -> void:
 		return
 	
 	selected_connexion_change_state(key, state)
+
+
+func _on_visibility_changed() -> void:
+	_update_graph_display()
