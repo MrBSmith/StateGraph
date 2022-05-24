@@ -36,6 +36,7 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 theme = ExtResource( 3 )
 script = ExtResource( 1 )
+logs = true
 
 [node name="Panel" type="Panel" parent="."]
 anchor_right = 1.0

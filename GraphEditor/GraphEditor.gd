@@ -14,6 +14,8 @@ onready var footer = condition_editor.get_node("VBoxContainer/Footer")
 
 onready var add_standalone_trigger_button = node_editor_header.get_node("AddStandaloneTrigger")
 
+export var logs : bool = false
+
 var edited_scene_path : String = ""
 
 var fsm : StateMachine = null
@@ -60,8 +62,10 @@ func _ready() -> void:
 	connect("selected_trigger_changed", self, "_on_selected_trigger_changed")
 	connect("selected_trigger_dict_changed", self, "_on_selected_trigger_dict_changed")
 	connect("selected_node_changed", self, "_on_selected_node_changed")
-
-	graph_edit.connect("item_rect_changed", self, "_on_NodesContainer_item_rect_changed")
+	
+	graph_edit.connect("item_rect_changed", self, "_on_GraphEdit_item_rect_changed")
+	graph_edit.connect("scroll_offset_changed", self, "_on_GraphEdit_scroll_offset_changed")
+	graph_edit.connect("gui_input", self, "_on_GraphEdit_gui_input")
 	OS.low_processor_usage_mode = true
 	
 	$Panel.add_stylebox_override("panel", get_stylebox("Content", "EditorStyles"))
@@ -161,6 +165,13 @@ func _update() -> void:
 				add_node_connexion(from_node, to_node)
 
 
+func _update_graph_display() -> void:
+	_update_nodes_position()
+	force_connexions_update()
+	update_line_containers()
+
+
+
 func _update_nodes_position() -> void:
 	for node in graph_edit.get_children():
 		if node is GraphNode:
@@ -182,10 +193,10 @@ func update_line_containers() -> void:
 		var from = line_container.from
 		var to = line_container.to
 
-		line_container.set_global_position(from.get_global_position() + from.get_size() / 2)
+		line_container.set_global_position(from.get_global_position() + from.get_size() / 2.0 * from.rect_scale)
 
 		var line_global_pos = line_container.get_global_position()
-		var dest = to.get_global_position() + to.get_size() / 2.0
+		var dest = to.get_global_position() + to.get_size() / 2.0 * to.rect_scale
 
 		var angle = dest.angle_to_point(line_global_pos)
 		var distance = line_global_pos.distance_to(dest)
@@ -445,10 +456,22 @@ func _on_footer_button_pressed(button: Button) -> void:
 			selected_node.set_has_standalone_trigger(false)
 
 
-func _on_NodesContainer_item_rect_changed() -> void:
-	_update_nodes_position()
-	force_connexions_update()
-	update_line_containers()
+func _on_GraphEdit_item_rect_changed() -> void:
+	_update_graph_display()
+	if logs: print("item_rect_changed called, update display")
+
+
+func _on_GraphEdit_scroll_offset_changed(offset: Vector2) -> void:
+	_update_graph_display()
+	if logs: print("scroll_offset_changed called, update display")
+
+
+func _on_GraphEdit_gui_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton:
+		if event.button_index in [BUTTON_WHEEL_DOWN, BUTTON_WHEEL_UP, BUTTON_WHEEL_RIGHT, BUTTON_WHEEL_LEFT]:
+			if logs: print("mouse wheel used, update display")
+			yield(get_tree(), "idle_frame")
+			_update_graph_display()
 
 
 func _on_ConditionEditor_remove_condition(condition_dict: Dictionary) -> void:
