@@ -528,6 +528,7 @@ func _on_node_selected_changed(selected: bool, node: Control) -> void:
 	else:
 		if node == selected_node:
 			set_selected_node(null)
+			set_selected_trigger_dict({})
 
 
 func _on_node_editor_header_button_pressed(button: Button) -> void:
