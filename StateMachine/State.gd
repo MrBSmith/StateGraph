@@ -216,5 +216,20 @@ func are_all_conditions_verified(event: Dictionary) -> bool:
 func is_condition_verified(condition_dict: Dictionary) -> bool:
 	var target = get_node(condition_dict["target_path"])
 	var condition = condition_dict["condition"]
-	return ConditionInterpretor.inquire_condition(condition, target)
+	
+	var expression = Expression.new()
+	expression.parse(condition)
+	var result = expression.execute([], target)
+	
+	if expression.has_execute_failed():
+		push_error("Condition execution failed, check its expression is valid")
+		return false
+		
+	elif not result is bool:
+		push_error("Condition expression didn't retruned a bool value, condition aborted (retruned false)")
+		return false
+	
+	else:
+		return result
+
 
