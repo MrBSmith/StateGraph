@@ -1,4 +1,5 @@
-# StateGraph
+![LogoStateGraph](https://user-images.githubusercontent.com/34774144/172343297-33f082b9-5088-4316-9a3a-92eb121c1af0.svg)
+
 A Godot plugin that manages state machines &amp; state transitions.
 
 
