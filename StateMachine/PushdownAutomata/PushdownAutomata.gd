@@ -1,3 +1,4 @@
+tool
 extends StateMachine
 class_name PushdownAutomata
 

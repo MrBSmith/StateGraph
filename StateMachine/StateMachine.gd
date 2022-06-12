@@ -66,10 +66,11 @@ func _ready():
 	
 	# Set the state to be the default one, unless we are in a nested StateMachine
 	# Nested StateMachines shouldn't have a current_state if they are not the current_state of its parent
+	default_state = get_child(0) if default_state_path.is_empty() else get_node_or_null(default_state_path)
+	
 	if is_nested() or no_default_state:
 		set_state(null)
 	else:
-		default_state = get_child(0) if default_state_path.is_empty() else get_node_or_null(default_state_path)
 		set_state(default_state)
 	
 	# Connect all state's standalone triggers
