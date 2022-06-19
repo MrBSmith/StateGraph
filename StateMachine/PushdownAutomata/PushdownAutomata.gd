@@ -19,7 +19,8 @@ func get_class() -> String: return "PushdownAutomata"
 
 #### VIRTUALS ####
 
-
+func enter_state() -> void:
+	.enter_state()
 
 #### LOGIC ####
 

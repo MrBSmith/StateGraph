@@ -92,7 +92,8 @@ func _physics_process(delta):
 	if current_state == null:
 		return
 	
-	current_state.update_state(delta)
+	if !is_nested() or (is_nested() && is_current_state()):
+		current_state.update_state(delta)
 	
 	for state in standalone_triggers_states:
 		for event in state.standalone_trigger["events"]:
