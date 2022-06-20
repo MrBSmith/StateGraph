@@ -99,6 +99,7 @@ func _physics_process(delta):
 		for event in state.standalone_trigger["events"]:
 			if event["trigger"] == "process" && state.are_all_conditions_verified(event):
 				set_state(state)
+				return
 	
 	var new_state = current_state.check_exit_conditions()
 	if new_state != null:
