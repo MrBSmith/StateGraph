@@ -19,8 +19,7 @@ func get_class() -> String: return "PushdownAutomata"
 
 #### VIRTUALS ####
 
-func enter_state() -> void:
-	.enter_state()
+
 
 #### LOGIC ####
 
@@ -28,10 +27,13 @@ func set_state(state) -> void:
 	if state is String:
 		state = get_node(state)
 	
-	if state == current_state or state == null:
+	if state == current_state:
 		return
 	
 	.set_state(state)
+	
+	if state == null:
+		return
 	
 	# If the current state is the last of the queue
 	if state_index != state_queue.size() - 1:
