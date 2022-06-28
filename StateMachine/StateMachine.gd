@@ -101,9 +101,10 @@ func _physics_process(delta):
 				set_state(state)
 				return
 	
-	var new_state = current_state.check_exit_conditions()
-	if new_state != null:
-		set_state(new_state)
+	if current_state != null:
+		var new_state = current_state.check_exit_conditions()
+		if new_state != null:
+			set_state(new_state)
 
 
 #### LOGIC ####
