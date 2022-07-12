@@ -100,14 +100,15 @@ func _update_animation() -> void:
 		return
 	
 	# Handles flipping the sprites if necesary
-	if flip_mode & FLIP.ISO:
-		var flip_h = direction in [Vector2.DOWN, Vector2.LEFT] 
-		animated_sprite.set_flip_h(flip_h)
-	else:
-		var flip_h = (flip_mode & FLIP.H) && (direction.x < 0)
-		var flip_v = (flip_mode & FLIP.V) && (direction.y < 0)
-		animated_sprite.set_flip_v(flip_v)
-		animated_sprite.set_flip_h(flip_h)
+	if flip_mode != 0:
+		if flip_mode & FLIP.ISO:
+			var flip_h = direction in [Vector2.DOWN, Vector2.LEFT] 
+			animated_sprite.set_flip_h(flip_h)
+		else:
+			var flip_h = (flip_mode & FLIP.H) && (direction.x < 0)
+			var flip_v = (flip_mode & FLIP.V) && (direction.y < 0)
+			animated_sprite.set_flip_v(flip_v)
+			animated_sprite.set_flip_h(flip_h)
 	
 	# Compute the animation name that need to be played
 	var dir_sufix = find_dir_name(direction)
