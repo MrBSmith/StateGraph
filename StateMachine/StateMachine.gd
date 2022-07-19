@@ -19,6 +19,10 @@ export var default_state_path : NodePath
 # Set this to true if you want the default state to be null, no matter what the default_state_path value is
 export var no_default_state : bool = false
 
+# If this propery is true, the first enter_state call will be deffered after the scene owner  ready
+export var deffer_first_enter_state : bool = false
+var owner_ready : bool = false
+
 var current_state : State = null
 var previous_state : State = null
 var default_state : State = null
@@ -60,6 +64,7 @@ func _ready():
 		return
 	
 	var __ = connect("state_entered", self, "_on_state_entered")
+	__ = owner.connect("ready", self, "_on_owner_ready")
 	
 	if get_parent().is_class("StateMachine"):
 		__ = connect("state_entered_recursive", get_parent(), "_on_State_state_entered_recursive")
@@ -153,6 +158,10 @@ func set_state(new_state):
 	if new_state != null && (!is_nested() or new_state.is_current_state()):
 		current_state.connect_connexions_events(self)
 		emit_signal("state_entered", current_state)
+		
+		if !owner_ready && deffer_first_enter_state:
+			yield(owner, "ready")
+		
 		current_state.enter_state()
 
 
@@ -201,6 +210,10 @@ func is_nested() -> bool:
 
 # Set state by incrementing its id (id of the node, ie position in the hierachy)
 func increment_state(increment: int = 1, wrapping : bool = true) -> void:
+	if get_state() == null:
+		push_error("Current state is null, cannot increment")
+		return
+	
 	var current_state_id = get_state().get_index()
 	var id = wrapi(current_state_id + increment, 0, get_child_count()) if wrapping else current_state_id + increment 
 	var state = get_child(id)
@@ -280,3 +293,8 @@ func _on_current_state_event(state: State, connexion: Dictionary, event: Diction
 func _on_standalone_trigger_event(state: State, event: Dictionary) -> void:
 	if state.are_all_conditions_verified(event):
 		set_state(state)
+
+
+func _on_owner_ready() -> void:
+	owner_ready = true
+
