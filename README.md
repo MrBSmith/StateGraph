@@ -55,14 +55,14 @@ You can find more information about how to use the [State](https://github.com/Mr
 
 ## Graph Editor
 
-The [GraphEditor](https://github.com/MrBSmith/StateGraph/wiki/GraphEditor) is a tool that runs inside Godot's editor and allows you to manage & edit the **connexions** between states as well as **standalone triggers**.
+The [GraphEditor](https://github.com/MrBSmith/StateGraph/wiki/GraphEditor) is a tool that runs inside Godot's editor and allows you to manage & edit the **Connections** between states as well as **standalone triggers**.
 
-Connexions can be triggered either by signals or in the `_physics_process()` of the [StateMachine](https://github.com/MrBSmith/StateGraph/wiki/StateMachine).
+Connections can be triggered either by signals or in the `_physics_process()` of the [StateMachine](https://github.com/MrBSmith/StateGraph/wiki/StateMachine).
 Additionally, it can take any conditions that must all return true for the change of State to operate.
 
-The graph also implements **standalone triggers** that work precisely as connexions but does not need to be in a particular state to trigger.
+The graph also implements **standalone triggers** that work precisely as Connections but does not need to be in a particular state to trigger.
 
-It is designed to be very flexible and to keep the graph as readable as possible by minimizing the number of connexions you need to make between two states.
+It is designed to be very flexible and to keep the graph as readable as possible by minimizing the number of Connections you need to make between two states.
 If it is correctly used, it will prevent you from writing any boilerplate state transition code. (You can still do it by code tho)
 
 <br>
