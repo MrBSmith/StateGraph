@@ -148,6 +148,7 @@ func set_state(new_state):
 		current_state.connect_connexions_events(self, true)
 		emit_signal("state_exited", current_state)
 		current_state.exit_state()
+		current_state.emit_signal("exited")
 	
 	previous_state = current_state
 	current_state = new_state
@@ -158,6 +159,7 @@ func set_state(new_state):
 	if new_state != null && (!is_nested() or new_state.is_current_state()):
 		current_state.connect_connexions_events(self)
 		emit_signal("state_entered", current_state)
+		current_state.emit_signal("entered")
 		
 		if !owner_ready && deffer_first_enter_state:
 			yield(owner, "ready")

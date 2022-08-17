@@ -8,6 +8,12 @@ enum FLIP {
 	ISO = 4
 }
 
+enum ANIM_NAME_MODE {
+	PARENT_MOST_STATE_NAME,
+	CHILD_MOST_STATE_NAME,
+	RECURSIVE_NAME_COMPOSITION
+}
+
 enum MODE {
 	ANIMATED_SPRITE,
 	ANIMATION_PLAYER
@@ -49,7 +55,7 @@ onready var states_machine = get_parent()
 
 export var animation_player_path : NodePath
 export var animated_sprite_path : NodePath
-export var recursive_animation_triggering : bool = true
+export(ANIM_NAME_MODE) var anim_name_mode : int = ANIM_NAME_MODE.RECURSIVE_NAME_COMPOSITION
 
 export(int, FLAGS, "flip_h", "flip_v", "flip_iso") var flip_mode = FLIP.H
 export(MODE) var finished_trigger_mode : int = MODE.ANIMATED_SPRITE
@@ -113,11 +119,11 @@ func _update_animation() -> void:
 				var flip_v = (flip_mode & FLIP.V) && (direction.y < 0)
 				animated_sprite.set_flip_v(flip_v)
 	
-	# Compute the animation name that need to be played
+	# Compute the animation name that needs to be played
 	var dir_sufix = find_dir_name(direction)
 	var previous_state = states_machine.previous_state
 	
-	var anim_name = state.name + dir_sufix
+	var anim_name = get_anim_name(state) + dir_sufix
 	var start_anim_name = "Start" + anim_name
 	var trans_anim_name = previous_state.name + "To" + anim_name if previous_state else ""
 	
@@ -175,6 +181,30 @@ func find_dir_name(dir: Vector2) -> String:
 	return dir_key
 
 
+# Based on the anim_name_mode, returns a different anim name:
+# If anim_name_mode is PARENT_MOST_STATE_NAME
+# 	it will return only the parent state's name
+
+# If anim_name_mode is CHILD_MOST_STATE_NAME
+# 	it will return only the recursive current state name
+
+# If anim_name_mode is RECURSIVE_NAME_COMPOSITION
+# 	it will recursively add the children state's name together
+func get_anim_name(state: Object) -> String:
+	if anim_name_mode == ANIM_NAME_MODE.PARENT_MOST_STATE_NAME:
+		return state.name
+	
+	if state.is_class("StateMachine"):
+		var child_state = state.get_state()
+		
+		if child_state != null:
+			match(anim_name_mode):
+				ANIM_NAME_MODE.CHILD_MOST_STATE_NAME:
+					return get_anim_name(child_state)
+				ANIM_NAME_MODE.RECURSIVE_NAME_COMPOSITION:
+					return state.name + get_anim_name(child_state)
+	return state.name
+
 
 #### SIGNAL RESPONSES #####
 
@@ -195,9 +225,11 @@ func _on_animation_finished() -> void:
 	if !state_name.is_subsequence_ofi(current_animation):
 		return
 	
-	if current_animation == "Start" + state_name or ("To" + state_name).is_subsequence_ofi(current_animation):
-		if sprite_frames != null and sprite_frames.has_animation(state_name):
-			animated_sprite.play(state_name)
+	var anim_name = get_anim_name(state)
+	
+	if current_animation == "Start" + anim_name or ("To" + anim_name).is_subsequence_ofi(current_animation):
+		if sprite_frames != null and sprite_frames.has_animation(anim_name):
+			animated_sprite.play(anim_name)
 
 
 func _on_StateMachine_state_entered(new_state: Node) -> void:
