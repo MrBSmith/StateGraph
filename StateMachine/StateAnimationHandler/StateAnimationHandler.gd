@@ -78,7 +78,7 @@ func _ready() -> void:
 	
 	yield(owner, "ready")
 	
-	var __ = get_parent().connect("state_entered", self, "_on_StateMachine_state_entered")
+	var __ = get_parent().connect("state_entered_recursive", self, "_on_StateMachine_state_entered_recursive")
 	
 	if animated_sprite && finished_trigger_mode == MODE.ANIMATED_SPRITE:
 		__ = animated_sprite.connect("animation_finished", self, "_on_animation_finished")
@@ -130,6 +130,7 @@ func _update_animation() -> void:
 	var sprite_frames = animated_sprite.get_sprite_frames()
 	
 	# Play the animation
+
 	for target in [animated_sprite, animation_player]:
 		if target == null: continue
 		
@@ -232,7 +233,7 @@ func _on_animation_finished() -> void:
 			animated_sprite.play(anim_name)
 
 
-func _on_StateMachine_state_entered(new_state: Node) -> void:
+func _on_StateMachine_state_entered_recursive(new_state: Node) -> void:
 	state = new_state
 	_update_animation()
 

@@ -119,6 +119,13 @@ func get_state() -> Object:
 	return current_state
 
 
+func get_state_recursive() -> Object:
+	if current_state.is_class("StateMachine"):
+		return current_state.get_state_recursive()
+	else: 
+		return current_state
+
+
 # Returns the name of the current state
 func get_state_name() -> String:
 	if current_state == null:
@@ -146,8 +153,8 @@ func set_state(new_state):
 	# Use the exit state function of the current state
 	if current_state != null:
 		current_state.connect_connexions_events(self, true)
-		emit_signal("state_exited", current_state)
 		current_state.exit_state()
+		emit_signal("state_exited", current_state)
 		current_state.emit_signal("exited")
 	
 	previous_state = current_state
@@ -158,13 +165,13 @@ func set_state(new_state):
 	# Use the enter_state function of the current state
 	if new_state != null && (!is_nested() or new_state.is_current_state()):
 		current_state.connect_connexions_events(self)
-		emit_signal("state_entered", current_state)
-		current_state.emit_signal("entered")
 		
 		if !owner_ready && deffer_first_enter_state:
 			yield(owner, "ready")
 		
 		current_state.enter_state()
+		emit_signal("state_entered", current_state)
+		current_state.emit_signal("entered")
 
 
 # Set the state based on the id of the state (id of the node, ie position in the hierachy)
