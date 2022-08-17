@@ -105,7 +105,7 @@ func connect_connexions_events(listener: Node, disconnect: bool = false) -> void
 					else:
 						var __ = emitter.connect(trigger, listener, "_on_current_state_event", [self, connexion, event], CONNECT_REFERENCE_COUNTED)
 				else:
-					push_error("The emitter found a path %s has no signal named %s" % [emitter_path, trigger])
+					push_error("The emitter found at path %s has no signal named %s" % [emitter_path, trigger])
 
 
 func add_connexion(to: State, connexion : Dictionary = {}) -> void:
