@@ -1,15 +1,15 @@
-tool
+@tool
 extends StateMachine
 class_name PushdownAutomata
 
 var state_queue : Array = []
 var state_index : int = -1
 
-export var state_queue_max_size : int = 5
+@export var state_queue_max_size : int = 5
 
 #### ACCESSORS ####
 
-func is_class(value: String): return value == "PushdownAutomata" or .is_class(value)
+func is_class(value: String): return value == "PushdownAutomata" or super.is_class(value)
 func get_class() -> String: return "PushdownAutomata"
 
 
@@ -30,7 +30,7 @@ func set_state(state) -> void:
 	if state == current_state:
 		return
 	
-	.set_state(state)
+	super.set_state(state)
 	
 	if state == null:
 		return
@@ -38,7 +38,7 @@ func set_state(state) -> void:
 	# If the current state is the last of the queue
 	if state_index != state_queue.size() - 1:
 		for i in range(state_index + 1, state_queue.size() - 1):
-			state_queue.remove(i)
+			state_queue.remove_at(i)
 	
 	_append_state_to_queue(state)
 
@@ -47,7 +47,7 @@ func _append_state_to_queue(state: Object) -> void:
 	state_queue.append(state)
 	
 	if state_queue.size() > state_queue_max_size:
-		state_queue.remove(0)
+		state_queue.remove_at(0)
 		state_index = state_queue.size() - 1
 	else:
 		state_index += 1
@@ -67,11 +67,11 @@ func go_to_queued_state_by_index(id: int) -> void:
 	if id == state_index : return
 	
 	if id < 0 or id > state_queue.size() - 1:
-		push_error("The given index: " + String(id) + "isn't inside the queue bouderies")
+		push_error("The given index: %d isn't inside the queue bouderies" % id)
 		return
 	
 	state_index = id
-	.set_state(state_queue[id])
+	super.set_state(state_queue[id])
 
 
 # Sets the state to the previous one in the queue

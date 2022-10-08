@@ -1,12 +1,20 @@
-tool
+@tool
 extends GraphNode
 
-onready var line = $Line2D
-onready var trigger_button = $TriggerButton
+@onready var line = $Line2D
+@onready var trigger_button = $TriggerButton
 
-var drawing_line : bool = false setget set_drawing_line
+var drawing_line : bool = false :
+	get:
+		return drawing_line # TODOConverter40 Non existent get function 
+	set(mod_value):
+		mod_value  # TODOConverter40 Copy here content of set_drawing_line
 var mouse_offset := Vector2.ZERO
-var has_standalone_trigger : bool = false setget set_has_standalone_trigger
+var has_standalone_trigger : bool = false :
+	get:
+		return has_standalone_trigger # TODOConverter40 Non existent get function 
+	set(mod_value):
+		mod_value  # TODOConverter40 Copy here content of set_has_standalone_trigger
 
 signal selected_changed(value)
 signal connexion_attempt()
@@ -35,12 +43,12 @@ func set_has_standalone_trigger(value: bool) -> void:
 #### BUILT-IN ####
 
 func _ready() -> void:
-	connect("drawing_line_changed", self, "_on_drawing_line_changed")
-	connect("selected_changed", self, "_on_selected_changed")
-	connect("has_standalone_trigger_changed", self, "_on_has_standalone_trigger_changed")
-	trigger_button.connect("pressed", self, "_on_trigger_button_pressed")
+	connect("drawing_line_changed",Callable(self,"_on_drawing_line_changed"))
+	connect("selected_changed",Callable(self,"_on_selected_changed"))
+	connect("has_standalone_trigger_changed",Callable(self,"_on_has_standalone_trigger_changed"))
+	trigger_button.connect("pressed",Callable(self,"_on_trigger_button_pressed"))
 	
-	trigger_button.set_button_icon(get_icon("Signals", "EditorIcons"))
+	trigger_button.set_button_icon(get_theme_icon("Signals", "EditorIcons"))
 	trigger_button.set_visible(has_standalone_trigger)
 
 
@@ -48,7 +56,7 @@ func _process(delta: float) -> void:
 	if drawing_line:
 		line.set_points([get_size() / 2, get_local_mouse_position()])
 	else:
-		line.set_points(PoolVector2Array())
+		line.set_points(PackedVector2Array())
 
 
 #### VIRTUALS ####
@@ -67,17 +75,17 @@ func unselect_trigger() -> void:
 func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton && event.is_pressed() && !event.is_echo():
 		match(event.button_index):
-			BUTTON_LEFT: 
+			MOUSE_BUTTON_LEFT: 
 				set_selected(true)
 
-			BUTTON_RIGHT: 
+			MOUSE_BUTTON_RIGHT: 
 				set_drawing_line(true)
 
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton && !event.is_pressed():
 		match(event.button_index):
-			BUTTON_RIGHT: set_drawing_line(false)
+			MOUSE_BUTTON_RIGHT: set_drawing_line(false)
 	
 	elif event is InputEventKey && event.is_pressed() && !event.is_echo():
 		match(event.scancode):
@@ -111,11 +119,11 @@ func _on_standalone_trigger_removed() -> void:
 
 func _on_selected_changed(_value: bool) -> void:
 	if !selected:
-		$TriggerButton.pressed = false
+		$TriggerButton.button_pressed = false
 
 
 func _on_has_standalone_trigger_changed(value: bool) -> void:
-	$TriggerButton.pressed = false
+	$TriggerButton.button_pressed = false
 	$TriggerButton.set_visible(value)
 
 

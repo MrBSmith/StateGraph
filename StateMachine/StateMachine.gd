@@ -1,4 +1,4 @@
-tool
+@tool
 extends State
 class_name StateMachine
 
@@ -14,13 +14,13 @@ class_name StateMachine
 # StatesMachines can also be nested
 # In that case the StateMachine behave also as a state, and the enter_state callback is called recursivly
 
-export var default_state_path : NodePath
+@export var default_state_path : NodePath
 
 # Set this to true if you want the default state to be null, no matter what the default_state_path value is
-export var no_default_state : bool = false
+@export var no_default_state : bool = false
 
 # If this propery is true, the first enter_state call will be deffered after the scene owner  ready
-export var deffer_first_enter_state : bool = false
+@export var deffer_first_enter_state : bool = false
 var owner_ready : bool = false
 
 var current_state : State = null
@@ -32,7 +32,7 @@ var standalone_triggers_states : Array = []
 
 # Usefull only if this instance of StateMachine is nested (ie its parent is also a StateMachine)
 # When this state is entered, if this bool is true, reset the child state to the default one
-export var reset_to_default : bool = false
+@export var reset_to_default : bool = false
 
 # Called after the state have changed (After the enter_state callback)
 signal state_entered(state)
@@ -51,7 +51,7 @@ signal state_removed(state)
 
 #### ACCESSORS ####
 
-func is_class(value: String): return value == "StateMachine" or .is_class(value)
+func is_class(value: String): return value == "StateMachine" or super.is_class(value)
 func get_class() -> String: return "StateMachine"
 
 
@@ -63,11 +63,11 @@ func _ready():
 		set_physics_process(false)
 		return
 	
-	var __ = connect("state_entered", self, "_on_state_entered")
-	__ = owner.connect("ready", self, "_on_owner_ready")
+	var __ = connect("state_entered",Callable(self,"_on_state_entered"))
+	__ = owner.connect("ready",Callable(self,"_on_owner_ready"))
 	
 	if get_parent().is_class("StateMachine"):
-		__ = connect("state_entered_recursive", get_parent(), "_on_State_state_entered_recursive")
+		__ = connect("state_entered_recursive",Callable(get_parent(),"_on_State_state_entered_recursive"))
 	
 	# Set the state to be the default one, unless we are in a nested StateMachine
 	# Nested StateMachines shouldn't have a current_state if they are not the current_state of its parent
@@ -89,7 +89,7 @@ func _ready():
 					standalone_triggers_states.append(child)
 				else:
 					var emitter = child.get_node_or_null(event["emitter_path"])
-					__ = emitter.connect(event["trigger"], self, "_on_standalone_trigger_event", [child, event])
+					__ = emitter.connect(event["trigger"],Callable(self,"_on_standalone_trigger_event").bind(child, event))
 
 
 # Call for the current state process at every frame of the physic process
@@ -131,7 +131,7 @@ func get_state_name() -> String:
 	if current_state == null:
 		return ""
 	else:
-		return current_state.name
+		return String(current_state.name)
 
 
 # Set current_state at a new state, also set previous state, 
@@ -167,14 +167,14 @@ func set_state(new_state):
 		current_state.connect_connexions_events(self)
 		
 		if !owner_ready && deffer_first_enter_state:
-			yield(owner, "ready")
+			await owner.ready
 		
 		current_state.enter_state()
 		emit_signal("state_entered", current_state)
 		current_state.emit_signal("entered")
 
 
-# Set the state based on the id of the state (id of the node, ie position in the hierachy)
+# Set the state based checked the id of the state (id of the node, ie position in the hierachy)
 func set_state_by_id(state_id: int):
 	var state = get_child(state_id)
 	if state == null:
@@ -182,8 +182,7 @@ func set_state_by_id(state_id: int):
 			push_error("The given state_id is out of bound")
 		
 		elif !state.is_class("State"):
-			push_error("The child of the statemachine pointed by the state_id: " + String(state_id)
-			 + " does not inherit State")
+			push_error("The child of the statemachine pointed by the state_id: %d does not inherit State" % state_id)
 	else:
 		set_state(state)
 

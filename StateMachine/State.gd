@@ -1,4 +1,4 @@
-tool
+@tool
 extends Node
 class_name State
 
@@ -11,13 +11,13 @@ class_name State
 # the update_state method of the currrent state is called every physics tick,  
 # by the physics_process of the StateMachine 
 
-onready var states_machine = get_parent() if get_parent().is_class("StateMachine") else null
+@onready var states_machine = get_parent() if get_parent().is_class("StateMachine") else null
 
-export var connexions_array : Array
-export var standalone_trigger : Dictionary
+@export var connexions_array : Array
+@export var standalone_trigger : Dictionary
 
 # Defines the position of the StateNode in the StateGraph. Expressed in ratio of the container size.
-export var graph_position := Vector2.ZERO
+@export var graph_position := Vector2.ZERO
 
 signal standalone_trigger_added
 signal standalone_trigger_removed
@@ -27,7 +27,7 @@ signal exited
 #### ACCESSORS ####
 
 func get_class() -> String : return "State"
-func is_class(value: String) -> bool: return value == "State" or .is_class(value)
+func is_class(value: String) -> bool: return value == "State" or super.is_class(value)
 
 
 #### BUILT-IN ####
@@ -77,7 +77,7 @@ func is_current_state() -> bool:
 func check_exit_conditions(event_trigger: String = "process") -> Object:
 	for connexion in connexions_array:
 		var event = trigger_find_event(connexion, event_trigger)
-		if event.empty():
+		if event.is_empty():
 			continue
 		
 		if are_all_conditions_verified(event):
@@ -102,25 +102,25 @@ func connect_connexions_events(listener: Node, disconnect: bool = false) -> void
 			else:
 				if emitter.has_signal(trigger):
 					if disconnect:
-						var __ = emitter.disconnect(trigger, listener, "_on_current_state_event")
+						var __ = emitter.disconnect(trigger, Callable(listener,"_on_current_state_event"))
 					else:
-						var __ = emitter.connect(trigger, listener, "_on_current_state_event", [self, connexion, event], CONNECT_REFERENCE_COUNTED)
+						var __ = emitter.connect(trigger, Callable(listener,"_on_current_state_event").bind(self, connexion, event), CONNECT_REFERENCE_COUNTED)
 				else:
 					push_error("The emitter %s found at path %s has no signal named %s" % [emitter.name, emitter_path, trigger])
 
 
 func add_connexion(to: State, connexion : Dictionary = {}) -> void:
-	if !find_connexion(to).empty():
+	if !find_connexion(to).is_empty():
 		return
 	
-	if connexion.empty():
+	if connexion.is_empty():
 		connexion = {
 			"type": "connexion",
 			"to": str(owner.get_path_to(to)),
 			"events": []
 		}
 	
-	if connexions_array.empty():
+	if connexions_array.is_empty():
 		connexions_array = [connexion]
 	else:
 		connexions_array.append(connexion)
@@ -128,11 +128,11 @@ func add_connexion(to: State, connexion : Dictionary = {}) -> void:
 
 func remove_connexion(to: State) -> void:
 	var connexion_id = find_connexion_id(to)
-	connexions_array.remove(connexion_id)
+	connexions_array.remove_at(connexion_id)
 
 
 func add_standalone_trigger() -> void:
-	if standalone_trigger.empty():
+	if standalone_trigger.is_empty():
 		standalone_trigger = {
 			"type": "standalone_trigger",
 			"events": []
@@ -168,7 +168,7 @@ func trigger_find_event(trigger: Dictionary, event_trigger: String) -> Dictionar
 
 
 func trigger_add_event(trigger: Dictionary, event_trigger : String = "process", emitter_path: String = str(get_path_to(owner))) -> Dictionary:
-	if !trigger_find_event(trigger, event_trigger).empty():
+	if !trigger_find_event(trigger, event_trigger).is_empty():
 		push_warning("Couldn't create a new event, an event with the tirgger %s already exists" % trigger)
 		return {}
 	
@@ -190,8 +190,8 @@ func trigger_add_condition(connexion: Dictionary, event_dict: Dictionary = {}, s
 		"target_path": target_path
 	}
 	
-	if event_dict.empty():
-		if connexion["events"].empty():
+	if event_dict.is_empty():
+		if connexion["events"].is_empty():
 			event_dict = trigger_add_event(connexion)
 		else:
 			event_dict = connexion["events"][0]

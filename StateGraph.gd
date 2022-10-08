@@ -1,4 +1,4 @@
-tool
+@tool
 extends EditorPlugin
 class_name StateGraph
 
@@ -7,26 +7,26 @@ var fsm_editor_scene = preload("res://addons/StateGraph/GraphEditor/GraphEditor.
 var edited_scene_path = ""
 
 var fsm_editor : Node = null
-var fsm_editor_button : ToolButton = null
+var fsm_editor_button : Button = null
 
 
 #### ACCESSORS ####
 
-func is_class(value: String): return value == "StateMachineHandler" or .is_class(value)
+func is_class(value: String): return value == "StateMachineHandler" or super.is_class(value)
 func get_class() -> String: return "StateMachineHandler"
 
 
 #### BUILT-IN ####
 
 func _ready() -> void:
-	var __ = connect("scene_changed", self, "_on_scene_changed")
+	var __ = connect("scene_changed",Callable(self,"_on_scene_changed"))
 
-	__ = fsm_editor.connect("inspect_node_query", self, "_on_inspect_node_query")
-	__ = fsm_editor.connect("visibility_changed", self, "_on_fsm_editor_visibility_changed")
+	__ = fsm_editor.connect("inspect_node_query",Callable(self,"_on_inspect_node_query"))
+	__ = fsm_editor.connect("visibility_changed",Callable(self,"_on_fsm_editor_visibility_changed"))
 
 
 func _enter_tree() -> void:
-	fsm_editor = fsm_editor_scene.instance()
+	fsm_editor = fsm_editor_scene.instantiate()
 	fsm_editor_button = add_control_to_bottom_panel(fsm_editor, "StateMachine")
 
 

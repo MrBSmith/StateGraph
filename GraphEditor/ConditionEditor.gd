@@ -1,4 +1,4 @@
-tool
+@tool
 extends PanelContainer
 class_name ConditionEditor
 
@@ -6,18 +6,26 @@ enum BUTTON_TYPE {
 	REMOVE
 }
 
-onready var add_event_button = $VBoxContainer/Toolbar/AddEvent
-onready var delete_trigger_button = $VBoxContainer/Footer/DeleteStandaloneTrigger
-onready var delete_connexion_button = $VBoxContainer/Footer/DeleteConnexion
-onready var add_anim_event_button = $VBoxContainer/Toolbar/AddAnimFinishedEvent
-onready var add_condition_button = $VBoxContainer/Toolbar/AddCondition
-onready var origin_state_line_edit = $VBoxContainer/Panel/VBoxContainer/OriginState/LineEdit
-onready var dest_state_line_edit = $VBoxContainer/Panel/VBoxContainer/DestState/LineEdit
+@onready var add_event_button = $VBoxContainer/Toolbar/AddEvent
+@onready var delete_trigger_button = $VBoxContainer/Footer/DeleteStandaloneTrigger
+@onready var delete_connexion_button = $VBoxContainer/Footer/DeleteConnexion
+@onready var add_anim_event_button = $VBoxContainer/Toolbar/AddAnimFinishedEvent
+@onready var add_condition_button = $VBoxContainer/Toolbar/AddCondition
+@onready var origin_state_line_edit = $VBoxContainer/Panel/VBoxContainer/OriginState/LineEdit
+@onready var dest_state_line_edit = $VBoxContainer/Panel/VBoxContainer/DestState/LineEdit
 
-onready var tree = $VBoxContainer/Panel/VBoxContainer/Tree
+@onready var tree = $VBoxContainer/Panel/VBoxContainer/Tree
 
-var animation_handler : StateAnimationHandler = null setget set_animation_handler
-var edited_event : Dictionary setget set_edited_event
+var animation_handler : StateAnimationHandler = null :
+	get:
+		return animation_handler # TODOConverter40 Non existent get function 
+	set(mod_value):
+		mod_value  # TODOConverter40 Copy here content of set_animation_handler
+var edited_event : Dictionary :
+	get:
+		return edited_event # TODOConverter40 Non existent get function 
+	set(mod_value):
+		mod_value  # TODOConverter40 Copy here content of set_edited_event
 var edited_trigger_dict : Dictionary
 
 signal remove_event(dict)
@@ -31,13 +39,13 @@ class DataDict:
 	var dict : Dictionary = {}
 	var key : String = ""
 	
-	func _init(_dict: Dictionary, _key: String) -> void:
+	func _init(_dict: Dictionary,_key: String):
 		dict = _dict
 		key = _key
 
 #### ACCESSORS ####
 
-func is_class(value: String): return value == "ConditionEditor" or .is_class(value)
+func is_class(value: String): return value == "ConditionEditor" or super.is_class(value)
 func get_class() -> String: return "ConditionEditor"
 
 func set_animation_handler(value: StateAnimationHandler) -> void:
@@ -54,16 +62,16 @@ func set_edited_event(value: Dictionary) -> void:
 
 
 func _ready() -> void:
-	var __ = tree.connect("item_edited", self, "_on_tree_item_edited")
-	__ = tree.connect("button_pressed", self, "_on_tree_button_pressed")
-	__ = tree.connect("item_selected", self, "_on_item_selected")
+	var __ = tree.connect("item_edited",Callable(self,"_on_tree_item_edited"))
+	__ = tree.connect("button_pressed",Callable(self,"_on_tree_button_pressed"))
+	__ = tree.connect("item_selected",Callable(self,"_on_item_selected"))
 	
-	__ = connect("edited_event_changed", self, "_on_edited_event_changed")
-	__ = connect("animation_handler_changed", self, "_on_animation_handler_changed")
-	__ = connect("remove_event", self, "_on_remove_event")
+	__ = connect("edited_event_changed",Callable(self,"_on_edited_event_changed"))
+	__ = connect("animation_handler_changed",Callable(self,"_on_animation_handler_changed"))
+	__ = connect("remove_event",Callable(self,"_on_remove_event"))
 	
-	origin_state_line_edit.connect("text_entered", self, "_on_text_entered", ["from"])
-	dest_state_line_edit.connect("text_entered", self, "_on_text_entered", ["to"])
+	origin_state_line_edit.connect("text_submitted",Callable(self,"_on_text_entered").bind("from"))
+	dest_state_line_edit.connect("text_submitted",Callable(self,"_on_text_entered").bind("to"))
 
 
 #### VIRTUALS ####
@@ -131,28 +139,28 @@ func update_tree() -> void:
 	
 	for event in edited_trigger_dict["events"]:
 		var event_tree_item = add_tree_item(root, DataDict.new(event, "trigger"), 
-											get_icon("Signals", "EditorIcons"))
+											get_theme_icon("Signals", "EditorIcons"))
 		
 		var emitter_path_item = add_tree_item(event_tree_item, DataDict.new(event, "emitter_path"),
-											get_icon("Signal", "EditorIcons"), false, false)
+											get_theme_icon("Signal", "EditorIcons"), false, false)
 		
 		for condition in event["conditions"]:
-			var condition_tree_item = add_tree_item(event_tree_item, DataDict.new(condition, "condition"), get_icon("Key", "EditorIcons"), true)
-			var target_tree_item = add_tree_item(condition_tree_item, DataDict.new(condition, "target_path"), get_icon("NodePath", "EditorIcons"), false, false)
+			var condition_tree_item = add_tree_item(event_tree_item, DataDict.new(condition, "condition"), get_theme_icon("Key", "EditorIcons"), true)
+			var target_tree_item = add_tree_item(condition_tree_item, DataDict.new(condition, "target_path"), get_theme_icon("NodePath", "EditorIcons"), false, false)
 
 
-func add_tree_item(parent: TreeItem, data_dict : DataDict = null, icon: Texture = null, collapsed: bool = false, removeable: bool = true, editable: bool = true) -> TreeItem:
+func add_tree_item(parent: TreeItem, data_dict : DataDict = null, icon: Texture2D = null, collapsed: bool = false, removeable: bool = true, editable: bool = true) -> TreeItem:
 	var item = tree.create_item(parent)
 	item.set_text(0, data_dict.key.capitalize())
 	item.set_text(1, data_dict.dict[data_dict.key])
-	item.set_custom_color(0, Color.dimgray)
+	item.set_custom_color(0, Color.DIM_GRAY)
 	item.set_editable(1, editable)
 	item.set_metadata(1, data_dict)
 	item.set_icon(0, icon)
 	item.set_collapsed(collapsed)
 	
 	if removeable:
-		item.add_button(1, get_icon("Remove", "EditorIcons"), 0)
+		item.add_button(1, get_theme_icon("Remove", "EditorIcons"), 0)
 	
 	return item
 
@@ -194,7 +202,7 @@ func _on_animation_handler_changed() -> void:
 
 
 func _on_edited_event_changed() -> void:
-	add_condition_button.set_visible(!edited_event.empty())
+	add_condition_button.set_visible(!edited_event.is_empty())
 
 
 func _on_remove_event(_event_dict: Dictionary) -> void:

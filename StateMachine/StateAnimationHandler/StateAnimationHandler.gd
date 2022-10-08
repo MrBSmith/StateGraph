@@ -1,10 +1,10 @@
-tool
+@tool
 extends Node
 class_name StateAnimationHandler
 
 enum FLIP {
 	H = 1,
-	V = 2
+	V = 2,
 	ISO = 4
 }
 
@@ -49,24 +49,24 @@ const DIRECTIONS_8 : Dictionary = {
 	"UpLeft": -Vector2.ONE
 }
 
-onready var animated_sprite : AnimatedSprite = get_node_or_null(animated_sprite_path)
-onready var animation_player : AnimationPlayer = get_node_or_null(animation_player_path)
-onready var states_machine = get_parent()
+@onready var animated_sprite : AnimatedSprite2D = get_node_or_null(animated_sprite_path)
+@onready var animation_player : AnimationPlayer = get_node_or_null(animation_player_path)
+@onready var states_machine = get_parent()
 
-export var animation_player_path : NodePath
-export var animated_sprite_path : NodePath
-export(ANIM_NAME_MODE) var anim_name_mode : int = ANIM_NAME_MODE.RECURSIVE_NAME_COMPOSITION
+@export var animation_player_path : NodePath
+@export var animated_sprite_path : NodePath
+@export var anim_name_mode := ANIM_NAME_MODE.RECURSIVE_NAME_COMPOSITION
 
-export(int, FLAGS, "flip_h", "flip_v", "flip_iso") var flip_mode = FLIP.H
-export(MODE) var finished_trigger_mode : int = MODE.ANIMATED_SPRITE
-export(DIRECTION_MODE) var direction_mode : int = DIRECTION_MODE.NONE
+@export var flip_mode = FLIP.H # (int, FLAGS, "flip_h", "flip_v", "flip_iso")
+@export var finished_trigger_mode := MODE.ANIMATED_SPRITE
+@export var direction_mode := DIRECTION_MODE.NONE
 
-export var direction := Vector2.DOWN
+@export var direction := Vector2.DOWN
 var state : State = null
 
 #### ACCESSORS ####
 
-func is_class(value: String): return value == "StateAnimationHandler" or .is_class(value)
+func is_class(value: String): return value == "StateAnimationHandler" or super.is_class(value)
 func get_class() -> String: return "StateAnimationHandler"
 
 
@@ -76,15 +76,15 @@ func _ready() -> void:
 	if Engine.editor_hint:
 		return
 	
-	yield(owner, "ready")
+	await owner.ready
 	
-	var __ = get_parent().connect("state_entered_recursive", self, "_on_StateMachine_state_entered_recursive")
+	var __ = get_parent().connect("state_entered_recursive",Callable(self,"_on_StateMachine_state_entered_recursive"))
 	
 	if animated_sprite && finished_trigger_mode == MODE.ANIMATED_SPRITE:
-		__ = animated_sprite.connect("animation_finished", self, "_on_animation_finished")
+		__ = animated_sprite.connect("animation_finished",Callable(self,"_on_animation_finished"))
 	
 	elif animation_player && finished_trigger_mode == MODE.ANIMATION_PLAYER:
-		__ = animation_player.connect("animation_finished", self, "_on_animation_finished")
+		__ = animation_player.connect("animation_finished",Callable(self,"_on_animation_finished"))
 		
 
 
@@ -182,7 +182,7 @@ func find_dir_name(dir: Vector2) -> String:
 	return dir_key
 
 
-# Based on the anim_name_mode, returns a different anim name:
+# Based checked the anim_name_mode, returns a different anim name:
 # If anim_name_mode is PARENT_MOST_STATE_NAME
 # 	it will return only the parent state's name
 

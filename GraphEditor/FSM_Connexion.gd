@@ -1,4 +1,4 @@
-tool
+@tool
 extends Control
 class_name FSM_Connexion
 
@@ -8,23 +8,27 @@ enum STATE {
 	SELECTED
 }
 
-onready var line = $Line2D
-onready var clickable_area = $ClickableArea
-onready var color_rect = $ClickableArea/ColorRect
-onready var texture_rect = $ClickableArea/TextureRect
+@onready var line = $Line2D
+@onready var clickable_area = $ClickableArea
+@onready var color_rect = $ClickableArea/ColorRect
+@onready var texture_rect = $ClickableArea/TextureRect
 
-onready var arrow_texture = clickable_area.get_icon("TransitionImmediateBig", "EditorIcons")
+@onready var arrow_texture = clickable_area.get_icon("TransitionImmediateBig", "EditorIcons")
 
 var from : Control = null
 var to : Control = null
 
-var state : int = STATE.NORMAL setget set_state
+var state : int = STATE.NORMAL :
+	get:
+		return state # TODOConverter40 Non existent get function 
+	set(mod_value):
+		mod_value  # TODOConverter40 Copy here content of set_state
 
 var inverted : bool = false
 
-export var normal_color := Color.transparent
-export var hovered_color := Color.aqua
-export var selected_color := Color.red
+@export var normal_color := Color.TRANSPARENT
+@export var hovered_color := Color.AQUA
+@export var selected_color := Color.RED
 
 signal state_changed(previous_state, state)
 signal selected()
@@ -48,17 +52,17 @@ func _ready() -> void:
 	var __
 
 	if from :
-		__ = from.connect("tree_exited", self, "_on_node_tree_exited")
+		__ = from.connect("tree_exited",Callable(self,"_on_node_tree_exited"))
 	if to:
-		__ = to.connect("tree_exited", self, "_on_node_tree_exited")
+		__ = to.connect("tree_exited",Callable(self,"_on_node_tree_exited"))
 
-	__ = clickable_area.connect("gui_input", self, "_on_clickable_area_gui_input")
-	__ = clickable_area.connect("mouse_entered", self, "_on_clickable_area_mouse_entered")
-	__ = clickable_area.connect("mouse_exited", self, "_on_clickable_area_mouse_exited")
-	__ = clickable_area.connect("focus_exited", self, "_on_clickable_area_focus_exited")
+	__ = clickable_area.connect("gui_input",Callable(self,"_on_clickable_area_gui_input"))
+	__ = clickable_area.connect("mouse_entered",Callable(self,"_on_clickable_area_mouse_entered"))
+	__ = clickable_area.connect("mouse_exited",Callable(self,"_on_clickable_area_mouse_exited"))
+	__ = clickable_area.connect("focus_exited",Callable(self,"_on_clickable_area_focus_exited"))
 
-	__ = connect("state_changed", self, "_on_state_changed")
-	__ = connect("item_rect_changed", self, "_on_item_rect_changed")
+	__ = connect("state_changed",Callable(self,"_on_state_changed"))
+	__ = connect("item_rect_changed",Callable(self,"_on_item_rect_changed"))
 	
 	texture_rect.set_texture(arrow_texture)
 	texture_rect.set_flip_h(inverted)
@@ -78,9 +82,9 @@ func update_line() -> void:
 		queue_free()
 		return
 	
-	var origin = Vector2(0, rect_size.y / 2)
-	var dest = Vector2(rect_size.x, rect_size.y / 2)
-	line.set_points(PoolVector2Array([origin, dest]))
+	var origin = Vector2(0, size.y / 2)
+	var dest = Vector2(size.x, size.y / 2)
+	line.set_points(PackedVector2Array([origin, dest]))
 
 
 
@@ -108,7 +112,7 @@ func _on_node_tree_exited() -> void:
 
 
 func _on_clickable_area_gui_input(event: InputEvent) -> void:
-	if event is InputEventMouseButton && event.button_index == BUTTON_LEFT:
+	if event is InputEventMouseButton && event.button_index == MOUSE_BUTTON_LEFT:
 		if event.is_pressed() && !event.is_echo():
 			set_state(STATE.SELECTED)
 
@@ -116,13 +120,13 @@ func _on_clickable_area_gui_input(event: InputEvent) -> void:
 func _on_state_changed(previous_state: int, new_state: int) -> void:
 	match(new_state):
 		STATE.NORMAL:
-			color_rect.set_frame_color(normal_color)
+			color_rect.set_color(normal_color)
 
 		STATE.HOVERED:
-			color_rect.set_frame_color(hovered_color)
+			color_rect.set_color(hovered_color)
 
 		STATE.SELECTED:
-			color_rect.set_frame_color(selected_color)
+			color_rect.set_color(selected_color)
 			emit_signal("selected")
 
 	if previous_state == STATE.SELECTED:
