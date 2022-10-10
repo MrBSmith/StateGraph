@@ -2,9 +2,9 @@
 
 [ext_resource type="Script" path="res://addons/StateGraph/GraphEditor/GraphEditor.gd" id="1"]
 [ext_resource type="Script" path="res://addons/StateGraph/GraphEditor/ConditionEditor.gd" id="2"]
-[ext_resource type="Theme" path="res://addons/StateGraph/GraphEditor/Theme/GraphEditorTheme.tres" id="3"]
+[ext_resource type="Theme" uid="uid://bo0y8ggcj7tnh" path="res://addons/StateGraph/GraphEditor/Theme/GraphEditorTheme.tres" id="3"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_r4auy"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0yvm1"]
 content_margin_left = 4.0
 content_margin_top = 4.0
 content_margin_right = 4.0
@@ -37,7 +37,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_r4auy")
+theme_override_styles/panel = SubResource("StyleBoxFlat_0yvm1")
 
 [node name="HSplitContainer" type="HSplitContainer" parent="."]
 layout_mode = 1

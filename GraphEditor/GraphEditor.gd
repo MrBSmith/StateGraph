@@ -211,7 +211,7 @@ func update_line_containers() -> void:
 		var line_global_pos = line_container.get_global_position()
 		var dest = to.get_global_position() + to.get_size() / 2.0 * to.scale
 
-		var angle = dest.angle_to_point(line_global_pos)
+		var angle = dest.angle_to_point(line_global_pos) + deg_to_rad(180.0)
 		var distance = line_global_pos.distance_to(dest)
 
 		line_container.v_box_container.set_rotation(angle)
