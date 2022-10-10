@@ -13,16 +13,19 @@ enum STATE {
 @onready var color_rect = $ClickableArea/ColorRect
 @onready var texture_rect = $ClickableArea/TextureRect
 
-@onready var arrow_texture = clickable_area.get_icon("TransitionImmediateBig", "EditorIcons")
+@onready var arrow_texture = clickable_area.get_theme_icon("TransitionImmediateBig", "EditorIcons")
 
 var from : Control = null
 var to : Control = null
 
 var state : int = STATE.NORMAL :
 	get:
-		return state # TODOConverter40 Non existent get function 
-	set(mod_value):
-		mod_value  # TODOConverter40 Copy here content of set_state
+		return state
+	set(value):
+		if state != value:
+			var previous_state = state
+			state = value
+			emit_signal("state_changed", previous_state, state)
 
 var inverted : bool = false
 
@@ -37,12 +40,6 @@ signal removed()
 
 #### ACCESSORS ####
 
-
-func set_state(value: int) -> void:
-	if state != value:
-		var previous_state = state
-		state = value
-		emit_signal("state_changed", previous_state, state)
 
 
 #### BUILT-IN ####
@@ -100,8 +97,8 @@ func delete() -> void:
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventKey && !event.is_echo():
-		if event.scancode == KEY_ESCAPE:
-			set_state(STATE.NORMAL)
+		if event.keycode == KEY_ESCAPE:
+			state = STATE.NORMAL
 
 
 
@@ -114,7 +111,7 @@ func _on_node_tree_exited() -> void:
 func _on_clickable_area_gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton && event.button_index == MOUSE_BUTTON_LEFT:
 		if event.is_pressed() && !event.is_echo():
-			set_state(STATE.SELECTED)
+			state = STATE.SELECTED
 
 
 func _on_state_changed(previous_state: int, new_state: int) -> void:
@@ -135,16 +132,16 @@ func _on_state_changed(previous_state: int, new_state: int) -> void:
 
 func _on_clickable_area_mouse_entered() -> void:
 	if state == STATE.NORMAL:
-		set_state(STATE.HOVERED)
+		state = STATE.HOVERED
 
 
 func _on_clickable_area_mouse_exited() -> void:
 	if state == STATE.HOVERED:
-		set_state(STATE.NORMAL)
+		state = STATE.NORMAL
 
 
 func _on_clickable_area_focus_exited() -> void:
-	set_state(STATE.NORMAL)
+	state = STATE.NORMAL
 
 
 func _on_item_rect_changed() -> void:

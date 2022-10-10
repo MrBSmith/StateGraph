@@ -1,8 +1,21 @@
-[gd_scene load_steps=4 format=3 uid="uid://ce03n4h35yg5c"]
+[gd_scene load_steps=5 format=3 uid="uid://ce03n4h35yg5c"]
 
 [ext_resource type="Script" path="res://addons/StateGraph/GraphEditor/GraphEditor.gd" id="1"]
 [ext_resource type="Script" path="res://addons/StateGraph/GraphEditor/ConditionEditor.gd" id="2"]
 [ext_resource type="Theme" path="res://addons/StateGraph/GraphEditor/Theme/GraphEditorTheme.tres" id="3"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_r4auy"]
+content_margin_left = 4.0
+content_margin_top = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 4.0
+bg_color = Color(1, 0.365, 0.365, 1)
+draw_center = false
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+corner_detail = 1
 
 [node name="GraphEditor" type="Control"]
 clip_contents = true
@@ -10,6 +23,8 @@ layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 theme = ExtResource("3")
@@ -20,12 +35,17 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_r4auy")
 
 [node name="HSplitContainer" type="HSplitContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 split_offset = 237
 
 [node name="NodesEditor" type="PanelContainer" parent="HSplitContainer"]

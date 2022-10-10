@@ -59,12 +59,12 @@ func get_class() -> String: return "StateMachine"
 
 
 func _ready():
-	if Engine.editor_hint:
+	if Engine.is_editor_hint():
 		set_physics_process(false)
 		return
 	
-	var __ = connect("state_entered",Callable(self,"_on_state_entered"))
-	__ = owner.connect("ready",Callable(self,"_on_owner_ready"))
+	var __ = connect("state_entered", Callable(self,"_on_state_entered"))
+	__ = owner.connect("ready", Callable(self,"_on_owner_ready"))
 	
 	if get_parent().is_class("StateMachine"):
 		__ = connect("state_entered_recursive",Callable(get_parent(),"_on_State_state_entered_recursive"))

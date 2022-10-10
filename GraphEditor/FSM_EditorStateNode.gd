@@ -6,15 +6,21 @@ extends GraphNode
 
 var drawing_line : bool = false :
 	get:
-		return drawing_line # TODOConverter40 Non existent get function 
-	set(mod_value):
-		mod_value  # TODOConverter40 Copy here content of set_drawing_line
+		return drawing_line
+	set(value):
+		if drawing_line != value:
+			drawing_line = value
+			emit_signal("drawing_line_changed", drawing_line)
+
 var mouse_offset := Vector2.ZERO
+
 var has_standalone_trigger : bool = false :
 	get:
-		return has_standalone_trigger # TODOConverter40 Non existent get function 
-	set(mod_value):
-		mod_value  # TODOConverter40 Copy here content of set_has_standalone_trigger
+		return has_standalone_trigger 
+	set(value):
+		if value != has_standalone_trigger:
+			has_standalone_trigger = value
+			emit_signal("has_standalone_trigger_changed", value)
 
 signal selected_changed(value)
 signal connexion_attempt()
@@ -24,10 +30,6 @@ signal has_standalone_trigger_changed(value)
 
 #### ACCESSORS ####
 
-func set_drawing_line(value: bool) -> void:
-	if drawing_line != value:
-		drawing_line = value
-		emit_signal("drawing_line_changed", drawing_line)
 
 func set_selected(value: bool) -> void:
 	if value != selected:
@@ -35,10 +37,6 @@ func set_selected(value: bool) -> void:
 		emit_signal("selected_changed", selected)
 func is_selected() -> bool: return selected
 
-func set_has_standalone_trigger(value: bool) -> void:
-	if value != has_standalone_trigger:
-		has_standalone_trigger = value
-		emit_signal("has_standalone_trigger_changed", value)
 
 #### BUILT-IN ####
 
@@ -75,20 +73,21 @@ func unselect_trigger() -> void:
 func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton && event.is_pressed() && !event.is_echo():
 		match(event.button_index):
-			MOUSE_BUTTON_LEFT: 
+			MOUSE_BUTTON_LEFT:
 				set_selected(true)
 
 			MOUSE_BUTTON_RIGHT: 
-				set_drawing_line(true)
+				drawing_line = true
 
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton && !event.is_pressed():
 		match(event.button_index):
-			MOUSE_BUTTON_RIGHT: set_drawing_line(false)
+			MOUSE_BUTTON_RIGHT: 
+				drawing_line = false
 	
 	elif event is InputEventKey && event.is_pressed() && !event.is_echo():
-		match(event.scancode):
+		match(event.keycode):
 			KEY_ESCAPE:
 				set_selected(false)
 				$TriggerButton.set_pressed(false)
@@ -97,9 +96,12 @@ func _input(event: InputEvent) -> void:
 #### SIGNAL RESPONSES ####
 
 
-func _on_drawing_line_changed(_value: bool) -> void:
+func _on_drawing_line_changed(value: bool) -> void:
+	print("Drawing line: %s" % str(value))
+	
 	if !drawing_line:
 		emit_signal("connexion_attempt")
+		print("connexion_attempt")
 
 
 func _on_trigger_button_pressed() -> void:

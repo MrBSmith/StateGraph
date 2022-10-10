@@ -106,6 +106,8 @@ func _ready() -> void:
 #### LOGIC ####
 
 func feed(state_machine: StateMachine) -> void:
+	print("StateGraph editor fed with %s" % str(state_machine.name))
+	
 	if state_machine == fsm:
 		return
 
@@ -155,7 +157,7 @@ func _update() -> void:
 			node.set_title(state.name)
 			node.has_standalone_trigger = !state.standalone_trigger.is_empty()
 			graph_edit.add_child(node)
-			node.minimum_size = Vector2(50.0, 20.0)
+			node.custom_minimum_size = Vector2i(50, 20)
 			
 			var __ = node.connect("item_rect_changed",Callable(self,"_on_state_node_item_rect_changed").bind(node))
 			__ = node.connect("connexion_attempt",Callable(self,"_on_state_node_connexion_attempt").bind(node))
@@ -255,13 +257,15 @@ func add_node_connexion(from: Control, to: Control) -> void:
 	connexion.inverted = from == line_container.to
 	line_container.add_connexion(connexion)
 
-	connexion.connect("removed",Callable(self,"_on_connection_removed").bind(connexion))
-	connexion.connect("selected",Callable(self,"_on_connection_selected").bind(connexion))
-	connexion.connect("unselected",Callable(self,"_on_connection_unselected").bind(connexion))
+	connexion.connect("removed", Callable(self,"_on_connection_removed").bind(connexion))
+	connexion.connect("selected", Callable(self,"_on_connection_selected").bind(connexion))
+	connexion.connect("unselected", Callable(self,"_on_connection_unselected").bind(connexion))
 
 	var from_state = fsm.get_state_by_name(from.name)
 	var to_state = fsm.get_state_by_name(to.name)
-
+	
+	print("node connexion added from %s to %s" % [str(from.name), str(to.name)])
+	
 	from_state.add_connexion(to_state)
 
 	update_line_containers()
@@ -369,7 +373,7 @@ func _input(event: InputEvent) -> void:
 	if !visible:
 		return
 
-	if event is InputEventKey && event.scancode == KEY_DELETE:
+	if event is InputEventKey && event.keycode == KEY_DELETE:
 		if event.is_pressed() && !event.is_echo():
 			if selected_trigger != null:
 				selected_trigger.delete()

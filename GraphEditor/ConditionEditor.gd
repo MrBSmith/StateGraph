@@ -62,12 +62,12 @@ func set_edited_event(value: Dictionary) -> void:
 
 
 func _ready() -> void:
-	var __ = tree.connect("item_edited",Callable(self,"_on_tree_item_edited"))
-	__ = tree.connect("button_pressed",Callable(self,"_on_tree_button_pressed"))
-	__ = tree.connect("item_selected",Callable(self,"_on_item_selected"))
+	var __ = tree.connect("item_edited", Callable(self,"_on_tree_item_edited"))
+	__ = tree.connect("button_clicked", Callable(self,"_on_tree_button_pressed"))
+	__ = tree.connect("item_selected", Callable(self,"_on_item_selected"))
 	
-	__ = connect("edited_event_changed",Callable(self,"_on_edited_event_changed"))
-	__ = connect("animation_handler_changed",Callable(self,"_on_animation_handler_changed"))
+	__ = connect("edited_event_changed", Callable(self, "_on_edited_event_changed"))
+	__ = connect("animation_handler_changed", Callable(self, "_on_animation_handler_changed"))
 	__ = connect("remove_event",Callable(self,"_on_remove_event"))
 	
 	origin_state_line_edit.connect("text_submitted",Callable(self,"_on_text_entered").bind("from"))

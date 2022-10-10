@@ -36,18 +36,26 @@ func _exit_tree() -> void:
 
 #### VIRTUALS ####
 
-func handles(obj: Object) -> bool:
+func _handles(obj: Variant) -> bool:
+	if obj is GDScript:
+		return false
+	
 	var handled = obj is StateMachine or (obj is State && obj.get_parent() is StateMachine)
-
+	
 	fsm_editor_button.set_visible(obj is State)
 
 	if fsm_editor_button.pressed:
 		fsm_editor.set_visible(obj is State)
-
+	
+	if handled:
+		print("%s obj is handled" % str(obj.name))
+	else:
+		print("%s obj is NOT handled" % str(obj.name))
+	
 	return handled
 
 
-func edit(obj: Object) -> void:
+func _edit(obj: Variant) -> void:
 	var handled_fsm = obj if obj is StateMachine else obj.get_parent()
 	fsm_editor.feed(handled_fsm)
 
@@ -66,7 +74,8 @@ func _on_scene_changed(scene_root: Node) -> void:
 	if scene_root == null:
 		edited_scene_path = ""
 	else:
-		edited_scene_path = scene_root.filename
+		edited_scene_path = scene_root.scene_file_path
+
 
 
 func _on_inspect_node_query(node: Node) -> void:

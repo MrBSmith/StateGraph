@@ -1,11 +1,3 @@
-[gd_resource type="Theme" load_steps=3 format=2]
-
-[ext_resource path="res://addons/StateGraph/GraphEditor/Theme/GraphNodeFocus_StyleBox.tres" type="StyleBox" id=1]
-[ext_resource path="res://addons/StateGraph/GraphEditor/Theme/GraphNodeDefault_StyleBox.tres" type="StyleBox" id=2]
+[gd_resource type="Theme" format=3 uid="uid://bo0y8ggcj7tnh"]
 
 [resource]
-GraphNode/styles/commentfocus = ExtResource( 1 )
-GraphNode/styles/defaultfocus = ExtResource( 1 )
-GraphNode/styles/defaultframe = ExtResource( 2 )
-GraphNode/styles/frame = ExtResource( 2 )
-GraphNode/styles/selectedframe = ExtResource( 1 )
