@@ -16,14 +16,13 @@ class_name GraphEditor
 
 @export var logs : bool = false
 
-var edited_scene_path : String = ""
-
 var fsm : StateMachine = null
 
 var state_node_scene = preload("res://addons/StateGraph/GraphEditor/StateGraphNode.tscn")
 var node_connexion_scene = preload("res://addons/StateGraph/GraphEditor/FSM_Connexion.tscn")
 var fsm_connexion_container_scene = preload("res://addons/StateGraph/GraphEditor/FSM_ConnexionContainer.tscn")
 
+var edited_scene_root : Node = null
 var states_array = []
 
 var selected_node : Control :
@@ -46,7 +45,7 @@ var selected_trigger_dict : Dictionary :
 
 	set(value):
 		if value != selected_trigger_dict:
-			print("selected_trigger_dict changed:" + str(value))
+			if logs: print("selected_trigger_dict changed:" + str(value))
 			selected_trigger_dict = value
 			emit_signal("selected_trigger_dict_changed", selected_trigger_dict)
 
@@ -100,15 +99,18 @@ func _ready() -> void:
 
 #### LOGIC ####
 
+
 func feed(state_machine: StateMachine) -> void:
 	if state_machine == fsm:
 		return
+	
+	if logs: print("GraphEditor fed with %s" % str(state_machine.name))
 
 	if fsm != null && is_instance_valid(fsm):
 		var __ = fsm.disconnect("state_added",Callable(self,"_on_fsm_state_added"))
 		__ = fsm.disconnect("state_removed",Callable(self,"_on_fsm_state_removed"))
 	
-	_clear()
+	clear()
 	fsm = state_machine
 	
 	if state_machine != null:
@@ -120,9 +122,12 @@ func feed(state_machine: StateMachine) -> void:
 		_update()
 
 
-func _clear() -> void:
+func clear() -> void:
 	states_array = []
-
+	selected_node = null
+	selected_trigger = null
+	selected_trigger_dict = {}
+	
 	for child in graph_edit.get_children():
 		if child is GraphNode:
 			child.queue_free()
@@ -137,6 +142,15 @@ func _update_states_array() -> void:
 
 
 func _update() -> void:
+	if fsm == null:
+		return
+	
+	if fsm.owner != edited_scene_root:
+		push_error("Cannot update the GraphEditor: the StateMachine isn't inside the edited scene anymore")
+		return
+	
+	if logs: print("update GraphEditor")
+	
 	# Remove useless state nodes
 	for child in graph_edit.get_children():
 		if child is GraphNode && !fsm.has_state(child.name):
@@ -173,7 +187,7 @@ func _update() -> void:
 
 			if !has_connexion(from_node, to_node):
 				add_node_connexion(from_node, to_node)
-	
+
 
 # Update state nodes graph position
 func _update_nodes_position() -> void:
@@ -234,6 +248,8 @@ func _find_hovered_node() -> Control:
 
 
 func add_node_connexion(from: Control, to: Control) -> void:
+	if logs: print("add node connexion")
+	
 	var connexion = node_connexion_scene.instantiate()
 	connexion.from = from
 	connexion.to = to
@@ -302,12 +318,15 @@ func force_connexions_update() -> void:
 
 
 func get_selected_trigger_origin_path() -> String:
+	if fsm.owner != edited_scene_root:
+		return ""
+	
 	if selected_trigger == null:
 		if edited_state != null:
 			return str(edited_state.owner.get_path_to(edited_state))
 		return ""
 
-	var from_state = fsm.get_state_by_name(selected_trigger.from.name)
+	var from_state = fsm.get_state_by_name(str(selected_trigger.from.name))
 	return str(from_state.owner.get_path_to(from_state))
 
 
@@ -331,6 +350,8 @@ func unselect_all_nodes(exeption: Control = null) -> void:
 
 # The key must be "from" or "to"
 func selected_connexion_change_state(key: String, new_state: State) -> void:
+	if logs: print("selected_connexion_change_state")
+	
 	if selected_trigger == null:
 		push_error("Can't change the selected connexion %s state, the selected_trigger is null" % key)
 		return
@@ -378,12 +399,14 @@ func _input(event: InputEvent) -> void:
 #### SIGNAL RESPONSES ####
 
 
-func _on_fsm_state_added(_state: State) -> void:
+func _on_fsm_state_added(state: State) -> void:
+	if logs: print("StateMachine state added %s" % str(state.name))
 	_update_states_array()
 	_update()
 
 
-func _on_fsm_state_removed(_state: State) -> void:
+func _on_fsm_state_removed(state: State) -> void:
+	if logs: print("StateMachine state removed %s" % str(state.name))
 	_update_states_array()
 	_update()
 
@@ -408,13 +431,20 @@ func _on_state_node_connexion_attempt(starting_node: Control) -> void:
 
 
 func _on_connection_removed(connexion: FSM_Connexion) -> void:
-	var from = fsm.get_state_by_name(connexion.from.name)
-	var to = fsm.get_state_by_name(connexion.to.name)
+	if connexion.from == null or connexion.to == null:
+		push_error("the connexion form or to state is null, abort removal")
+		return
+	
+	var from = fsm.get_state_by_name(str(connexion.from.name))
+	var to = fsm.get_state_by_name(str(connexion.to.name))
 
 	from.remove_connexion(to)
 
 
 func _on_connection_selected(connexion: FSM_Connexion) -> void:
+	if connexion.from == null or connexion.to == null:
+		return
+	
 	unselect_all_nodes()
 	unselect_all_connexions(connexion)
 	unselect_all_triggers()
@@ -431,12 +461,11 @@ func _on_connection_unselected(connexion: FSM_Connexion) -> void:
 
 func _on_selected_trigger_changed(fsm_connexion: FSM_Connexion) -> void:
 	var dict = fsm_connexion_get_connexion_dict(fsm_connexion)
-	print("selected_trigger_changed : %s" % str(dict))
 	selected_trigger_dict = dict
 
 
 func _on_toolbar_button_pressed(button: Button) -> void:
-	print("toolbar button pressed %s" % str(button.name))
+	if logs: print("toolbar button pressed %s" % str(button.name))
 	var is_condition : bool = selected_trigger_dict["type"] == "connexion"
 
 	var from_state = fsm.get_state_by_name(selected_trigger.from.name) if is_condition else edited_state
@@ -452,6 +481,7 @@ func _on_toolbar_button_pressed(button: Button) -> void:
 		"AddAnimFinishedEvent":
 			var anim_handler = condition_editor.animation_handler
 			var animated_sprite = anim_handler.animated_sprite
+			
 			var animated_sprite_path = from_state.get_path_to(animated_sprite)
 
 			from_state.trigger_add_event(selected_trigger_dict, "animation_finished", animated_sprite_path)
@@ -460,7 +490,7 @@ func _on_toolbar_button_pressed(button: Button) -> void:
 
 
 func _on_footer_button_pressed(button: Button) -> void:
-	match(button.name):
+	match(str(button.name)):
 		"DeleteConnexion":
 			if selected_trigger == null:
 				push_error("There is no selected connexion, the ConditionEditor shouln't be visible")
@@ -468,10 +498,10 @@ func _on_footer_button_pressed(button: Button) -> void:
 				selected_trigger.delete()
 
 		"DeleteStandaloneTrigger":
-			var state = fsm.get_state_by_name(selected_node.name)
+			var state = fsm.get_state_by_name(str(selected_node.name))
 			state.remove_standalone_trigger()
 
-			selected_node.set_has_standalone_trigger(false)
+			selected_node.has_standalone_trigger = false
 
 
 func _on_GraphEdit_item_rect_changed() -> void:
@@ -540,7 +570,7 @@ func _on_node_selected_changed(node: StateGraphNode) -> void:
 
 
 func _on_node_editor_header_button_pressed(button: Button) -> void:
-	match(button.name):
+	match(str(button.name)):
 		"AddStandaloneTrigger":
 			var state = fsm.get_state_by_name(str(selected_node.name))
 			state.add_standalone_trigger()
@@ -570,5 +600,11 @@ func _on_connexion_path_changed_query(key: String, path: String) -> void:
 
 
 func _on_visibility_changed() -> void:
-	_update_graph_display()
-	_update_nodes_position()
+	if visible:
+		_update()
+		
+		await get_tree().process_frame
+		_update_nodes_position()
+		
+		await get_tree().process_frame
+		_update_graph_display()

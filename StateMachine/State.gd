@@ -151,9 +151,7 @@ func remove_standalone_trigger() -> void:
 func find_connexion(to: State) -> Dictionary:
 	for con in connexions_array:
 		if con["to"] == str(owner.get_path_to(to)):
-			print("connexion found: %s" % str(con))
 			return con
-	print("connexion NOT found")
 	return {}
 
 

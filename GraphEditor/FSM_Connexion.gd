@@ -25,6 +25,7 @@ var state : int = STATE.NORMAL :
 			state = value
 			emit_signal("state_changed", previous_state, state)
 
+
 var inverted : bool = false
 
 @export var normal_color := Color.BLUE_VIOLET
@@ -46,7 +47,7 @@ signal removed()
 func _ready() -> void:
 	var __
 
-	if from :
+	if from:
 		__ = from.connect("tree_exited",Callable(self,"_on_node_tree_exited"))
 	if to:
 		__ = to.connect("tree_exited",Callable(self,"_on_node_tree_exited"))
@@ -86,7 +87,7 @@ func update_line() -> void:
 func delete() -> void:
 	emit_signal("unselected")
 	emit_signal("removed")
-	get_tree().set_input_as_handled()
+	get_viewport().set_input_as_handled()
 	queue_free()
 
 
@@ -113,6 +114,7 @@ func _on_clickable_area_gui_input(event: InputEvent) -> void:
 
 
 func _on_state_changed(previous_state: int, new_state: int) -> void:
+	
 	match(new_state):
 		STATE.NORMAL:
 			color_rect.set_color(normal_color)
