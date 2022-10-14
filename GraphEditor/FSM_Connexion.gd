@@ -10,10 +10,8 @@ enum STATE {
 
 @onready var line = $Line2D
 @onready var clickable_area = $ClickableArea
-@onready var color_rect = $ClickableArea/ColorRect
-@onready var texture_rect = $ClickableArea/TextureRect
-
-@onready var arrow_texture = clickable_area.get_theme_icon("TransitionImmediateBig", "EditorIcons")
+@onready var color_rect = %ColorRect
+@onready var texture_rect = %TextureRect
 
 var from : Control = null
 var to : Control = null
@@ -29,7 +27,7 @@ var state : int = STATE.NORMAL :
 
 var inverted : bool = false
 
-@export var normal_color := Color.TRANSPARENT
+@export var normal_color := Color.BLUE_VIOLET
 @export var hovered_color := Color.AQUA
 @export var selected_color := Color.RED
 
@@ -53,16 +51,16 @@ func _ready() -> void:
 	if to:
 		__ = to.connect("tree_exited",Callable(self,"_on_node_tree_exited"))
 
-	__ = clickable_area.connect("gui_input",Callable(self,"_on_clickable_area_gui_input"))
-	__ = clickable_area.connect("mouse_entered",Callable(self,"_on_clickable_area_mouse_entered"))
-	__ = clickable_area.connect("mouse_exited",Callable(self,"_on_clickable_area_mouse_exited"))
-	__ = clickable_area.connect("focus_exited",Callable(self,"_on_clickable_area_focus_exited"))
+	__ = clickable_area.connect("gui_input", Callable(self,"_on_clickable_area_gui_input"))
+	__ = clickable_area.connect("mouse_entered", Callable(self,"_on_clickable_area_mouse_entered"))
+	__ = clickable_area.connect("mouse_exited", Callable(self,"_on_clickable_area_mouse_exited"))
+	__ = clickable_area.connect("focus_exited", Callable(self,"_on_clickable_area_focus_exited"))
 
-	__ = connect("state_changed",Callable(self,"_on_state_changed"))
-	__ = connect("item_rect_changed",Callable(self,"_on_item_rect_changed"))
+	__ = connect("state_changed", Callable(self,"_on_state_changed"))
+	__ = connect("item_rect_changed", Callable(self,"_on_item_rect_changed"))
 	
-	texture_rect.set_texture(arrow_texture)
 	texture_rect.set_flip_h(inverted)
+	color_rect.set_color(normal_color)
 	
 	if is_instance_valid(from) && is_instance_valid(to):
 		update_line()

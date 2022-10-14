@@ -1,70 +1,62 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=3 format=3 uid="uid://u1l5p1tmu3qp"]
 
-[ext_resource path="res://addons/StateGraph/GraphEditor/FSM_Connexion.gd" type="Script" id=1]
-
-[sub_resource type="Image" id=1]
-data = {
-"data": PackedByteArray( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ),
-"format": "LumAlpha8",
-"height": 16,
-"mipmaps": false,
-"width": 16
-}
-
-[sub_resource type="ImageTexture" id=2]
-flags = 4
-flags = 4
-image = SubResource( 1 )
-size = Vector2( 16, 16 )
+[ext_resource type="Script" path="res://addons/StateGraph/GraphEditor/FSM_Connexion.gd" id="1"]
+[ext_resource type="Texture2D" uid="uid://c6ln1w0amlaua" path="res://addons/StateGraph/Icons/ArrowEnd_Texture.tres" id="2_mgjg2"]
 
 [node name="FSM_Connexion" type="Control" groups=["FSM_Connexions"]]
+layout_mode = 3
+anchors_preset = 0
 offset_top = -5.0
 offset_right = 100.0
 offset_bottom = 5.0
-minimum_size = Vector2( 0, 10 )
-pivot_offset = Vector2( 0, 5 )
-script = ExtResource( 1 )
-hovered_color = Color( 0, 1, 1, 0.501961 )
-selected_color = Color( 1, 0, 0, 0.537255 )
+pivot_offset = Vector2(0, 5)
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+script = ExtResource("1")
+normal_color = Color(1, 1, 1, 0)
+hovered_color = Color(0, 1, 1, 0.501961)
+selected_color = Color(1, 0, 0, 0.537255)
 
 [node name="ClickableArea" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-pivot_offset = Vector2( 0, 4.5 )
-__meta__ = {
-"_edit_lock_": true
-}
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(0, 4.5)
 
 [node name="ColorRect" type="ColorRect" parent="ClickableArea"]
+unique_name_in_owner = true
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-pivot_offset = Vector2( 0, 3.5 )
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(0, 3.5)
 mouse_filter = 2
-color = Color( 0.133333, 0.690196, 0.905882, 0 )
-__meta__ = {
-"_edit_lock_": true
-}
+color = Color(1, 1, 1, 0)
 
 [node name="TextureRect" type="TextureRect" parent="ClickableArea"]
+unique_name_in_owner = true
+anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -32.0
-offset_top = -32.0
-offset_right = 32.0
-offset_bottom = 32.0
-pivot_offset = Vector2( 32, 32 )
+offset_left = -15.5
+offset_top = -15.5
+offset_right = 15.5
+offset_bottom = 15.5
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.33, 0.33)
+pivot_offset = Vector2(15, 15)
 mouse_filter = 2
-texture = SubResource( 2 )
+texture = ExtResource("2_mgjg2")
 stretch_mode = 4
-__meta__ = {
-"_edit_lock_": true
-}
 
 [node name="Line2D" type="Line2D" parent="."]
-width = 2.0
-default_color = Color( 1, 1, 1, 1 )
-__meta__ = {
-"_edit_lock_": true
-}
+width = 4.0
+antialiased = true

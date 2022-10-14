@@ -63,8 +63,8 @@ func _ready():
 		set_physics_process(false)
 		return
 	
-	var __ = connect("state_entered", Callable(self,"_on_state_entered"))
-	__ = owner.connect("ready", Callable(self,"_on_owner_ready"))
+	var __ = connect("state_entered", Callable(self, "_on_state_entered"))
+	__ = owner.connect("ready", Callable(self, "_on_owner_ready"))
 	
 	if get_parent().is_class("StateMachine"):
 		__ = connect("state_entered_recursive",Callable(get_parent(),"_on_State_state_entered_recursive"))
@@ -237,9 +237,9 @@ func increment_state(increment: int = 1, wrapping : bool = true) -> void:
 				break
 	
 	if state == null:
-		print_debug("There is no node at the given id: " + String(id))
+		push_error("There is no node at the given id: " + String(id))
 	elif !(state is State):
-		print_debug("The node found at the id: " + String(id) + " does not inherit State")
+		push_error("The node found at the id: " + String(id) + " does not inherit State")
 	else:
 		set_state(state)
 

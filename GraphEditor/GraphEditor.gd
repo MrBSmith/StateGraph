@@ -20,7 +20,7 @@ var edited_scene_path : String = ""
 
 var fsm : StateMachine = null
 
-var state_node_scene = preload("res://addons/StateGraph/GraphEditor/FSM_EditorStateNode.tscn")
+var state_node_scene = preload("res://addons/StateGraph/GraphEditor/StateGraphNode.tscn")
 var node_connexion_scene = preload("res://addons/StateGraph/GraphEditor/FSM_Connexion.tscn")
 var fsm_connexion_container_scene = preload("res://addons/StateGraph/GraphEditor/FSM_ConnexionContainer.tscn")
 
@@ -28,19 +28,28 @@ var states_array = []
 
 var selected_node : Control :
 	get:
-		return selected_node # TODOConverter40 Non existent get function 
-	set(mod_value):
-		mod_value  # TODOConverter40 Copy here content of set_selected_node
+		return selected_node
+	set(value):
+		if value != selected_node:
+			selected_node = value
+			emit_signal("selected_node_changed")
 var selected_trigger : Control = null :
 	get:
-		return selected_trigger # TODOConverter40 Non existent get function 
-	set(mod_value):
-		mod_value  # TODOConverter40 Copy here content of set_selected_trigger
+		return selected_trigger
+	set(value):
+		if value != selected_trigger:
+			selected_trigger = value
+			emit_signal("selected_trigger_changed", selected_trigger)
 var selected_trigger_dict : Dictionary :
 	get:
-		return selected_trigger_dict # TODOConverter40 Non existent get function 
-	set(mod_value):
-		mod_value  # TODOConverter40 Copy here content of set_selected_trigger_dict
+		return selected_trigger_dict
+
+	set(value):
+		if value != selected_trigger_dict:
+			print("selected_trigger_dict changed:" + str(value))
+			selected_trigger_dict = value
+			emit_signal("selected_trigger_dict_changed", selected_trigger_dict)
+
 var edited_state : State
 
 signal inspect_node_query(node)
@@ -54,28 +63,14 @@ signal selected_node_changed()
 func is_class(value: String): return value == "FSM_Editor" or super.is_class(value)
 func get_class() -> String: return "FSM_Editor"
 
-func set_selected_trigger(con: FSM_Connexion) -> void:
-	if con != selected_trigger:
-		selected_trigger = con
-		emit_signal("selected_trigger_changed", selected_trigger)
-
-func set_selected_node(value: Control) -> void:
-	if value != selected_node:
-		selected_node = value
-		emit_signal("selected_node_changed")
-
-func set_selected_trigger_dict(value: Dictionary) -> void:
-	if value != selected_trigger_dict:
-		selected_trigger_dict = value
-		emit_signal("selected_trigger_dict_changed", selected_trigger_dict)
 
 #### BUILT-IN ####
 
 func _ready() -> void:
-	connect("selected_trigger_changed",Callable(self,"_on_selected_trigger_changed"))
-	connect("selected_trigger_dict_changed",Callable(self,"_on_selected_trigger_dict_changed"))
-	connect("selected_node_changed",Callable(self,"_on_selected_node_changed"))
-	connect("visibility_changed",Callable(self,"_on_visibility_changed"))
+	connect("selected_trigger_changed", Callable(self,"_on_selected_trigger_changed"))
+	connect("selected_trigger_dict_changed", Callable(self,"_on_selected_trigger_dict_changed"))
+	connect("selected_node_changed", Callable(self,"_on_selected_node_changed"))
+	connect("visibility_changed", Callable(self,"_on_visibility_changed"))
 	
 	graph_edit.connect("item_rect_changed",Callable(self,"_on_GraphEdit_item_rect_changed"))
 	graph_edit.connect("scroll_offset_changed",Callable(self,"_on_GraphEdit_scroll_offset_changed"))
@@ -106,8 +101,6 @@ func _ready() -> void:
 #### LOGIC ####
 
 func feed(state_machine: StateMachine) -> void:
-	print("StateGraph editor fed with %s" % str(state_machine.name))
-	
 	if state_machine == fsm:
 		return
 
@@ -151,40 +144,44 @@ func _update() -> void:
 
 	# Add missing state nodes
 	for state in states_array:
-		if !_has_state_node(state.name):
+		var state_name = str(state.name)
+		
+		if !_has_state_node(state_name):
 			var node = state_node_scene.instantiate()
-			node.name = state.name
-			node.set_title(state.name)
+			node.name = state_name
+			node.set_title(state_name)
 			node.has_standalone_trigger = !state.standalone_trigger.is_empty()
 			graph_edit.add_child(node)
-			node.custom_minimum_size = Vector2i(50, 20)
 			
-			var __ = node.connect("item_rect_changed",Callable(self,"_on_state_node_item_rect_changed").bind(node))
-			__ = node.connect("connexion_attempt",Callable(self,"_on_state_node_connexion_attempt").bind(node))
-			__ = node.connect("trigger_selected",Callable(self,"_on_node_trigger_selected").bind(node))
-			__ = node.connect("selected_changed",Callable(self,"_on_node_selected_changed").bind(node))
+			var __ = node.connect("item_rect_changed", Callable(self,"_on_state_node_item_rect_changed").bind(node))
+			__ = node.connect("connexion_attempt", Callable(self,"_on_state_node_connexion_attempt").bind(node))
+			__ = node.connect("trigger_selected", Callable(self,"_on_node_trigger_selected").bind(node))
+			__ = node.connect("selected", Callable(self, "_on_node_selected_changed").bind(node))
+			__ = node.deselected.connect(Callable(self, "_on_node_selected_changed").bind(node))
 			__ = state.connect("standalone_trigger_added",Callable(node,"_on_standalone_trigger_added"))
 			__ = state.connect("standalone_trigger_removed",Callable(node,"_on_standalone_trigger_removed"))
 			__ = state.connect("renamed",Callable(node,"_on_state_renamed").bind(state))
 
 	# Update connexions
 	for state in states_array:
-		var from_node = graph_edit.get_node(state.name)
+		var from_node = graph_edit.get_node(str(state.name))
 
 		for con in state.connexions_array:
 			var to_state_path = str(fsm.owner.get_path()) + "/" + str(con["to"])
 			var to_state = get_node(to_state_path)
-			var to_node = graph_edit.get_node(to_state.name)
+			var to_node = graph_edit.get_node(str(to_state.name))
 
 			if !has_connexion(from_node, to_node):
 				add_node_connexion(from_node, to_node)
 	
-	await get_tree().idle_frame
-	
-	# Update state nodes graph position
+
+# Update state nodes graph position
+func _update_nodes_position() -> void:
 	for state in states_array:
-		var node = graph_edit.get_node(state.name)
-		node.set_offset(state.graph_position * graph_edit.get_size())
+		var node = graph_edit.get_node(str(state.name))
+		var pos = state.graph_position * graph_edit.get_size()
+		
+		node.set_position_offset(pos)
 
 
 func _update_graph_display() -> void:
@@ -264,8 +261,6 @@ func add_node_connexion(from: Control, to: Control) -> void:
 	var from_state = fsm.get_state_by_name(from.name)
 	var to_state = fsm.get_state_by_name(to.name)
 	
-	print("node connexion added from %s to %s" % [str(from.name), str(to.name)])
-	
 	from_state.add_connexion(to_state)
 
 	update_line_containers()
@@ -319,7 +314,7 @@ func get_selected_trigger_origin_path() -> String:
 func unselect_all_connexions(exeption: FSM_Connexion = null) -> void:
 	for connexion in get_tree().get_nodes_in_group("FSM_Connexions"):
 		if connexion != exeption:
-			connexion.set_state(FSM_Connexion.STATE.NORMAL)
+			connexion.state = FSM_Connexion.STATE.NORMAL
 
 
 func unselect_all_triggers(exeption: Control = null) -> void:
@@ -424,27 +419,30 @@ func _on_connection_selected(connexion: FSM_Connexion) -> void:
 	unselect_all_connexions(connexion)
 	unselect_all_triggers()
 	
-	set_selected_trigger(connexion)
+	selected_trigger = connexion
 
 	condition_editor.animation_handler = fsm.get_animation_handler()
 
 
 func _on_connection_unselected(connexion: FSM_Connexion) -> void:
 	if selected_trigger == connexion:
-		set_selected_trigger(null)
+		selected_trigger = null
 
 
 func _on_selected_trigger_changed(fsm_connexion: FSM_Connexion) -> void:
-	set_selected_trigger_dict(fsm_connexion_get_connexion_dict(fsm_connexion))
+	var dict = fsm_connexion_get_connexion_dict(fsm_connexion)
+	print("selected_trigger_changed : %s" % str(dict))
+	selected_trigger_dict = dict
 
 
 func _on_toolbar_button_pressed(button: Button) -> void:
+	print("toolbar button pressed %s" % str(button.name))
 	var is_condition : bool = selected_trigger_dict["type"] == "connexion"
 
 	var from_state = fsm.get_state_by_name(selected_trigger.from.name) if is_condition else edited_state
 	var from_state_path = from_state.owner.get_path_to(from_state)
 
-	match(button.name):
+	match(str(button.name)):
 		"AddCondition":
 			from_state.trigger_add_condition(selected_trigger_dict, condition_editor.edited_event)
 
@@ -490,13 +488,11 @@ func _on_GraphEdit_gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
 		if event.button_index in [MOUSE_BUTTON_WHEEL_DOWN, MOUSE_BUTTON_WHEEL_UP, MOUSE_BUTTON_WHEEL_RIGHT, MOUSE_BUTTON_WHEEL_LEFT]:
 			if logs: print("mouse wheel used, update display")
-			await get_tree().idle_frame
+			await get_tree().process_frame
 			_update_graph_display()
 
 
 func _on_ConditionEditor_remove_condition(condition_dict: Dictionary) -> void:
-	print("condition remove_at attempt")
-
 	if selected_trigger_dict.is_empty():
 		push_error("Can't remove_at the given condition: no connexion is currently selected")
 	else:
@@ -504,7 +500,6 @@ func _on_ConditionEditor_remove_condition(condition_dict: Dictionary) -> void:
 			var id = event["conditions"].find(condition_dict)
 			if id != -1:
 				event["conditions"].remove_at(id)
-				print("condition removed successfully")
 				update_connexion_editor()
 				return
 
@@ -512,8 +507,6 @@ func _on_ConditionEditor_remove_condition(condition_dict: Dictionary) -> void:
 
 
 func _on_ConditionEditor_remove_event(event_dict: Dictionary) -> void:
-	print("event remove_at attempt")
-
 	if selected_trigger_dict.is_empty():
 		push_error("Can't remove_at the given event: no connexion is currently selected")
 	else:
@@ -521,7 +514,6 @@ func _on_ConditionEditor_remove_event(event_dict: Dictionary) -> void:
 		if id != -1:
 			selected_trigger_dict["events"].remove_at(id)
 			update_connexion_editor()
-			print("event removed successfully")
 			return
 
 	push_error("event couldn't be found, removal aborted")
@@ -534,23 +526,23 @@ func _on_node_trigger_selected(node: Control) -> void:
 	edited_state = fsm.get_state_by_name(node.name)
 
 	condition_editor.animation_handler = null
-	set_selected_trigger_dict(edited_state.standalone_trigger)
+	selected_trigger_dict = edited_state.standalone_trigger
 
 
-func _on_node_selected_changed(selected: bool, node: Control) -> void:
-	if selected:
+func _on_node_selected_changed(node: StateGraphNode) -> void:
+	if node.selected:
 		unselect_all_nodes(node)
-		set_selected_node(node)
+		selected_node = node
 	else:
 		if node == selected_node:
-			set_selected_node(null)
-			set_selected_trigger_dict({})
+			selected_node = null
+			selected_trigger_dict = {}
 
 
 func _on_node_editor_header_button_pressed(button: Button) -> void:
 	match(button.name):
 		"AddStandaloneTrigger":
-			var state = fsm.get_state_by_name(selected_node.name)
+			var state = fsm.get_state_by_name(str(selected_node.name))
 			state.add_standalone_trigger()
 			add_standalone_trigger_button.set_visible(false)
 
@@ -579,3 +571,4 @@ func _on_connexion_path_changed_query(key: String, path: String) -> void:
 
 func _on_visibility_changed() -> void:
 	_update_graph_display()
+	_update_nodes_position()

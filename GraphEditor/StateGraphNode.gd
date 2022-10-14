@@ -1,5 +1,6 @@
 @tool
 extends GraphNode
+class_name StateGraphNode
 
 @onready var line = $Line2D
 @onready var trigger_button = $TriggerButton
@@ -22,7 +23,6 @@ var has_standalone_trigger : bool = false :
 			has_standalone_trigger = value
 			emit_signal("has_standalone_trigger_changed", value)
 
-signal selected_changed(value)
 signal connexion_attempt()
 signal drawing_line_changed(value)
 signal trigger_selected()
@@ -31,20 +31,17 @@ signal has_standalone_trigger_changed(value)
 #### ACCESSORS ####
 
 
-func set_selected(value: bool) -> void:
-	if value != selected:
-		selected = value
-		emit_signal("selected_changed", selected)
 func is_selected() -> bool: return selected
 
 
 #### BUILT-IN ####
 
 func _ready() -> void:
-	connect("drawing_line_changed",Callable(self,"_on_drawing_line_changed"))
-	connect("selected_changed",Callable(self,"_on_selected_changed"))
-	connect("has_standalone_trigger_changed",Callable(self,"_on_has_standalone_trigger_changed"))
-	trigger_button.connect("pressed",Callable(self,"_on_trigger_button_pressed"))
+	connect("drawing_line_changed", Callable(self,"_on_drawing_line_changed"))
+	connect("selected", Callable(self,"_on_selected_changed"))
+	connect("deselected", Callable(self,"_on_selected_changed"))
+	connect("has_standalone_trigger_changed", Callable(self,"_on_has_standalone_trigger_changed"))
+	trigger_button.connect("pressed", Callable(self,"_on_trigger_button_pressed"))
 	
 	trigger_button.set_button_icon(get_theme_icon("Signals", "EditorIcons"))
 	trigger_button.set_visible(has_standalone_trigger)
@@ -97,11 +94,8 @@ func _input(event: InputEvent) -> void:
 
 
 func _on_drawing_line_changed(value: bool) -> void:
-	print("Drawing line: %s" % str(value))
-	
 	if !drawing_line:
 		emit_signal("connexion_attempt")
-		print("connexion_attempt")
 
 
 func _on_trigger_button_pressed() -> void:
@@ -119,7 +113,7 @@ func _on_standalone_trigger_removed() -> void:
 	has_standalone_trigger = false
 
 
-func _on_selected_changed(_value: bool) -> void:
+func _on_selected_changed() -> void:
 	if !selected:
 		$TriggerButton.button_pressed = false
 

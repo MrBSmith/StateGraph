@@ -43,14 +43,6 @@ func _handles(obj: Variant) -> bool:
 	var handled = obj is StateMachine or (obj is State && obj.get_parent() is StateMachine)
 	
 	fsm_editor_button.set_visible(obj is State)
-
-	if fsm_editor_button.pressed:
-		fsm_editor.set_visible(obj is State)
-	
-	if handled:
-		print("%s obj is handled" % str(obj.name))
-	else:
-		print("%s obj is NOT handled" % str(obj.name))
 	
 	return handled
 
