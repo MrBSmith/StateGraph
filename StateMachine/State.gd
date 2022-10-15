@@ -71,6 +71,12 @@ func is_current_state() -> bool:
 		return states_machine.current_state == self
 
 
+func get_master_state_machine() -> State:
+	if not get_parent() is State:
+		return self
+	else :
+		return get_parent().get_master_state_machine()
+
 
 #### CONDITIONS & TRIGGER LOGIC ####
 

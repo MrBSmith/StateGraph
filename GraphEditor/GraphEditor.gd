@@ -45,7 +45,7 @@ var selected_trigger_dict : Dictionary :
 
 	set(value):
 		if value != selected_trigger_dict:
-			if logs: print("selected_trigger_dict changed:" + str(value))
+			if logs: print_debug("selected_trigger_dict changed:" + str(value))
 			selected_trigger_dict = value
 			emit_signal("selected_trigger_dict_changed", selected_trigger_dict)
 
@@ -104,13 +104,11 @@ func feed(state_machine: StateMachine) -> void:
 	if state_machine == fsm:
 		return
 	
-	if logs: print("GraphEditor fed with %s" % str(state_machine.name))
+	if logs: print_debug("GraphEditor fed with %s" % str(state_machine.name))
 
-	if fsm != null && is_instance_valid(fsm):
-		var __ = fsm.disconnect("state_added",Callable(self,"_on_fsm_state_added"))
-		__ = fsm.disconnect("state_removed",Callable(self,"_on_fsm_state_removed"))
-	
+	clear_fsm()
 	clear()
+	
 	fsm = state_machine
 	
 	if state_machine != null:
@@ -123,10 +121,14 @@ func feed(state_machine: StateMachine) -> void:
 
 
 func clear() -> void:
+	if logs: print_debug("Graph Editor cleared")
+	
 	states_array = []
 	selected_node = null
 	selected_trigger = null
 	selected_trigger_dict = {}
+	
+	clear_fsm()
 	
 	for child in graph_edit.get_children():
 		if child is GraphNode:
@@ -136,6 +138,14 @@ func clear() -> void:
 		child.queue_free()
 
 
+func clear_fsm() -> void:
+	if fsm != null && is_instance_valid(fsm):
+		var __ = fsm.disconnect("state_added", Callable(self,"_on_fsm_state_added"))
+		__ = fsm.disconnect("state_removed", Callable(self,"_on_fsm_state_removed"))
+	
+	fsm = null
+
+
 func _update_states_array() -> void:
 	states_array = []
 	fsm.fetch_states(states_array)
@@ -143,17 +153,19 @@ func _update_states_array() -> void:
 
 func _update() -> void:
 	if fsm == null:
+		if logs: print_debug("Cannot update the graph editor: the given fsm is null")
 		return
 	
 	if fsm.owner != edited_scene_root:
-		push_error("Cannot update the GraphEditor: the StateMachine isn't inside the edited scene anymore")
+		push_error("Cannot update the GraphEditor: the StateMachine owner %s isn't the edited scene root %s" % [str(fsm.owner.name), str(edited_scene_root.name)])
 		return
 	
-	if logs: print("update GraphEditor")
+	if logs: print_debug("--- update GraphEditor started ---")
 	
 	# Remove useless state nodes
 	for child in graph_edit.get_children():
 		if child is GraphNode && !fsm.has_state(child.name):
+			if logs: print_debug("Remove state node %s from the graph" % str(child.name))
 			child.queue_free()
 
 	# Add missing state nodes
@@ -166,6 +178,7 @@ func _update() -> void:
 			node.set_title(state_name)
 			node.has_standalone_trigger = !state.standalone_trigger.is_empty()
 			graph_edit.add_child(node)
+			if logs: print_debug("Add state node %s to the graph" % state_name)
 			
 			var __ = node.connect("item_rect_changed", Callable(self,"_on_state_node_item_rect_changed").bind(node))
 			__ = node.connect("connexion_attempt", Callable(self,"_on_state_node_connexion_attempt").bind(node))
@@ -187,6 +200,8 @@ func _update() -> void:
 
 			if !has_connexion(from_node, to_node):
 				add_node_connexion(from_node, to_node)
+	
+	if logs: print_debug("--- update GraphEditor finished ---")
 
 
 # Update state nodes graph position
@@ -248,7 +263,7 @@ func _find_hovered_node() -> Control:
 
 
 func add_node_connexion(from: Control, to: Control) -> void:
-	if logs: print("add node connexion")
+	if logs: print_debug("add node connexion between %s & %s nodes" % [str(from.name), str(to.name)])
 	
 	var connexion = node_connexion_scene.instantiate()
 	connexion.from = from
@@ -350,7 +365,7 @@ func unselect_all_nodes(exeption: Control = null) -> void:
 
 # The key must be "from" or "to"
 func selected_connexion_change_state(key: String, new_state: State) -> void:
-	if logs: print("selected_connexion_change_state")
+	if logs: print_debug("selected_connexion_change_state")
 	
 	if selected_trigger == null:
 		push_error("Can't change the selected connexion %s state, the selected_trigger is null" % key)
@@ -400,13 +415,19 @@ func _input(event: InputEvent) -> void:
 
 
 func _on_fsm_state_added(state: State) -> void:
-	if logs: print("StateMachine state added %s" % str(state.name))
+	if logs: print_debug("StateMachine state added %s" % str(state.name))
+	
+	await get_tree().process_frame
+	
 	_update_states_array()
 	_update()
 
 
 func _on_fsm_state_removed(state: State) -> void:
-	if logs: print("StateMachine state removed %s" % str(state.name))
+	if logs: print_debug("StateMachine state removed %s" % str(state.name))
+	
+	await get_tree().process_frame
+	
 	_update_states_array()
 	_update()
 
@@ -418,7 +439,7 @@ func _on_state_node_item_rect_changed(node: Control) -> void:
 	var state = fsm.get_state_by_name(node.name)
 	state.graph_position = node.get_position() / graph_edit.get_size()
 	
-	if logs: print(str(node.name) + " changed position: " + str(node.position))
+	if logs: print_debug(str(node.name) + " changed position: " + str(node.position))
 	
 	update_line_containers()
 
@@ -465,7 +486,7 @@ func _on_selected_trigger_changed(fsm_connexion: FSM_Connexion) -> void:
 
 
 func _on_toolbar_button_pressed(button: Button) -> void:
-	if logs: print("toolbar button pressed %s" % str(button.name))
+	if logs: print_debug("toolbar button pressed %s" % str(button.name))
 	var is_condition : bool = selected_trigger_dict["type"] == "connexion"
 
 	var from_state = fsm.get_state_by_name(selected_trigger.from.name) if is_condition else edited_state
@@ -506,18 +527,17 @@ func _on_footer_button_pressed(button: Button) -> void:
 
 func _on_GraphEdit_item_rect_changed() -> void:
 	_update_graph_display()
-	if logs: print("item_rect_changed called, update display")
+	if logs: print_debug("item_rect_changed called, update display")
 
 
 func _on_GraphEdit_scroll_offset_changed(offset: Vector2) -> void:
 	_update_graph_display()
-	if logs: print("scroll_offset_changed called, update display")
 
 
 func _on_GraphEdit_gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
 		if event.button_index in [MOUSE_BUTTON_WHEEL_DOWN, MOUSE_BUTTON_WHEEL_UP, MOUSE_BUTTON_WHEEL_RIGHT, MOUSE_BUTTON_WHEEL_LEFT]:
-			if logs: print("mouse wheel used, update display")
+			if logs: print_debug("mouse wheel used, update display")
 			await get_tree().process_frame
 			_update_graph_display()
 

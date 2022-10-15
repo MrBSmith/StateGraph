@@ -5,6 +5,7 @@ class_name StateGraph
 var fsm_editor_scene = preload("res://addons/StateGraph/GraphEditor/GraphEditor.tscn")
 
 var edited_scene_path = ""
+var current_scene_root : Node = null
 
 var fsm_editor : Node = null
 var fsm_editor_button : Button = null
@@ -41,14 +42,8 @@ func _handles(obj: Variant) -> bool:
 	if obj is GDScript:
 		return false
 	
-	var handled = obj is StateMachine or (obj is State && obj.get_parent() is StateMachine)
-	
-	return handled
+	return obj is State
 
-
-func _edit(obj: Variant) -> void:
-	var handled_fsm = obj if obj is StateMachine else obj.get_parent()
-	fsm_editor.feed(handled_fsm)
 
 
 
@@ -57,8 +52,15 @@ func _edit(obj: Variant) -> void:
 func _update_graph_editor_visibility() -> void:
 	var state_selected : bool = has_state_selected()
 	
-	if !state_selected:
-		fsm_editor_button.set_pressed(false) 
+	if state_selected:
+		var interface = get_editor_interface()
+		var state = interface.get_selection().get_selected_nodes()[0]
+		var fsm = state.get_master_state_machine()
+		
+		if fsm.owner == current_scene_root:
+			fsm_editor.feed(fsm)
+	else:
+		fsm_editor_button.set_pressed(false)
 	
 	fsm_editor_button.set_visible(state_selected)
 
@@ -81,13 +83,15 @@ func has_state_selected() -> bool:
 #### SIGNAL RESPONSES ####
 
 func _on_scene_changed(scene_root: Node) -> void:
+	print_debug("scene_changed to %s" % str(scene_root.name))
+	
 	if not scene_root is State:
 		fsm_editor.clear()
 	
-	fsm_editor.set_visible(scene_root is State)
-	fsm_editor_button.set_visible(scene_root is State)
-	
+	current_scene_root = scene_root
 	fsm_editor.edited_scene_root = scene_root
+	
+	await get_tree().process_frame
 	
 	_update_graph_editor_visibility()
 
