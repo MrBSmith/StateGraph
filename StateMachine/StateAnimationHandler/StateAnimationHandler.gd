@@ -57,7 +57,7 @@ const DIRECTIONS_8 : Dictionary = {
 @export var animated_sprite_path : NodePath
 @export var anim_name_mode := ANIM_NAME_MODE.RECURSIVE_NAME_COMPOSITION
 
-@export var flip_mode = FLIP.H # (int, FLAGS, "flip_h", "flip_v", "flip_iso")
+@export_flags("flip_h", "flip_v", "flip_iso") var flip_mode = 0
 @export var finished_trigger_mode := MODE.ANIMATED_SPRITE
 @export var direction_mode := DIRECTION_MODE.NONE
 
@@ -73,7 +73,7 @@ func get_class() -> String: return "StateAnimationHandler"
 #### BUILT-IN ####
 
 func _ready() -> void:
-	if Engine.editor_hint:
+	if Engine.is_editor_hint():
 		return
 	
 	await owner.ready
@@ -125,7 +125,7 @@ func _update_animation() -> void:
 	
 	var anim_name = get_anim_name(state) + dir_sufix
 	var start_anim_name = "Start" + anim_name
-	var trans_anim_name = previous_state.name + "To" + anim_name if previous_state else ""
+	var trans_anim_name = str(previous_state.name) + "To" + anim_name if previous_state else ""
 	
 	var sprite_frames = animated_sprite.get_sprite_frames()
 	
@@ -193,7 +193,7 @@ func find_dir_name(dir: Vector2) -> String:
 # 	it will recursively add the children state's name together
 func get_anim_name(state: Object) -> String:
 	if anim_name_mode == ANIM_NAME_MODE.PARENT_MOST_STATE_NAME:
-		return state.name
+		return str(state.name)
 	
 	if state.is_class("StateMachine"):
 		var child_state = state.get_state()
@@ -203,8 +203,8 @@ func get_anim_name(state: Object) -> String:
 				ANIM_NAME_MODE.CHILD_MOST_STATE_NAME:
 					return get_anim_name(child_state)
 				ANIM_NAME_MODE.RECURSIVE_NAME_COMPOSITION:
-					return state.name + get_anim_name(child_state)
-	return state.name
+					return str(state.name) + get_anim_name(child_state)
+	return str(state.name)
 
 
 #### SIGNAL RESPONSES #####
@@ -218,17 +218,17 @@ func _on_animation_finished() -> void:
 	if state == null:
 		return
 	
-	var state_name = state.name
+	var state_name = str(state.name)
 	
 	var sprite_frames = animated_sprite.get_sprite_frames()
 	var current_animation = animated_sprite.get_animation()
 	
-	if !state_name.is_subsequence_ofi(current_animation):
+	if !state_name.is_subsequence_ofn(current_animation):
 		return
 	
 	var anim_name = get_anim_name(state)
 	
-	if current_animation == "Start" + anim_name or ("To" + anim_name).is_subsequence_ofi(current_animation):
+	if current_animation == "Start" + anim_name or ("To" + anim_name).is_subsequence_ofn(current_animation):
 		if sprite_frames != null and sprite_frames.has_animation(anim_name):
 			animated_sprite.play(anim_name)
 
