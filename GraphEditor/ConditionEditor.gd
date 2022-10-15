@@ -18,15 +18,21 @@ enum BUTTON_TYPE {
 
 var animation_handler : StateAnimationHandler = null :
 	get:
-		return animation_handler # TODOConverter40 Non existent get function 
-	set(mod_value):
-		mod_value  # TODOConverter40 Copy here content of set_animation_handler
+		return animation_handler
+	set(value):
+		if value != animation_handler:
+			animation_handler = value
+			emit_signal("animation_handler_changed")
 var edited_event : Dictionary :
 	get:
-		return edited_event # TODOConverter40 Non existent get function 
-	set(mod_value):
-		mod_value  # TODOConverter40 Copy here content of set_edited_event
+		return edited_event
+	set(value):
+		if edited_event != value:
+			edited_event = value
+			emit_signal("edited_event_changed")
 var edited_trigger_dict : Dictionary
+
+@export var logs : bool = false
 
 signal remove_event(dict)
 signal remove_condition(dict)
@@ -48,15 +54,7 @@ class DataDict:
 func is_class(value: String): return value == "ConditionEditor" or super.is_class(value)
 func get_class() -> String: return "ConditionEditor"
 
-func set_animation_handler(value: StateAnimationHandler) -> void:
-	if value != animation_handler:
-		animation_handler = value
-		emit_signal("animation_handler_changed")
 
-func set_edited_event(value: Dictionary) -> void:
-	if edited_event != value:
-		edited_event = value
-		emit_signal("edited_event_changed")
 
 #### BUILT-IN ####
 
@@ -173,6 +171,8 @@ func add_tree_item(parent: TreeItem, data_dict : DataDict = null, icon: Texture2
 #### SIGNAL RESPONSES ####
 
 func _on_tree_item_edited() -> void:
+	if logs: print("tree item edited")
+	
 	var tree_item = tree.get_edited()
 	var value = tree_item.get_text(1)
 	var data_dict = tree_item.get_metadata(1)
@@ -181,6 +181,8 @@ func _on_tree_item_edited() -> void:
 
 
 func _on_tree_button_pressed(item: TreeItem, _column: int, button_index: int) -> void:
+	if logs: print("tree button pressed")
+	
 	match(button_index):
 		BUTTON_TYPE.REMOVE: 
 			var data_dict = item.get_metadata(1)
@@ -191,10 +193,12 @@ func _on_tree_button_pressed(item: TreeItem, _column: int, button_index: int) ->
 
 
 func _on_item_selected() -> void:
+	if logs: print("tree item selected")
+	
 	var selected_item = tree.get_selected()
 	var data_dict = selected_item.get_metadata(1)
 	
-	set_edited_event(data_dict.dict)
+	edited_event = data_dict.dict
 
 
 func _on_animation_handler_changed() -> void:
@@ -206,7 +210,7 @@ func _on_edited_event_changed() -> void:
 
 
 func _on_remove_event(_event_dict: Dictionary) -> void:
-	set_edited_event({})
+	edited_event = {}
 
 
 # Key is either "from" or "to" here

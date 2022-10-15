@@ -219,15 +219,20 @@ func is_condition_verified(condition_dict: Dictionary) -> bool:
 	var condition = condition_dict["condition"]
 	
 	var expression = Expression.new()
-	expression.parse(condition)
+	var error = expression.parse(condition)
+	
+	if error != OK:
+		push_error("the expression couldn't be parsed: %s | condition: %s" % [expression.get_error_text(), condition])
+		return false
+	
 	var result = expression.execute([], target)
 	
 	if expression.has_execute_failed():
-		push_error("Condition execution failed, check its expression is valid")
+		push_error("Condition execution failed, check if its expression is valid | condition: %s" % condition)
 		return false
 		
 	elif not result is bool:
-		push_error("Condition expression didn't retruned a bool value, condition aborted (retruned false)")
+		push_error("Condition expression didn't retruned a bool value, condition aborted (retruned false)| condition: %s" % condition)
 		return false
 	
 	else:
