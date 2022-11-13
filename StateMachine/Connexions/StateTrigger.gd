@@ -4,7 +4,7 @@ class_name StateTrigger
 @export var events : Array[StateEvent]
 
 
-func find_event(event_trigger: Signal) -> StateEvent:
+func find_event(event_trigger: String) -> StateEvent:
 	for event in events:
 		if event.trigger == event_trigger:
 			return event
@@ -12,12 +12,12 @@ func find_event(event_trigger: Signal) -> StateEvent:
 
 
 
-func add_event(event_trigger : Signal) -> StateEvent:
+func add_event(event_trigger : String, emitter_path: NodePath) -> StateEvent:
 	if find_event(event_trigger) != null:
-		push_warning("Couldn't create a new event, an event with the trigger %s already exists" % str(event_trigger.get_name()))
+		push_warning("Couldn't create a new event, an event with the trigger %s already exists" % event_trigger)
 		return null
 	
-	var event = StateEvent.new(event_trigger, [])
+	var event = StateEvent.new(event_trigger, emitter_path, [])
 	
 	events.append(event)
 	return event

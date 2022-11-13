@@ -80,7 +80,7 @@ func get_master_state_machine() -> State:
 
 #### CONDITIONS & TRIGGER LOGIC ####
 
-func check_exit_conditions(event_trigger: Signal) -> State:
+func check_exit_conditions(event_trigger: String = "") -> State:
 	for connexion in connexions_array:
 		var event = connexion.find_event(event_trigger)
 		if event == null:

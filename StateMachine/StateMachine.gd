@@ -107,7 +107,7 @@ func _physics_process(delta):
 				return
 	
 	if current_state != null:
-		var new_state = current_state.check_exit_conditions(get_tree().physics_frame)
+		var new_state = current_state.check_exit_conditions()
 		if new_state != null:
 			set_state(new_state)
 

@@ -499,10 +499,13 @@ func _on_toolbar_button_pressed(button: Button) -> void:
 
 	match(str(button.name)):
 		"AddCondition":
-			condition_editor.edited_event.add_condition("", from_state.get_path_to(from_state.owner))
+			var edited_event : StateEvent = condition_editor.edited_event
+			print(str(edited_event))
+			var add_cond_func = edited_event.add_condition
+			add_cond_func.call("", from_state.get_path_to(from_state.owner))
 
 		"AddEvent":
-			selected_trigger.add_event(get_tree().physics_frame)
+			selected_trigger.add_event("process", from_state.get_path_to(from_state.owner))
 
 		"AddAnimFinishedEvent":
 			var anim_handler = condition_editor.animation_handler
@@ -510,7 +513,7 @@ func _on_toolbar_button_pressed(button: Button) -> void:
 			
 			var animated_sprite_path = from_state.get_path_to(animated_sprite)
 			
-			selected_trigger.add_event(animated_sprite.animation_finished)
+			selected_trigger.add_event("animation_finished", animated_sprite_path)
 
 	condition_editor.update_content(from_state_path, selected_trigger)
 
@@ -566,6 +569,8 @@ func _on_ConditionEditor_remove_event(event: StateEvent) -> void:
 		push_error("Can't remove_at the given event: no connexion is currently selected")
 	else:
 		var id = selected_trigger.events.find(event)
+		print("found event to remove at id %d" % id)
+		
 		if id != -1:
 			selected_trigger.events.remove_at(id)
 			update_connexion_editor()

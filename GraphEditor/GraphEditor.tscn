@@ -4,7 +4,7 @@
 [ext_resource type="Script" path="res://addons/StateGraph/GraphEditor/ConditionEditor.gd" id="2"]
 [ext_resource type="Theme" uid="uid://bo0y8ggcj7tnh" path="res://addons/StateGraph/GraphEditor/Theme/GraphEditorTheme.tres" id="3"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_xmfuq"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dflid"]
 content_margin_left = 4.0
 content_margin_top = 4.0
 content_margin_right = 4.0
@@ -34,15 +34,17 @@ script = ExtResource("1")
 logs = true
 
 [node name="Panel" type="Panel" parent="."]
+layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_xmfuq")
+theme_override_styles/panel = SubResource("StyleBoxFlat_dflid")
 
 [node name="HSplitContainer" type="HSplitContainer" parent="."]
+layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -51,6 +53,7 @@ grow_vertical = 2
 split_offset = 237
 
 [node name="NodesEditor" type="PanelContainer" parent="HSplitContainer"]
+layout_mode = 2
 offset_right = 807.0
 offset_bottom = 648.0
 size_flags_horizontal = 3
@@ -58,26 +61,31 @@ size_flags_vertical = 3
 mouse_filter = 2
 
 [node name="Panel" type="Panel" parent="HSplitContainer/NodesEditor"]
+layout_mode = 2
 offset_right = 807.0
 offset_bottom = 648.0
 mouse_filter = 2
 
 [node name="VBoxContainer" type="VBoxContainer" parent="HSplitContainer/NodesEditor"]
+layout_mode = 2
 offset_right = 807.0
 offset_bottom = 648.0
 
 [node name="Header" type="HBoxContainer" parent="HSplitContainer/NodesEditor/VBoxContainer"]
 custom_minimum_size = Vector2(0, 32)
+layout_mode = 2
 offset_right = 807.0
 offset_bottom = 32.0
 
 [node name="AddStandaloneTrigger" type="Button" parent="HSplitContainer/NodesEditor/VBoxContainer/Header"]
 visible = false
+layout_mode = 2
 offset_right = 185.0
 offset_bottom = 32.0
 text = "Add standalone trigger"
 
 [node name="GraphEdit" type="GraphEdit" parent="HSplitContainer/NodesEditor/VBoxContainer"]
+layout_mode = 2
 offset_top = 36.0
 offset_right = 807.0
 offset_bottom = 648.0
@@ -90,6 +98,7 @@ minimap_enabled = false
 [node name="ConnexionsContainer" type="Node2D" parent="HSplitContainer/NodesEditor/VBoxContainer/GraphEdit"]
 
 [node name="ConditionEditor" type="PanelContainer" parent="HSplitContainer"]
+layout_mode = 2
 offset_left = 819.0
 offset_right = 1152.0
 offset_bottom = 648.0
@@ -99,6 +108,7 @@ script = ExtResource("2")
 logs = true
 
 [node name="VBoxContainer" type="VBoxContainer" parent="HSplitContainer/ConditionEditor"]
+layout_mode = 2
 offset_right = 333.0
 offset_bottom = 648.0
 size_flags_horizontal = 3
@@ -106,16 +116,19 @@ size_flags_vertical = 3
 size_flags_stretch_ratio = 0.3
 
 [node name="Toolbar" type="HBoxContainer" parent="HSplitContainer/ConditionEditor/VBoxContainer"]
+layout_mode = 2
 offset_right = 333.0
 offset_bottom = 31.0
 
 [node name="AddEvent" type="Button" parent="HSplitContainer/ConditionEditor/VBoxContainer/Toolbar"]
+layout_mode = 2
 offset_right = 87.0
 offset_bottom = 31.0
 text = "Add event"
 
 [node name="AddCondition" type="Button" parent="HSplitContainer/ConditionEditor/VBoxContainer/Toolbar"]
 visible = false
+layout_mode = 2
 offset_left = 81.0
 offset_right = 182.0
 offset_bottom = 20.0
@@ -123,25 +136,30 @@ text = "Add condition"
 
 [node name="AddAnimFinishedEvent" type="Button" parent="HSplitContainer/ConditionEditor/VBoxContainer/Toolbar"]
 visible = false
+layout_mode = 2
 offset_right = 77.0
 offset_bottom = 20.0
 text = "Add Animation Finished Event"
 
 [node name="Panel" type="PanelContainer" parent="HSplitContainer/ConditionEditor/VBoxContainer"]
+layout_mode = 2
 offset_top = 35.0
 offset_right = 333.0
 offset_bottom = 644.0
 size_flags_vertical = 3
 
 [node name="VBoxContainer" type="VBoxContainer" parent="HSplitContainer/ConditionEditor/VBoxContainer/Panel"]
+layout_mode = 2
 offset_right = 333.0
 offset_bottom = 609.0
 
 [node name="OriginState" type="HBoxContainer" parent="HSplitContainer/ConditionEditor/VBoxContainer/Panel/VBoxContainer"]
+layout_mode = 2
 offset_right = 333.0
 offset_bottom = 31.0
 
 [node name="Label" type="Label" parent="HSplitContainer/ConditionEditor/VBoxContainer/Panel/VBoxContainer/OriginState"]
+layout_mode = 2
 offset_top = 2.0
 offset_right = 164.0
 offset_bottom = 28.0
@@ -149,6 +167,7 @@ size_flags_horizontal = 3
 text = "Origin State:"
 
 [node name="LineEdit" type="LineEdit" parent="HSplitContainer/ConditionEditor/VBoxContainer/Panel/VBoxContainer/OriginState"]
+layout_mode = 2
 offset_left = 168.0
 offset_right = 333.0
 offset_bottom = 31.0
@@ -157,11 +176,13 @@ text = "../.."
 editable = false
 
 [node name="DestState" type="HBoxContainer" parent="HSplitContainer/ConditionEditor/VBoxContainer/Panel/VBoxContainer"]
+layout_mode = 2
 offset_top = 35.0
 offset_right = 333.0
 offset_bottom = 66.0
 
 [node name="Label" type="Label" parent="HSplitContainer/ConditionEditor/VBoxContainer/Panel/VBoxContainer/DestState"]
+layout_mode = 2
 offset_top = 2.0
 offset_right = 164.0
 offset_bottom = 28.0
@@ -169,6 +190,7 @@ size_flags_horizontal = 3
 text = "Destination State:"
 
 [node name="LineEdit" type="LineEdit" parent="HSplitContainer/ConditionEditor/VBoxContainer/Panel/VBoxContainer/DestState"]
+layout_mode = 2
 offset_left = 168.0
 offset_right = 333.0
 offset_bottom = 31.0
@@ -177,24 +199,28 @@ text = "../.."
 editable = false
 
 [node name="Tree" type="Tree" parent="HSplitContainer/ConditionEditor/VBoxContainer/Panel/VBoxContainer"]
+layout_mode = 2
 offset_top = 70.0
 offset_right = 333.0
 offset_bottom = 609.0
 size_flags_vertical = 3
 
 [node name="Footer" type="HBoxContainer" parent="HSplitContainer/ConditionEditor/VBoxContainer"]
+layout_mode = 2
 offset_top = 648.0
 offset_right = 333.0
 offset_bottom = 648.0
 
 [node name="DeleteConnexion" type="Button" parent="HSplitContainer/ConditionEditor/VBoxContainer/Footer"]
 visible = false
+layout_mode = 2
 offset_right = 126.0
 offset_bottom = 20.0
 text = "Delete Connexion"
 
 [node name="DeleteStandaloneTrigger" type="Button" parent="HSplitContainer/ConditionEditor/VBoxContainer/Footer"]
 visible = false
+layout_mode = 2
 offset_right = 176.0
 offset_bottom = 20.0
 text = "Delete Standalone Trigger"

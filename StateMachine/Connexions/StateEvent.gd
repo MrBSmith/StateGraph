@@ -2,11 +2,13 @@ extends Resource
 class_name StateEvent
 
 @export var conditions : Array[StateCondition]
-@export var trigger : Signal
+@export var trigger : String
+@export var emitter_path : NodePath
 
-func _init(_trigger: Signal, _conditions: Array[StateCondition]) -> void:
+func _init(_trigger: String, _emitter_path: NodePath, _conditions: Array[StateCondition]) -> void:
 	trigger = _trigger
 	conditions = _conditions
+	emitter_path = _emitter_path
 
 
 func are_all_conditions_verified(from_state: State) -> bool:

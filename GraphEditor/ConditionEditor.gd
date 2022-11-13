@@ -15,6 +15,7 @@ enum BUTTON_TYPE {
 @onready var dest_state_line_edit = $VBoxContainer/Panel/VBoxContainer/DestState/LineEdit
 
 @onready var tree = $VBoxContainer/Panel/VBoxContainer/Tree
+@export var logs : bool = false
 
 var animation_handler : StateAnimationHandler = null :
 	get:
@@ -33,13 +34,21 @@ var edited_event : StateEvent :
 var edited_trigger : StateTrigger
 var edited_state : State
 
-@export var logs : bool = false
 
 signal remove_event(dict)
 signal remove_condition(dict)
 signal animation_handler_changed()
 signal edited_event_changed()
 signal connexion_path_changed_query(key, path)
+
+
+class TreeItemData:
+	var obj : Object = null
+	var key : String = ""
+	
+	func _init(_obj: Object, _key: String) -> void:
+		obj = _obj
+		key = _key
 
 
 #### ACCESSORS ####
@@ -129,30 +138,24 @@ func update_tree() -> void:
 		return
 	
 	for event in edited_trigger.events:
-		var event_tree_item = add_tree_item(root, "trigger", event.trigger.get_name(), 
+		var event_tree_item = add_tree_item(root, TreeItemData.new(event, "trigger"), 
 											get_theme_icon("Signals", "EditorIcons"))
 		
-		var emitter = event.trigger.get_object()
-		var emitter_path = edited_state.get_path_to(emitter)
-	
-		var emitter_path_item = add_tree_item(event_tree_item, "emitter_path", str(emitter_path),
+		var emitter_path_item = add_tree_item(event_tree_item, TreeItemData.new(event, "emitter_path"),
 											get_theme_icon("Signal", "EditorIcons"), false, false)
-
+		
 		for condition in event.conditions:
-			var condition_tree_item = add_tree_item(event_tree_item, "condition", condition.condition, 
-															get_theme_icon("Key", "EditorIcons"), true)
-			
-			var target_tree_item = add_tree_item(condition_tree_item, "target_path", str(condition.target_path), 
-															get_theme_icon("NodePath", "EditorIcons"), false, false)
+			var condition_tree_item = add_tree_item(event_tree_item, TreeItemData.new(condition, "condition"), get_theme_icon("Key", "EditorIcons"), true)
+			var target_tree_item = add_tree_item(condition_tree_item, TreeItemData.new(condition, "target_path"), get_theme_icon("NodePath", "EditorIcons"), false, false)
 
 
-
-func add_tree_item(parent: TreeItem, key: String, data_value: String, icon: Texture2D = null, collapsed: bool = false, removeable: bool = true, editable: bool = true) -> TreeItem:
+func add_tree_item(parent: TreeItem, tree_item_data : TreeItemData = null, icon: Texture = null, collapsed: bool = false, removeable: bool = true, editable: bool = true) -> TreeItem:
 	var item = tree.create_item(parent)
-	item.set_text(0, key)
-	item.set_text(1, data_value)
+	item.set_text(0, tree_item_data.key.capitalize())
+	item.set_text(1, tree_item_data.obj.get(tree_item_data.key))
 	item.set_custom_color(0, Color.DIM_GRAY)
 	item.set_editable(1, editable)
+	item.set_metadata(1, tree_item_data)
 	item.set_icon(0, icon)
 	item.set_collapsed(collapsed)
 	
@@ -179,16 +182,16 @@ func _on_tree_item_edited() -> void:
 	data_dict.obj.set(data_dict.key, value)
 
 
-func _on_tree_button_clicked(item: TreeItem, _column: int, _id: int, button_index: int) -> void:
+func _on_tree_button_clicked(item: TreeItem, _column: int, id: int, _button_index: int) -> void:
 	if logs: print("tree button pressed")
 	
-	match(button_index):
+	match(id):
 		BUTTON_TYPE.REMOVE: 
-			var data_dict = item.get_metadata(1)
+			var tree_item_data = item.get_metadata(1)
 			
-			match(data_dict.key):
-				"trigger": emit_signal("remove_event", data_dict.dict)
-				"condition": emit_signal("remove_condition", data_dict.dict)
+			match(tree_item_data.key):
+				"trigger": emit_signal("remove_event", tree_item_data.obj)
+				"condition": emit_signal("remove_condition", tree_item_data.obj)
 
 
 func _on_item_selected() -> void:
@@ -197,7 +200,7 @@ func _on_item_selected() -> void:
 	var selected_item = tree.get_selected()
 	var tree_item_data = selected_item.get_metadata(1)
 	
-	edited_event = tree_item_data.obj
+	edited_event = tree_item_data.obj as StateEvent
 
 
 func _on_animation_handler_changed() -> void:
