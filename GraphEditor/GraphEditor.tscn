@@ -4,7 +4,7 @@
 [ext_resource type="Script" path="res://addons/StateGraph/GraphEditor/ConditionEditor.gd" id="2"]
 [ext_resource type="Theme" uid="uid://bo0y8ggcj7tnh" path="res://addons/StateGraph/GraphEditor/Theme/GraphEditorTheme.tres" id="3"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_alp0v"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_xmfuq"]
 content_margin_left = 4.0
 content_margin_top = 4.0
 content_margin_right = 4.0
@@ -19,7 +19,7 @@ corner_detail = 1
 
 [node name="GraphEditor" type="Control"]
 clip_contents = true
-custom_minimum_size = Vector2i(0, 300)
+custom_minimum_size = Vector2(0, 300)
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -40,7 +40,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_alp0v")
+theme_override_styles/panel = SubResource("StyleBoxFlat_xmfuq")
 
 [node name="HSplitContainer" type="HSplitContainer" parent="."]
 anchors_preset = 15
@@ -67,7 +67,7 @@ offset_right = 807.0
 offset_bottom = 648.0
 
 [node name="Header" type="HBoxContainer" parent="HSplitContainer/NodesEditor/VBoxContainer"]
-custom_minimum_size = Vector2i(0, 32)
+custom_minimum_size = Vector2(0, 32)
 offset_right = 807.0
 offset_bottom = 32.0
 

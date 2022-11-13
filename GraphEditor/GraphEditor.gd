@@ -32,22 +32,22 @@ var selected_node : Control :
 		if value != selected_node:
 			selected_node = value
 			emit_signal("selected_node_changed")
-var selected_trigger : Control = null :
+var selected_trigger_control : Control = null :
+	get:
+		return selected_trigger_control
+	set(value):
+		if value != selected_trigger_control:
+			selected_trigger_control = value
+			emit_signal("selected_trigger_changed", selected_trigger_control)
+var selected_trigger : StateTrigger :
 	get:
 		return selected_trigger
-	set(value):
-		if value != selected_trigger:
-			selected_trigger = value
-			emit_signal("selected_trigger_changed", selected_trigger)
-var selected_trigger_dict : Dictionary :
-	get:
-		return selected_trigger_dict
 
 	set(value):
-		if value != selected_trigger_dict:
-			if logs: print_debug("selected_trigger_dict changed:" + str(value))
-			selected_trigger_dict = value
-			emit_signal("selected_trigger_dict_changed", selected_trigger_dict)
+		if value != selected_trigger:
+			if logs: print_debug("selected_trigger changed:" + str(value))
+			selected_trigger = value
+			emit_signal("selected_trigger_dict_changed", selected_trigger)
 
 var edited_state : State
 
@@ -125,8 +125,8 @@ func clear() -> void:
 	
 	states_array = []
 	selected_node = null
+	selected_trigger_control = null
 	selected_trigger = null
-	selected_trigger_dict = {}
 	
 	clear_fsm()
 	
@@ -176,7 +176,7 @@ func _update() -> void:
 			var node = state_node_scene.instantiate()
 			node.name = state_name
 			node.set_title(state_name)
-			node.has_standalone_trigger = !state.standalone_trigger.is_empty()
+			node.has_standalone_trigger = state.standalone_trigger != null
 			graph_edit.add_child(node)
 			if logs: print_debug("Add state node %s to the graph" % state_name)
 			
@@ -219,12 +219,12 @@ func _update_graph_display() -> void:
 
 
 func update_connexion_editor() -> void:
-	if selected_trigger_dict.is_empty():
+	if selected_trigger == null:
 		condition_editor.clear()
 	else:
-		var from = selected_trigger.from if selected_trigger != null else null
+		var from = selected_trigger_control.from if selected_trigger_control != null else null
 		var from_path = str(fsm.name) + "/" + str(from.name) if from != null else ""
-		condition_editor.update_content(from_path, selected_trigger_dict)
+		condition_editor.update_content(from_path, selected_trigger)
 
 
 func update_line_containers() -> void:
@@ -317,9 +317,9 @@ func inspect_connexion(connexion: FSM_Connexion) -> void:
 	emit_signal("inspect_node_query", from_state)
 
 
-func fsm_connexion_get_connexion_dict(connexion: FSM_Connexion) -> Dictionary:
+func fsm_connexion_get_connexion(connexion: FSM_Connexion) -> StateConnexion:
 	if connexion == null:
-		return {}
+		return null
 	
 	var from_state = fsm.get_state_by_name(connexion.from.name)
 	var to_state = fsm.get_state_by_name(connexion.to.name)
@@ -336,12 +336,12 @@ func get_selected_trigger_origin_path() -> String:
 	if fsm.owner != edited_scene_root:
 		return ""
 	
-	if selected_trigger == null:
+	if selected_trigger_control == null:
 		if edited_state != null:
 			return str(edited_state.owner.get_path_to(edited_state))
 		return ""
 
-	var from_state = fsm.get_state_by_name(str(selected_trigger.from.name))
+	var from_state = fsm.get_state_by_name(str(selected_trigger_control.from.name))
 	return str(from_state.owner.get_path_to(from_state))
 
 
@@ -367,33 +367,33 @@ func unselect_all_nodes(exeption: Control = null) -> void:
 func selected_connexion_change_state(key: String, new_state: State) -> void:
 	if logs: print_debug("selected_connexion_change_state")
 	
-	if selected_trigger == null:
-		push_error("Can't change the selected connexion %s state, the selected_trigger is null" % key)
+	if selected_trigger_control == null:
+		push_error("Can't change the selected connexion %s state, the selected_trigger_control is null" % key)
 		return
 	
-	if not selected_trigger is FSM_Connexion:
+	if not selected_trigger_control is FSM_Connexion:
 		push_error("Can't change the connexion state, the selected trigger is not a connexion")
 	
 	# Change the backend connexion
 	match(key):
 		"from":
-			var from_state = fsm.get_state_by_name(selected_trigger.from.name)
-			var to_state = fsm.get_state_by_name(selected_trigger.to.name)
+			var from_state = fsm.get_state_by_name(selected_trigger_control.from.name)
+			var to_state = fsm.get_state_by_name(selected_trigger_control.to.name)
 			var connexion_dict = from_state.find_connexion(to_state)
 			
 			from_state.remove_connexion(to_state)
 			new_state.add_connexion(to_state, connexion_dict)
 		
 		"to":
-			var connexion_dict = fsm_connexion_get_connexion_dict(selected_trigger)
+			var connexion_dict = fsm_connexion_get_connexion(selected_trigger_control)
 			connexion_dict["to"] = str(fsm.owner.get_path_to(new_state))
 	
 	# Change the frontend connexion
-	selected_trigger.set(key, graph_edit.get_node(str(new_state.name)))
-	var from_node = selected_trigger.from
-	var to_node = selected_trigger.to
+	selected_trigger_control.set(key, graph_edit.get_node(str(new_state.name)))
+	var from_node = selected_trigger_control.from
+	var to_node = selected_trigger_control.to
 	
-	selected_trigger.queue_free()
+	selected_trigger_control.queue_free()
 	add_node_connexion(from_node, to_node)
 
 
@@ -406,8 +406,8 @@ func _input(event: InputEvent) -> void:
 
 	if event is InputEventKey && event.keycode == KEY_DELETE:
 		if event.is_pressed() && !event.is_echo():
-			if selected_trigger != null:
-				selected_trigger.delete()
+			if selected_trigger_control != null:
+				selected_trigger_control.delete()
 				get_tree().set_input_as_handled()
 
 
@@ -470,53 +470,58 @@ func _on_connection_selected(connexion: FSM_Connexion) -> void:
 	unselect_all_connexions(connexion)
 	unselect_all_triggers()
 	
-	selected_trigger = connexion
+	selected_trigger_control = connexion
 
 	condition_editor.animation_handler = fsm.get_animation_handler()
 
 
 func _on_connection_unselected(connexion: FSM_Connexion) -> void:
-	if selected_trigger == connexion:
-		selected_trigger = null
+	if selected_trigger_control == connexion:
+		selected_trigger_control = null
 
 
 func _on_selected_trigger_changed(fsm_connexion: FSM_Connexion) -> void:
-	var dict = fsm_connexion_get_connexion_dict(fsm_connexion)
-	selected_trigger_dict = dict
+	selected_trigger = fsm_connexion_get_connexion(fsm_connexion)
 
 
 func _on_toolbar_button_pressed(button: Button) -> void:
 	if logs: print_debug("toolbar button pressed %s" % str(button.name))
-	var is_condition : bool = selected_trigger_dict["type"] == "connexion"
+	var is_connexion : bool = selected_trigger is StateConnexion
 
-	var from_state = fsm.get_state_by_name(selected_trigger.from.name) if is_condition else edited_state
+	var from_state_name = selected_trigger_control.from.name
+	var from_state = fsm.get_state_by_name(from_state_name) if is_connexion else edited_state
+	
+	if from_state == null:
+		push_error("From state with name %s couldn't be found" % from_state_name)
+		return
+	
 	var from_state_path = from_state.owner.get_path_to(from_state)
 
 	match(str(button.name)):
 		"AddCondition":
-			from_state.trigger_add_condition(selected_trigger_dict, condition_editor.edited_event)
+			condition_editor.edited_event.add_condition("", from_state.get_path_to(from_state.owner))
 
 		"AddEvent":
-			from_state.trigger_add_event(selected_trigger_dict)
+			selected_trigger.add_event(get_tree().physics_frame)
 
 		"AddAnimFinishedEvent":
 			var anim_handler = condition_editor.animation_handler
 			var animated_sprite = anim_handler.animated_sprite
 			
 			var animated_sprite_path = from_state.get_path_to(animated_sprite)
+			
+			selected_trigger.add_event(animated_sprite.animation_finished)
 
-			from_state.trigger_add_event(selected_trigger_dict, "animation_finished", animated_sprite_path)
-
-	condition_editor.update_content(from_state_path, selected_trigger_dict)
+	condition_editor.update_content(from_state_path, selected_trigger)
 
 
 func _on_footer_button_pressed(button: Button) -> void:
 	match(str(button.name)):
 		"DeleteConnexion":
-			if selected_trigger == null:
+			if selected_trigger_control == null:
 				push_error("There is no selected connexion, the ConditionEditor shouln't be visible")
 			else:
-				selected_trigger.delete()
+				selected_trigger_control.delete()
 
 		"DeleteStandaloneTrigger":
 			var state = fsm.get_state_by_name(str(selected_node.name))
@@ -542,27 +547,27 @@ func _on_GraphEdit_gui_input(event: InputEvent) -> void:
 			_update_graph_display()
 
 
-func _on_ConditionEditor_remove_condition(condition_dict: Dictionary) -> void:
-	if selected_trigger_dict.is_empty():
+func _on_ConditionEditor_remove_condition(condition: StateCondition) -> void:
+	if selected_trigger == null:
 		push_error("Can't remove_at the given condition: no connexion is currently selected")
 	else:
-		for event in selected_trigger_dict["events"]:
-			var id = event["conditions"].find(condition_dict)
+		for event in selected_trigger.events:
+			var id = event.conditions.find(condition)
 			if id != -1:
-				event["conditions"].remove_at(id)
+				event.conditions.remove_at(id)
 				update_connexion_editor()
 				return
 
 	push_error("condition couldn't be found, removal aborted")
 
 
-func _on_ConditionEditor_remove_event(event_dict: Dictionary) -> void:
-	if selected_trigger_dict.is_empty():
+func _on_ConditionEditor_remove_event(event: StateEvent) -> void:
+	if selected_trigger == null:
 		push_error("Can't remove_at the given event: no connexion is currently selected")
 	else:
-		var id = selected_trigger_dict["events"].find(event_dict)
+		var id = selected_trigger.events.find(event)
 		if id != -1:
-			selected_trigger_dict["events"].remove_at(id)
+			selected_trigger.events.remove_at(id)
 			update_connexion_editor()
 			return
 
@@ -574,9 +579,10 @@ func _on_node_trigger_selected(node: Control) -> void:
 	unselect_all_connexions()
 
 	edited_state = fsm.get_state_by_name(node.name)
-
+	condition_editor.edited_state = edited_state
+	
 	condition_editor.animation_handler = null
-	selected_trigger_dict = edited_state.standalone_trigger
+	selected_trigger = edited_state.standalone_trigger
 
 
 func _on_node_selected_changed(node: StateGraphNode) -> void:
@@ -586,7 +592,7 @@ func _on_node_selected_changed(node: StateGraphNode) -> void:
 	else:
 		if node == selected_node:
 			selected_node = null
-			selected_trigger_dict = {}
+			selected_trigger = null
 
 
 func _on_node_editor_header_button_pressed(button: Button) -> void:
@@ -605,7 +611,7 @@ func _on_selected_node_changed() -> void:
 		unselect_all_connexions()
 
 
-func _on_selected_trigger_dict_changed(_dict: Dictionary) -> void:
+func _on_selected_trigger_dict_changed(_trigger: StateTrigger) -> void:
 	update_connexion_editor()
 
 

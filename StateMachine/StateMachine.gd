@@ -28,7 +28,7 @@ var previous_state : State = null
 var default_state : State = null
 
 # Contains the reference of the states that have a standalone trigger
-var standalone_triggers_states : Array = []
+var standalone_triggers_states : Array[State]
 
 # Usefull only if this instance of StateMachine is nested (ie its parent is also a StateMachine)
 # When this state is entered, if this bool is true, reset the child state to the default one
@@ -107,7 +107,7 @@ func _physics_process(delta):
 				return
 	
 	if current_state != null:
-		var new_state = current_state.check_exit_conditions()
+		var new_state = current_state.check_exit_conditions(get_tree().physics_frame)
 		if new_state != null:
 			set_state(new_state)
 
