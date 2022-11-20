@@ -3,7 +3,8 @@ extends PanelContainer
 class_name ConditionEditor
 
 enum BUTTON_TYPE {
-	REMOVE
+	REMOVE,
+	EMITTER_PATH
 }
 
 @onready var add_event_button = $VBoxContainer/Toolbar/AddEvent
@@ -13,9 +14,10 @@ enum BUTTON_TYPE {
 @onready var add_condition_button = $VBoxContainer/Toolbar/AddCondition
 @onready var origin_state_line_edit = $VBoxContainer/Panel/VBoxContainer/OriginState/LineEdit
 @onready var dest_state_line_edit = $VBoxContainer/Panel/VBoxContainer/DestState/LineEdit
-
 @onready var tree = $VBoxContainer/Panel/VBoxContainer/Tree
+
 @export var logs : bool = false
+@export var tree_popup_scene : PackedScene
 
 var animation_handler : StateAnimationHandler = null :
 	get:
@@ -34,6 +36,7 @@ var edited_event : StateEvent :
 var edited_trigger : StateTrigger
 var edited_state : State
 
+var tree_popup : TreePopup = null 
 
 signal remove_event(dict)
 signal remove_condition(dict)
@@ -53,22 +56,17 @@ class TreeItemData:
 
 #### ACCESSORS ####
 
-func is_class(value: String): return value == "ConditionEditor" or super.is_class(value)
-func get_class() -> String: return "ConditionEditor"
-
-
 
 #### BUILT-IN ####
 
 
 func _ready() -> void:
-	var __ = tree.connect("item_edited", Callable(self,"_on_tree_item_edited"))
-	__ = tree.connect("button_clicked", Callable(self,"_on_tree_button_clicked"))
-	__ = tree.connect("item_selected", Callable(self,"_on_item_selected"))
+	tree.connect("button_clicked", Callable(self,"_on_tree_button_clicked"))
+	tree.connect("item_selected", Callable(self,"_on_item_selected"))
 	
-	__ = connect("edited_event_changed", Callable(self, "_on_edited_event_changed"))
-	__ = connect("animation_handler_changed", Callable(self, "_on_animation_handler_changed"))
-	__ = connect("remove_event",Callable(self,"_on_remove_event"))
+	connect("edited_event_changed", Callable(self, "_on_edited_event_changed"))
+	connect("animation_handler_changed", Callable(self, "_on_animation_handler_changed"))
+	connect("remove_event",Callable(self,"_on_remove_event"))
 	
 	origin_state_line_edit.connect("text_submitted",Callable(self,"_on_text_entered").bind("from"))
 	dest_state_line_edit.connect("text_submitted",Callable(self,"_on_text_entered").bind("to"))
@@ -160,7 +158,10 @@ func add_tree_item(parent: TreeItem, tree_item_data : TreeItemData = null, icon:
 	item.set_collapsed(collapsed)
 	
 	if removeable:
-		item.add_button(1, get_theme_icon("Remove", "EditorIcons"), 0)
+		item.add_button(1, get_theme_icon("Remove", "EditorIcons"), BUTTON_TYPE.REMOVE)
+	
+	if tree_item_data.key == "emitter_path":
+		item.add_button(1, get_theme_icon("Edit", "EditorIcons"), BUTTON_TYPE.EMITTER_PATH)
 	
 	return item
 
@@ -171,15 +172,6 @@ func add_tree_item(parent: TreeItem, tree_item_data : TreeItemData = null, icon:
 
 
 #### SIGNAL RESPONSES ####
-
-func _on_tree_item_edited() -> void:
-	if logs: print("tree item edited")
-	
-	var tree_item = tree.get_edited()
-	var value = tree_item.get_text(1)
-	var data_dict = tree_item.get_metadata(1)
-	
-	data_dict.obj.set(data_dict.key, value)
 
 
 func _on_tree_button_clicked(item: TreeItem, _column: int, id: int, _button_index: int) -> void:
@@ -192,6 +184,12 @@ func _on_tree_button_clicked(item: TreeItem, _column: int, id: int, _button_inde
 			match(tree_item_data.key):
 				"trigger": emit_signal("remove_event", tree_item_data.obj)
 				"condition": emit_signal("remove_condition", tree_item_data.obj)
+		
+		BUTTON_TYPE.EMITTER_PATH:
+			tree_popup = tree_popup_scene.instantiate()
+			tree_popup.root_node = edited_state.owner
+			add_child(tree_popup)
+			tree_popup.confirm.connect(_on_tree_popup_confirm.bind(item))
 
 
 func _on_item_selected() -> void:
@@ -218,3 +216,17 @@ func _on_remove_event(_event: StateEvent) -> void:
 # Key is either "from" or "to" here
 func _on_text_entered(path: String, key: String) -> void:
 	emit_signal("connexion_path_changed_query", key, path)
+
+
+func _on_tree_popup_confirm(node_path: NodePath, tree_item: TreeItem) -> void:
+	var data_dict = tree_item.get_metadata(1)
+	var target_node = edited_state.owner.get_node_or_null(node_path)
+	
+	if target_node == null:
+		push_error("The target node couldn't be found a path %s" % str(node_path))
+		return
+	
+	var relative_path = edited_state.get_path_to(target_node)
+	
+	tree_item.set_text(1, str(relative_path))
+	data_dict.obj.set(data_dict.key, str(relative_path))

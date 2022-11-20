@@ -400,7 +400,7 @@ func selected_connexion_change_state(key: String, new_state: State) -> void:
 
 #### INPUTS ####
 
-func _input(event: InputEvent) -> void:
+func _unhandled_input(event: InputEvent) -> void:
 	if !visible:
 		return
 
@@ -469,6 +469,9 @@ func _on_connection_selected(connexion: FSM_Connexion) -> void:
 	unselect_all_nodes()
 	unselect_all_connexions(connexion)
 	unselect_all_triggers()
+	
+	edited_state = fsm.get_state_by_name(connexion.from.name)
+	condition_editor.edited_state = edited_state
 	
 	selected_trigger_control = connexion
 

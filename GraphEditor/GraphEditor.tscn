@@ -1,10 +1,11 @@
-[gd_scene load_steps=5 format=3 uid="uid://ce03n4h35yg5c"]
+[gd_scene load_steps=6 format=3 uid="uid://ce03n4h35yg5c"]
 
 [ext_resource type="Script" path="res://addons/StateGraph/GraphEditor/GraphEditor.gd" id="1"]
 [ext_resource type="Script" path="res://addons/StateGraph/GraphEditor/ConditionEditor.gd" id="2"]
 [ext_resource type="Theme" uid="uid://bo0y8ggcj7tnh" path="res://addons/StateGraph/GraphEditor/Theme/GraphEditorTheme.tres" id="3"]
+[ext_resource type="PackedScene" uid="uid://cbnkrus0hlyun" path="res://addons/StateGraph/GraphEditor/TreePopup/TreePopup.tscn" id="4_wsmei"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dflid"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_sa5yn"]
 content_margin_left = 4.0
 content_margin_top = 4.0
 content_margin_right = 4.0
@@ -41,7 +42,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_dflid")
+theme_override_styles/panel = SubResource("StyleBoxFlat_sa5yn")
 
 [node name="HSplitContainer" type="HSplitContainer" parent="."]
 layout_mode = 1
@@ -106,6 +107,7 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("2")
 logs = true
+tree_popup_scene = ExtResource("4_wsmei")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="HSplitContainer/ConditionEditor"]
 layout_mode = 2
