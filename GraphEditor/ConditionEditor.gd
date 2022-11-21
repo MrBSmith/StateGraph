@@ -12,8 +12,7 @@ enum BUTTON_TYPE {
 @onready var delete_connexion_button = $VBoxContainer/Footer/DeleteConnexion
 @onready var add_anim_event_button = $VBoxContainer/Toolbar/AddAnimFinishedEvent
 @onready var add_condition_button = $VBoxContainer/Toolbar/AddCondition
-@onready var origin_state_line_edit = $VBoxContainer/Panel/VBoxContainer/OriginState/LineEdit
-@onready var dest_state_line_edit = $VBoxContainer/Panel/VBoxContainer/DestState/LineEdit
+@onready var state_path_container = %StatePathContainer
 @onready var tree = $VBoxContainer/Panel/VBoxContainer/Tree
 
 @export var logs : bool = false
@@ -43,6 +42,7 @@ signal remove_condition(dict)
 signal animation_handler_changed()
 signal edited_event_changed()
 signal connexion_path_changed_query(key, path)
+signal _change
 
 
 class TreeItemData:
@@ -61,15 +61,21 @@ class TreeItemData:
 
 
 func _ready() -> void:
-	tree.connect("button_clicked", Callable(self,"_on_tree_button_clicked"))
-	tree.connect("item_selected", Callable(self,"_on_item_selected"))
+	tree.button_clicked.connect(_on_tree_button_clicked)
+	tree.item_selected.connect(_on_item_selected)
 	
-	connect("edited_event_changed", Callable(self, "_on_edited_event_changed"))
-	connect("animation_handler_changed", Callable(self, "_on_animation_handler_changed"))
-	connect("remove_event",Callable(self,"_on_remove_event"))
+	edited_event_changed.connect(_on_edited_event_changed)
+	animation_handler_changed.connect(_on_animation_handler_changed)
+	remove_event.connect(_on_remove_event)
 	
-	origin_state_line_edit.connect("text_submitted",Callable(self,"_on_text_entered").bind("from"))
-	dest_state_line_edit.connect("text_submitted",Callable(self,"_on_text_entered").bind("to"))
+	for child in state_path_container.get_children():
+		var line_edit = child.get_node("LineEdit")
+		line_edit.text_submitted.connect(_on_text_entered.bind(child))
+		
+		var edit_button = child.get_node("EditButton")
+		edit_button.set_normal_texture(get_theme_icon("Edit", "EditorIcons"))
+		edit_button.pressed.connect(_on_state_path_edit_button_pressed.bind(child))
+
 
 
 #### VIRTUALS ####
@@ -82,11 +88,10 @@ func clear() -> void:
 	hide_all_buttons()
 	tree.clear()
 	
-	origin_state_line_edit.set_editable(false)
-	dest_state_line_edit.set_editable(false)
-	
-	origin_state_line_edit.set_text("None")
-	dest_state_line_edit.set_text("None")
+	for child in state_path_container.get_children():
+		var line_edit = child.get_node("LineEdit")
+		line_edit.set_editable(false)
+		line_edit.set_text("None")
 
 
 func hide_all_buttons() -> void:
@@ -116,14 +121,11 @@ func update_content(origin_state_path: NodePath, trigger: StateTrigger) -> void:
 func update_state_path_line_edits(origin_state_path: NodePath) -> void:
 	var is_connexion : bool = edited_trigger is StateConnexion
 	
-	origin_state_line_edit.set_editable(is_connexion)
-	dest_state_line_edit.set_editable(is_connexion)
-	
 	var origin_path = str(origin_state_path) if is_connexion else "None"
 	var dest_path = str(edited_trigger.to) if is_connexion else "None"
 	
-	origin_state_line_edit.set_text(origin_path)
-	dest_state_line_edit.set_text(dest_path)
+	state_path_container.get_node("OriginState/LineEdit").set_text(origin_path)
+	state_path_container.get_node("DestState/LineEdit").set_text(dest_path)
 
 
 func update_tree() -> void:
@@ -166,6 +168,14 @@ func add_tree_item(parent: TreeItem, tree_item_data : TreeItemData = null, icon:
 	return item
 
 
+func create_tree_popup(wanted_class : String = "", direct_parent: Node = null, exeptions : Array = []) -> void:
+	tree_popup = tree_popup_scene.instantiate()
+	tree_popup.root_node = edited_state.owner
+	tree_popup.wanted_class = wanted_class
+	tree_popup.exeptions = exeptions
+	tree_popup.direct_parent = direct_parent
+	add_child(tree_popup)
+
 
 #### INPUTS ####
 
@@ -186,10 +196,23 @@ func _on_tree_button_clicked(item: TreeItem, _column: int, id: int, _button_inde
 				"condition": emit_signal("remove_condition", tree_item_data.obj)
 		
 		BUTTON_TYPE.EMITTER_PATH:
-			tree_popup = tree_popup_scene.instantiate()
-			tree_popup.root_node = edited_state.owner
-			add_child(tree_popup)
-			tree_popup.confirm.connect(_on_tree_popup_confirm.bind(item))
+			create_tree_popup()
+			
+			var node_path = await tree_popup.finished
+			if node_path.is_empty():
+				return
+			
+			var data_dict = item.get_metadata(1)
+			var target_node = edited_state.owner.get_node_or_null(node_path)
+			
+			if target_node == null:
+				push_error("The target node couldn't be found a path %s" % str(node_path))
+				return
+			
+			var relative_path = edited_state.get_path_to(target_node)
+			
+			item.set_text(1, str(relative_path))
+			data_dict.obj.set(data_dict.key, str(relative_path))
 
 
 func _on_item_selected() -> void:
@@ -215,18 +238,22 @@ func _on_remove_event(_event: StateEvent) -> void:
 
 # Key is either "from" or "to" here
 func _on_text_entered(path: String, key: String) -> void:
-	emit_signal("connexion_path_changed_query", key, path)
+	emit_signal("connexion_path_changed_query", key, NodePath(path))
 
 
-func _on_tree_popup_confirm(node_path: NodePath, tree_item: TreeItem) -> void:
-	var data_dict = tree_item.get_metadata(1)
-	var target_node = edited_state.owner.get_node_or_null(node_path)
+func _on_state_path_edit_button_pressed(container: Control) -> void:
+	print("%s edit button pressed" % str(container.name))
+	var line_edit = container.get_node("LineEdit") as LineEdit
+	var exeptions = [NodePath(line_edit.text)]
 	
-	if target_node == null:
-		push_error("The target node couldn't be found a path %s" % str(node_path))
+	create_tree_popup("State", edited_state.get_parent(), exeptions)
+	
+	var node_path = await tree_popup.finished
+	
+	if node_path.is_empty():
 		return
 	
-	var relative_path = edited_state.get_path_to(target_node)
+	line_edit.set_text(str(node_path))
+	var key = "to" if str(container.name) == "DestState" else "from"
 	
-	tree_item.set_text(1, str(relative_path))
-	data_dict.obj.set(data_dict.key, str(relative_path))
+	emit_signal("connexion_path_changed_query", key, node_path)

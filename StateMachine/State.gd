@@ -105,10 +105,8 @@ func connect_connexions_events(listener: Node, disconnect: bool = false) -> void
 					push_error("The emitter %s found at path %s has no signal named %s" % [emitter.name, event.emitter_path, str(trigger.get_name())])
 				else:
 					if disconnect:
-#						var __ = emitter.disconnect(trigger, Callable(listener,"_on_current_state_event"))
 						trigger.disconnect(listener._on_current_state_event)
 					else:
-#						var __ = emitter.connect(trigger, Callable(listener,"_on_current_state_event").bind(self, connexion, event), CONNECT_REFERENCE_COUNTED)
 						trigger.connect(listener._on_current_state_event.bind(self, connexion, event), CONNECT_REFERENCE_COUNTED)
 
 

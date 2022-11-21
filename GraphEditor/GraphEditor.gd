@@ -365,7 +365,7 @@ func unselect_all_nodes(exeption: Control = null) -> void:
 
 # The key must be "from" or "to"
 func selected_connexion_change_state(key: String, new_state: State) -> void:
-	if logs: print_debug("selected_connexion_change_state")
+	if logs: print_debug("selected_connexion_change_state, key: %s" % key)
 	
 	if selected_trigger_control == null:
 		push_error("Can't change the selected connexion %s state, the selected_trigger_control is null" % key)
@@ -379,14 +379,14 @@ func selected_connexion_change_state(key: String, new_state: State) -> void:
 		"from":
 			var from_state = fsm.get_state_by_name(selected_trigger_control.from.name)
 			var to_state = fsm.get_state_by_name(selected_trigger_control.to.name)
-			var connexion_dict = from_state.find_connexion(to_state)
+			var connexion = from_state.find_connexion(to_state)
 			
 			from_state.remove_connexion(to_state)
-			new_state.add_connexion(to_state, connexion_dict)
+			new_state.add_connexion(to_state, connexion)
 		
 		"to":
-			var connexion_dict = fsm_connexion_get_connexion(selected_trigger_control)
-			connexion_dict["to"] = str(fsm.owner.get_path_to(new_state))
+			var connexion = fsm_connexion_get_connexion(selected_trigger_control)
+			connexion.to = edited_scene_root.get_path_to(new_state)
 	
 	# Change the frontend connexion
 	selected_trigger_control.set(key, graph_edit.get_node(str(new_state.name)))
@@ -394,7 +394,10 @@ func selected_connexion_change_state(key: String, new_state: State) -> void:
 	var to_node = selected_trigger_control.to
 	
 	selected_trigger_control.queue_free()
+	selected_trigger_control = null
 	add_node_connexion(from_node, to_node)
+	
+	condition_editor.clear()
 
 
 
@@ -623,7 +626,7 @@ func _on_selected_trigger_dict_changed(_trigger: StateTrigger) -> void:
 	update_connexion_editor()
 
 
-func _on_connexion_path_changed_query(key: String, path: String) -> void:
+func _on_connexion_path_changed_query(key: String, path: NodePath) -> void:
 	var state = fsm.owner.get_node_or_null(path)
 	
 	if state == null or not state is State:
