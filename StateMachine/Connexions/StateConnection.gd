@@ -1,4 +1,4 @@
 extends StateTrigger
-class_name StateConnexion
+class_name StateConnection
 
 @export var to : NodePath

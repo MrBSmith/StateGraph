@@ -6,7 +6,7 @@ class_name GraphEditor
 @onready var condition_editor = $HSplitContainer/ConditionEditor
 
 @onready var graph_edit = nodes_editor.get_node("VBoxContainer/GraphEdit")
-@onready var connexions_container = graph_edit.get_node("ConnexionsContainer")
+@onready var connections_container = %ConnectionsContainer
 
 @onready var node_editor_header = nodes_editor.get_node("VBoxContainer/Header")
 @onready var toolbar = condition_editor.get_node("VBoxContainer/Toolbar")
@@ -19,8 +19,8 @@ class_name GraphEditor
 var fsm : StateMachine = null
 
 var state_node_scene = preload("res://addons/StateGraph/GraphEditor/StateGraphNode.tscn")
-var node_connexion_scene = preload("res://addons/StateGraph/GraphEditor/FSM_Connexion.tscn")
-var fsm_connexion_container_scene = preload("res://addons/StateGraph/GraphEditor/FSM_ConnexionContainer.tscn")
+var node_connection_scene = preload("res://addons/StateGraph/GraphEditor/FSM_Connection.tscn")
+var fsm_connection_container_scene = preload("res://addons/StateGraph/GraphEditor/FSM_ConnectionContainer.tscn")
 
 var edited_scene_root : Node = null
 var states_array = []
@@ -81,7 +81,7 @@ func _ready() -> void:
 
 	condition_editor.connect("remove_condition",Callable(self,"_on_ConditionEditor_remove_condition"))
 	condition_editor.connect("remove_event",Callable(self,"_on_ConditionEditor_remove_event"))
-	condition_editor.connect("connexion_path_changed_query",Callable(self,"_on_connexion_path_changed_query"))
+	condition_editor.connect("connection_path_changed_query",Callable(self,"_on_connection_path_changed_query"))
 
 	for button in node_editor_header.get_children():
 		button.connect("pressed", _on_node_editor_header_button_pressed.bind(button))
@@ -135,7 +135,7 @@ func clear() -> void:
 		if child is GraphNode:
 			child.queue_free()
 	
-	for child in connexions_container.get_children():
+	for child in connections_container.get_children():
 		child.queue_free()
 
 
@@ -182,7 +182,7 @@ func _update() -> void:
 			if logs: print_debug("Add state node %s to the graph" % state_name)
 			
 			var __ = node.connect("item_rect_changed", Callable(self,"_on_state_node_item_rect_changed").bind(node))
-			__ = node.connect("connexion_attempt", Callable(self,"_on_state_node_connexion_attempt").bind(node))
+			__ = node.connect("connection_attempt", Callable(self,"_on_state_node_connection_attempt").bind(node))
 			__ = node.connect("trigger_selected", Callable(self,"_on_node_trigger_selected").bind(node))
 			__ = node.connect("selected", Callable(self, "_on_node_selected_changed").bind(node))
 			__ = node.deselected.connect(Callable(self, "_on_node_selected_changed").bind(node))
@@ -190,17 +190,17 @@ func _update() -> void:
 			__ = state.connect("standalone_trigger_removed",Callable(node,"_on_standalone_trigger_removed"))
 			__ = state.connect("renamed",Callable(node,"_on_state_renamed").bind(state))
 
-	# Update connexions
+	# Update connections
 	for state in states_array:
 		var from_node = graph_edit.get_node(str(state.name))
 
-		for con in state.connexions_array:
+		for con in state.connections_array:
 			var to_state_path = str(fsm.owner.get_path()) + "/" + str(con["to"])
 			var to_state = get_node(to_state_path)
 			var to_node = graph_edit.get_node(str(to_state.name))
 
-			if !has_connexion(from_node, to_node):
-				add_node_connexion(from_node, to_node)
+			if !has_connection(from_node, to_node):
+				add_node_connection(from_node, to_node)
 	
 	if logs: print_debug("--- update GraphEditor finished ---")
 
@@ -215,11 +215,11 @@ func _update_nodes_position() -> void:
 
 
 func _update_graph_display() -> void:
-	force_connexions_update()
+	force_connections_update()
 	update_line_containers()
 
 
-func update_connexion_editor() -> void:
+func update_connection_editor() -> void:
 	if selected_trigger == null:
 		condition_editor.clear()
 	else:
@@ -229,7 +229,7 @@ func update_connexion_editor() -> void:
 
 
 func update_line_containers() -> void:
-	for line_container in connexions_container.get_children():
+	for line_container in connections_container.get_children():
 		var from = line_container.from
 		var to = line_container.to
 
@@ -263,17 +263,17 @@ func _find_hovered_node() -> Control:
 	return null
 
 
-func add_node_connexion(from: Control, to: Control) -> void:
-	if logs: print_debug("add node connexion between %s & %s nodes" % [str(from.name), str(to.name)])
+func add_node_connection(from: Control, to: Control) -> void:
+	if logs: print_debug("add node connection between %s & %s nodes" % [str(from.name), str(to.name)])
 	
-	var connexion = node_connexion_scene.instantiate()
-	connexion.from = from
-	connexion.to = to
+	var connection = node_connection_scene.instantiate()
+	connection.from = from
+	connection.to = to
 
 	var line_container = find_line_container(from, to)
 
 	if line_container == null:
-		line_container = fsm_connexion_container_scene.instantiate()
+		line_container = fsm_connection_container_scene.instantiate()
 		line_container.from = from
 		line_container.to = to
 
@@ -281,56 +281,56 @@ func add_node_connexion(from: Control, to: Control) -> void:
 	line_container.set_position(from.get_position())
 
 	if !line_container.is_inside_tree():
-		connexions_container.add_child(line_container)
+		connections_container.add_child(line_container)
 
-	connexion.inverted = from == line_container.to
-	line_container.add_connexion(connexion)
+	connection.inverted = from == line_container.to
+	line_container.add_connection(connection)
 
-	connexion.connect("removed", Callable(self,"_on_connection_removed").bind(connexion))
-	connexion.connect("selected", Callable(self,"_on_connection_selected").bind(connexion))
-	connexion.connect("unselected", Callable(self,"_on_connection_unselected").bind(connexion))
+	connection.connect("removed", Callable(self,"_on_connection_removed").bind(connection))
+	connection.connect("selected", Callable(self,"_on_connection_selected").bind(connection))
+	connection.connect("unselected", Callable(self,"_on_connection_unselected").bind(connection))
 
 	var from_state = fsm.get_state_by_name(from.name)
 	var to_state = fsm.get_state_by_name(to.name)
 	
-	from_state.add_connexion(to_state)
+	from_state.add_connection(to_state)
 
 	update_line_containers()
 
 
-func find_line_container(from: Control, to: Control) -> FSM_ConnexionContainer:
-	for line_container in connexions_container.get_children():
+func find_line_container(from: Control, to: Control) -> FSM_ConnectionContainer:
+	for line_container in connections_container.get_children():
 		if line_container.from in [from, to] && line_container.to in [from, to]:
 			return line_container
 	return null
 
 
-func has_connexion(from: Control, to: Control) -> bool:
-	for con in get_tree().get_nodes_in_group("FSM_Connexions"):
+func has_connection(from: Control, to: Control) -> bool:
+	for con in get_tree().get_nodes_in_group("FSM_Connections"):
 		if con.from == from && con.to == to:
 			return true
 	return false
 
 
-func inspect_connexion(connexion: FSM_Connexion) -> void:
-	var from_state = fsm.get_state_by_name(connexion.from.name)
+func inspect_connection(connection: FSM_Connection) -> void:
+	var from_state = fsm.get_state_by_name(connection.from.name)
 
 	emit_signal("inspect_node_query", from_state)
 
 
-func fsm_connexion_get_connexion(connexion: FSM_Connexion) -> StateConnexion:
-	if connexion == null:
+func fsm_connection_get_connection(connection: FSM_Connection) -> StateConnection:
+	if connection == null:
 		return null
 	
-	var from_state = fsm.get_state_by_name(connexion.from.name)
-	var to_state = fsm.get_state_by_name(connexion.to.name)
+	var from_state = fsm.get_state_by_name(connection.from.name)
+	var to_state = fsm.get_state_by_name(connection.to.name)
 
-	return from_state.find_connexion(to_state)
+	return from_state.find_connection(to_state)
 
 
-func force_connexions_update() -> void:
-	for connexion in get_tree().get_nodes_in_group("FSM_Connexions"):
-		connexion.update_line()
+func force_connections_update() -> void:
+	for connection in get_tree().get_nodes_in_group("FSM_Connections"):
+		connection.update_line()
 
 
 func get_selected_trigger_origin_path() -> String:
@@ -346,10 +346,10 @@ func get_selected_trigger_origin_path() -> String:
 	return str(from_state.owner.get_path_to(from_state))
 
 
-func unselect_all_connexions(exeption: FSM_Connexion = null) -> void:
-	for connexion in get_tree().get_nodes_in_group("FSM_Connexions"):
-		if connexion != exeption:
-			connexion.state = FSM_Connexion.STATE.NORMAL
+func unselect_all_connections(exeption: FSM_Connection = null) -> void:
+	for connection in get_tree().get_nodes_in_group("FSM_Connections"):
+		if connection != exeption:
+			connection.state = FSM_Connection.STATE.NORMAL
 
 
 func unselect_all_triggers(exeption: Control = null) -> void:
@@ -365,38 +365,38 @@ func unselect_all_nodes(exeption: Control = null) -> void:
 
 
 # The key must be "from" or "to"
-func selected_connexion_change_state(key: String, new_state: State) -> void:
-	if logs: print_debug("selected_connexion_change_state, key: %s" % key)
+func selected_connection_change_state(key: String, new_state: State) -> void:
+	if logs: print_debug("selected_connection_change_state, key: %s" % key)
 	
 	if selected_trigger_control == null:
-		push_error("Can't change the selected connexion %s state, the selected_trigger_control is null" % key)
+		push_error("Can't change the selected connection %s state, the selected_trigger_control is null" % key)
 		return
 	
-	if not selected_trigger_control is FSM_Connexion:
-		push_error("Can't change the connexion state, the selected trigger is not a connexion")
+	if not selected_trigger_control is FSM_Connection:
+		push_error("Can't change the connection state, the selected trigger is not a connection")
 	
-	# Change the backend connexion
+	# Change the backend connection
 	match(key):
 		"from":
 			var from_state = fsm.get_state_by_name(selected_trigger_control.from.name)
 			var to_state = fsm.get_state_by_name(selected_trigger_control.to.name)
-			var connexion = from_state.find_connexion(to_state)
+			var connection = from_state.find_connection(to_state)
 			
-			from_state.remove_connexion(to_state)
-			new_state.add_connexion(to_state, connexion)
+			from_state.remove_connection(to_state)
+			new_state.add_connection(to_state, connection)
 		
 		"to":
-			var connexion = fsm_connexion_get_connexion(selected_trigger_control)
-			connexion.to = edited_scene_root.get_path_to(new_state)
+			var connection = fsm_connection_get_connection(selected_trigger_control)
+			connection.to = edited_scene_root.get_path_to(new_state)
 	
-	# Change the frontend connexion
+	# Change the frontend connection
 	selected_trigger_control.set(key, graph_edit.get_node(str(new_state.name)))
 	var from_node = selected_trigger_control.from
 	var to_node = selected_trigger_control.to
 	
 	selected_trigger_control.queue_free()
 	selected_trigger_control = null
-	add_node_connexion(from_node, to_node)
+	add_node_connection(from_node, to_node)
 	
 	condition_editor.clear()
 
@@ -448,62 +448,62 @@ func _on_state_node_item_rect_changed(node: Control) -> void:
 	update_line_containers()
 
 
-func _on_state_node_connexion_attempt(starting_node: Control) -> void:
+func _on_state_node_connection_attempt(starting_node: Control) -> void:
 	var hovered_node = _find_hovered_node()
 
 	if hovered_node != null && hovered_node != starting_node:
-		add_node_connexion(starting_node, hovered_node)
+		add_node_connection(starting_node, hovered_node)
 
 
-func _on_connection_removed(connexion: FSM_Connexion) -> void:
-	if connexion.from == null or connexion.to == null:
-		push_error("the connexion form or to state is null, abort removal")
+func _on_connection_removed(connection: FSM_Connection) -> void:
+	if connection.from == null or connection.to == null:
+		push_error("the connection form or to state is null, abort removal")
 		return
 	
-	var from = fsm.get_state_by_name(str(connexion.from.name))
-	var to = fsm.get_state_by_name(str(connexion.to.name))
+	var from = fsm.get_state_by_name(str(connection.from.name))
+	var to = fsm.get_state_by_name(str(connection.to.name))
 
-	from.remove_connexion(to)
+	from.remove_connection(to)
 
 
-func _on_connection_selected(connexion: FSM_Connexion) -> void:
-	if connexion.from == null or connexion.to == null:
+func _on_connection_selected(connection: FSM_Connection) -> void:
+	if connection.from == null or connection.to == null:
 		return
 	
 	unselect_all_nodes()
-	unselect_all_connexions(connexion)
+	unselect_all_connections(connection)
 	unselect_all_triggers()
 	
-	edited_state = fsm.get_state_by_name(connexion.from.name)
+	edited_state = fsm.get_state_by_name(connection.from.name)
 	condition_editor.edited_state = edited_state
 	
-	selected_trigger_control = connexion
+	selected_trigger_control = connection
 
 	condition_editor.animation_handler = fsm.get_animation_handler()
 	print("_on_connection_selected")
 
 
-func _on_connection_unselected(connexion: FSM_Connexion) -> void:
-	if selected_trigger_control == connexion:
+func _on_connection_unselected(connection: FSM_Connection) -> void:
+	if selected_trigger_control == connection:
 		selected_trigger_control = null
 
 
 func _on_selected_trigger_control_changed(trigger_control: Control) -> void:
-	selected_trigger = fsm_connexion_get_connexion(trigger_control)
+	selected_trigger = fsm_connection_get_connection(trigger_control)
 	print_stack()
 	print("selected_trigger_control_changed: %s" % str(trigger_control.name))
 
 
 func _on_selected_trigger_changed(trigger: StateTrigger) -> void:
-	update_connexion_editor()
+	update_connection_editor()
 
 
 func _on_toolbar_button_pressed(button: Button) -> void:
 	if logs: print_debug("toolbar button pressed %s" % str(button.name))
-	var is_connexion : bool = selected_trigger is StateConnexion
+	var is_connection : bool = selected_trigger is StateConnection
 
-	var from_state_name = selected_trigger_control.from.name if is_connexion else ""
-	var from_state = fsm.get_state_by_name(from_state_name) if is_connexion else edited_state
+	var from_state_name = selected_trigger_control.from.name if is_connection else ""
+	var from_state = fsm.get_state_by_name(from_state_name) if is_connection else edited_state
 	
 	if from_state == null:
 		push_error("From state with name %s couldn't be found" % from_state_name)
@@ -532,9 +532,9 @@ func _on_toolbar_button_pressed(button: Button) -> void:
 
 func _on_footer_button_pressed(button: Button) -> void:
 	match(str(button.name)):
-		"DeleteConnexion":
+		"DeleteConnection":
 			if selected_trigger_control == null:
-				push_error("There is no selected connexion, the ConditionEditor shouln't be visible")
+				push_error("There is no selected connection, the ConditionEditor shouln't be visible")
 			else:
 				selected_trigger_control.delete()
 
@@ -564,13 +564,13 @@ func _on_GraphEdit_gui_input(event: InputEvent) -> void:
 
 func _on_ConditionEditor_remove_condition(condition: StateCondition) -> void:
 	if selected_trigger == null:
-		push_error("Can't remove_at the given condition: no connexion is currently selected")
+		push_error("Can't remove_at the given condition: no connection is currently selected")
 	else:
 		for event in selected_trigger.events:
 			var id = event.conditions.find(condition)
 			if id != -1:
 				event.conditions.remove_at(id)
-				update_connexion_editor()
+				update_connection_editor()
 				return
 
 	push_error("condition couldn't be found, removal aborted")
@@ -578,14 +578,14 @@ func _on_ConditionEditor_remove_condition(condition: StateCondition) -> void:
 
 func _on_ConditionEditor_remove_event(event: StateEvent) -> void:
 	if selected_trigger == null:
-		push_error("Can't remove_at the given event: no connexion is currently selected")
+		push_error("Can't remove_at the given event: no connection is currently selected")
 	else:
 		var id = selected_trigger.events.find(event)
 		print("found event to remove at id %d" % id)
 		
 		if id != -1:
 			selected_trigger.events.remove_at(id)
-			update_connexion_editor()
+			update_connection_editor()
 			return
 
 	push_error("event couldn't be found, removal aborted")
@@ -593,7 +593,7 @@ func _on_ConditionEditor_remove_event(event: StateEvent) -> void:
 
 func _on_node_trigger_selected(node: Control) -> void:
 	unselect_all_triggers(node)
-	unselect_all_connexions()
+	unselect_all_connections()
 
 	edited_state = fsm.get_state_by_name(node.name)
 	condition_editor.edited_state = edited_state
@@ -625,17 +625,17 @@ func _on_selected_node_changed() -> void:
 	add_standalone_trigger_button.set_visible(add_button_needed)
 	
 	if selected_node != null:
-		unselect_all_connexions()
+		unselect_all_connections()
 
 
-func _on_connexion_path_changed_query(key: String, path: NodePath) -> void:
+func _on_connection_path_changed_query(key: String, path: NodePath) -> void:
 	var state = fsm.owner.get_node_or_null(path)
 	
 	if state == null or not state is State:
 		push_error("No State could be found at the given path. The path must be relative to the root of the scene, and to designated node must be a State.")
 		return
 	
-	selected_connexion_change_state(key, state)
+	selected_connection_change_state(key, state)
 
 
 func _on_visibility_changed() -> void:

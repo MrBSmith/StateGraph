@@ -152,7 +152,7 @@ func set_state(new_state):
 	
 	# Use the exit state function of the current state
 	if current_state != null:
-		current_state.connect_connexions_events(self, true)
+		current_state.connect_connections_events(self, true)
 		current_state.exit_state()
 		emit_signal("state_exited", current_state)
 		current_state.emit_signal("exited")
@@ -164,7 +164,7 @@ func set_state(new_state):
 	
 	# Use the enter_state function of the current state
 	if new_state != null && (!is_nested() or new_state.is_current_state()):
-		current_state.connect_connexions_events(self)
+		current_state.connect_connections_events(self)
 		
 		if !owner_ready && deffer_first_enter_state:
 			await owner.ready
@@ -288,12 +288,12 @@ func _on_State_state_entered_recursive(_state: Node) -> void:
 	emit_signal("state_entered_recursive", current_state)
 
 
-func _on_current_state_event(state: State, connexion: StateConnexion, event: StateEvent) -> void:
+func _on_current_state_event(state: State, connection: StateConnection, event: StateEvent) -> void:
 	if event.are_all_conditions_verified(state):
-		var dest_state = owner.get_node_or_null(connexion.to)
+		var dest_state = owner.get_node_or_null(connection.to)
 		
 		if dest_state == null:
-			push_error("The connexion event & conditions are fullfiled, but the destination state couldn't be find, aborting")
+			push_error("The connection event & conditions are fullfiled, but the destination state couldn't be find, aborting")
 		else:
 			set_state(dest_state)
 

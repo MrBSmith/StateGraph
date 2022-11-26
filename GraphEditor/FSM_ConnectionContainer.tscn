@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://sp2xtowvdwo7"]
+[gd_scene load_steps=2 format=3]
 
-[ext_resource type="Script" path="res://addons/StateGraph/GraphEditor/FSM_ConnexionContainer.gd" id="1"]
+[ext_resource type="Script" path="res://addons/StateGraph/GraphEditor/FSM_ConnectionContainer.gd" id="1"]
+
 
 [node name="FSM_ConnexionContainer" type="Container"]
 offset_right = 40.0

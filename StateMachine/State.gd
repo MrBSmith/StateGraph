@@ -13,7 +13,7 @@ class_name State
 
 @onready var states_machine = get_parent() if get_parent().is_class("StateMachine") else null
 
-@export var connexions_array : Array[StateConnexion]
+@export var connections_array : Array[StateConnection]
 @export var standalone_trigger : StateTrigger
 
 # Defines the position of the StateNode in the StateGraph. Expressed in ratio of the container size.
@@ -81,20 +81,20 @@ func get_master_state_machine() -> State:
 #### CONDITIONS & TRIGGER LOGIC ####
 
 func check_exit_conditions(event_trigger: String = "") -> State:
-	for connexion in connexions_array:
-		var event = connexion.find_event(event_trigger)
+	for connection in connections_array:
+		var event = connection.find_event(event_trigger)
 		if event == null:
 			continue
 		
 		if event.are_all_conditions_verified(self):
-			var state = owner.get_node(connexion.to)
+			var state = owner.get_node(connection.to)
 			return state
 	return null
 
 
-func connect_connexions_events(listener: Node, disconnect: bool = false) -> void:
-	for connexion in connexions_array:
-		for event in connexion.events:
+func connect_connections_events(listener: Node, disconnect: bool = false) -> void:
+	for connection in connections_array:
+		for event in connection.events:
 			var trigger = event.trigger
 			var emitter = get_node_or_null(event.emitter_path)
 			
@@ -111,24 +111,24 @@ func connect_connexions_events(listener: Node, disconnect: bool = false) -> void
 					if disconnect:
 						emitter.disconnect(trigger, listener._on_current_state_event)
 					else:
-						emitter.connect(trigger, listener._on_current_state_event.bind(self, connexion, event), CONNECT_REFERENCE_COUNTED)
+						emitter.connect(trigger, listener._on_current_state_event.bind(self, connection, event), CONNECT_REFERENCE_COUNTED)
 
 
-func add_connexion(to: State, connexion : StateConnexion = null) -> void:
-	if find_connexion(to) != null:
+func add_connection(to: State, connection : StateConnection = null) -> void:
+	if find_connection(to) != null:
 		return
 	
-	var conn : StateConnexion = connexion
+	var conn : StateConnection = connection
 	if conn == null:
-		conn = StateConnexion.new()
+		conn = StateConnection.new()
 		conn.to = owner.get_path_to(to)
 	
-	connexions_array.append(conn)
+	connections_array.append(conn)
 
 
-func remove_connexion(to: State) -> void:
-	var connexion_id = find_connexion_id(to)
-	connexions_array.remove_at(connexion_id)
+func remove_connection(to: State) -> void:
+	var connection_id = find_connection_id(to)
+	connections_array.remove_at(connection_id)
 
 
 func add_standalone_trigger() -> void:
@@ -145,16 +145,16 @@ func remove_standalone_trigger() -> void:
 	emit_signal("standalone_trigger_removed")
 
 
-func find_connexion(to: State) -> StateConnexion:
-	for con in connexions_array:
+func find_connection(to: State) -> StateConnection:
+	for con in connections_array:
 		if con.to == owner.get_path_to(to):
 			return con
 	return null
 
 
-func find_connexion_id(to: State) -> int:
-	var connexion = find_connexion(to)
-	return connexions_array.find(connexion)
+func find_connection_id(to: State) -> int:
+	var connection = find_connection(to)
+	return connections_array.find(connection)
 
 
 

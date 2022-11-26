@@ -1,10 +1,10 @@
-[gd_scene load_steps=3 format=3 uid="uid://u1l5p1tmu3qp"]
+[gd_scene load_steps=3 format=3 uid="uid://bcguvy5qqnhfe"]
 
-[ext_resource type="Script" path="res://addons/StateGraph/GraphEditor/FSM_Connexion.gd" id="1"]
+[ext_resource type="Script" path="res://addons/StateGraph/GraphEditor/FSM_Connection.gd" id="1"]
 [ext_resource type="Texture2D" uid="uid://c6ln1w0amlaua" path="res://addons/StateGraph/Icons/ArrowEnd_Texture.tres" id="2_mgjg2"]
 
-[node name="FSM_Connexion" type="Control" groups=["FSM_Connexions"]]
-custom_minimum_size = Vector2i(0, 10)
+[node name="FSM_Connexion" type="Control" groups=["FSM_Connections"]]
+custom_minimum_size = Vector2(0, 10)
 layout_mode = 3
 anchors_preset = 0
 offset_top = -5.0

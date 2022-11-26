@@ -1,6 +1,6 @@
 @tool
 extends Container
-class_name FSM_ConnexionContainer
+class_name FSM_ConnectionContainer
 
 @onready var v_box_container = $VBoxContainer
 
@@ -9,8 +9,8 @@ var to : Control
 
 #### ACCESSORS ####
 
-func is_class(value: String): return value == "FSM_ConnexionContainer" or super.is_class(value)
-func get_class() -> String: return "FSM_ConnexionContainer"
+func is_class(value: String): return value == "FSM_ConnectionContainer" or super.is_class(value)
+func get_class() -> String: return "FSM_ConnectionContainer"
 
 
 #### BUILT-IN ####
@@ -24,9 +24,9 @@ func _ready() -> void:
 
 #### LOGIC ####
 
-func add_connexion(fsm_connexion: FSM_Connexion) -> void:
-	$VBoxContainer.add_child(fsm_connexion)
-	fsm_connexion.connect("removed",Callable(self,"_on_connexion_removed").bind(fsm_connexion))
+func add_connection(fsm_connection: FSM_Connection) -> void:
+	$VBoxContainer.add_child(fsm_connection)
+	fsm_connection.connect("removed",Callable(self,"_on_connection_removed").bind(fsm_connection))
 	
 	update_vbox_container()
 
@@ -46,8 +46,8 @@ func _on_sort_children() -> void:
 	update_vbox_container()
 
 
-func _on_connexion_removed(connexion: FSM_Connexion) -> void:
-	await connexion.tree_exited
+func _on_connection_removed(connection: FSM_Connection) -> void:
+	await connection.tree_exited
 	v_box_container.size.y = 0.0
 	
 	update_vbox_container()

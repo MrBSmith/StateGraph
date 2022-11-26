@@ -23,7 +23,7 @@ var has_standalone_trigger : bool = false :
 			has_standalone_trigger = value
 			emit_signal("has_standalone_trigger_changed", value)
 
-signal connexion_attempt()
+signal connection_attempt()
 signal drawing_line_changed(value)
 signal trigger_selected()
 signal has_standalone_trigger_changed(value)
@@ -95,7 +95,7 @@ func _input(event: InputEvent) -> void:
 
 func _on_drawing_line_changed(value: bool) -> void:
 	if !drawing_line:
-		emit_signal("connexion_attempt")
+		emit_signal("connection_attempt")
 
 
 func _on_trigger_button_pressed() -> void:

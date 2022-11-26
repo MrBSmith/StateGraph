@@ -1,6 +1,6 @@
 @tool
 extends Control
-class_name FSM_Connexion
+class_name FSM_Connection
 
 enum STATE {
 	NORMAL,

@@ -9,7 +9,7 @@ enum BUTTON_TYPE {
 
 @onready var add_event_button = $VBoxContainer/Toolbar/AddEvent
 @onready var delete_trigger_button = $VBoxContainer/Footer/DeleteStandaloneTrigger
-@onready var delete_connexion_button = $VBoxContainer/Footer/DeleteConnexion
+@onready var delete_connection_button = $VBoxContainer/Footer/DeleteConnection
 @onready var add_anim_event_button = $VBoxContainer/Toolbar/AddAnimFinishedEvent
 @onready var add_condition_button = $VBoxContainer/Toolbar/AddCondition
 @onready var state_path_container = %StatePathContainer
@@ -41,7 +41,7 @@ signal remove_event(dict)
 signal remove_condition(dict)
 signal animation_handler_changed()
 signal edited_event_changed()
-signal connexion_path_changed_query(key, path)
+signal connection_path_changed_query(key, path)
 signal _change
 
 
@@ -106,9 +106,9 @@ func hide_all_buttons() -> void:
 func update_content(origin_state_path: NodePath, trigger: StateTrigger) -> void:
 	edited_trigger = trigger
 	
-	var is_connection : bool = trigger is StateConnexion
+	var is_connection : bool = trigger is StateConnection
 	
-	delete_connexion_button.set_visible(is_connection)
+	delete_connection_button.set_visible(is_connection)
 	delete_trigger_button.set_visible(!is_connection)
 	
 	update_state_path_line_edits(origin_state_path)
@@ -120,10 +120,10 @@ func update_content(origin_state_path: NodePath, trigger: StateTrigger) -> void:
 
 
 func update_state_path_line_edits(origin_state_path: NodePath) -> void:
-	var is_connexion : bool = edited_trigger is StateConnexion
+	var is_connection : bool = edited_trigger is StateConnection
 	
-	var origin_path = str(origin_state_path) if is_connexion else "None"
-	var dest_path = str(edited_trigger.to) if is_connexion else "None"
+	var origin_path = str(origin_state_path) if is_connection else "None"
+	var dest_path = str(edited_trigger.to) if is_connection else "None"
 	
 	state_path_container.get_node("OriginState/LineEdit").set_text(origin_path)
 	state_path_container.get_node("DestState/LineEdit").set_text(dest_path)
@@ -247,7 +247,7 @@ func _on_remove_event(_event: StateEvent) -> void:
 
 # Key is either "from" or "to" here
 func _on_text_entered(path: String, key: String) -> void:
-	emit_signal("connexion_path_changed_query", key, NodePath(path))
+	emit_signal("connection_path_changed_query", key, NodePath(path))
 
 
 func _on_state_path_edit_button_pressed(container: Control) -> void:
@@ -265,4 +265,4 @@ func _on_state_path_edit_button_pressed(container: Control) -> void:
 	line_edit.set_text(str(node_path))
 	var key = "to" if str(container.name) == "DestState" else "from"
 	
-	emit_signal("connexion_path_changed_query", key, node_path)
+	emit_signal("connection_path_changed_query", key, node_path)
