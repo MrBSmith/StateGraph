@@ -5,11 +5,6 @@ class_name StateCondition
 @export var target_path : NodePath
 
 
-func _init(cond_expression: String, target_node_path: NodePath) -> void:
-	condition = cond_expression
-	target_path = target_node_path
-
-
 func is_verified(from_state: State) -> bool:
 	var target = from_state.get_node(target_path)
 	

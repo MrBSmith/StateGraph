@@ -5,11 +5,6 @@ class_name StateEvent
 @export var trigger : String
 @export var emitter_path : NodePath
 
-func _init(_trigger: String, _emitter_path: NodePath, _conditions: Array[StateCondition]) -> void:
-	trigger = _trigger
-	conditions = _conditions
-	emitter_path = _emitter_path
-
 
 func are_all_conditions_verified(from_state: State) -> bool:
 	for condition in conditions:
@@ -19,7 +14,9 @@ func are_all_conditions_verified(from_state: State) -> bool:
 
 
 func add_condition(cond_expression: String, target_path: NodePath) -> void:
-	var cond = StateCondition.new(cond_expression, target_path)
+	var cond = StateCondition.new()
+	cond.condition = cond_expression
+	cond.target_path = target_path
 	conditions.append(cond)
 
 

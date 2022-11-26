@@ -62,7 +62,8 @@ class TreeItemData:
 
 func _ready() -> void:
 	tree.button_clicked.connect(_on_tree_button_clicked)
-	tree.item_selected.connect(_on_item_selected)
+	tree.item_selected.connect(_on_tree_item_selected)
+	tree.item_edited.connect(_on_tree_item_edited)
 	
 	edited_event_changed.connect(_on_edited_event_changed)
 	animation_handler_changed.connect(_on_animation_handler_changed)
@@ -73,7 +74,7 @@ func _ready() -> void:
 		line_edit.text_submitted.connect(_on_text_entered.bind(child))
 		
 		var edit_button = child.get_node("EditButton")
-		edit_button.set_normal_texture(get_theme_icon("Edit", "EditorIcons"))
+		edit_button.set_texture_normal(get_theme_icon("Edit", "EditorIcons"))
 		edit_button.pressed.connect(_on_state_path_edit_button_pressed.bind(child))
 
 
@@ -184,6 +185,14 @@ func create_tree_popup(wanted_class : String = "", direct_parent: Node = null, e
 #### SIGNAL RESPONSES ####
 
 
+func _on_tree_item_edited() -> void:
+	var tree_item = tree.get_edited()
+	var value = tree_item.get_text(1)
+	var tree_item_data = tree_item.get_metadata(1)
+	
+	tree_item_data.obj.set(tree_item_data.key, value)
+
+
 func _on_tree_button_clicked(item: TreeItem, _column: int, id: int, _button_index: int) -> void:
 	if logs: print("tree button pressed")
 	
@@ -215,7 +224,7 @@ func _on_tree_button_clicked(item: TreeItem, _column: int, id: int, _button_inde
 			data_dict.obj.set(data_dict.key, str(relative_path))
 
 
-func _on_item_selected() -> void:
+func _on_tree_item_selected() -> void:
 	if logs: print("tree item selected")
 	
 	var selected_item = tree.get_selected()

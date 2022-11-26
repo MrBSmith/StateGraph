@@ -17,7 +17,9 @@ func add_event(event_trigger : String, emitter_path: NodePath) -> StateEvent:
 		push_warning("Couldn't create a new event, an event with the trigger %s already exists" % event_trigger)
 		return null
 	
-	var event = StateEvent.new(event_trigger, emitter_path, [])
+	var event = StateEvent.new()
+	event.trigger = event_trigger
+	event.emitter_path = emitter_path
 	
 	events.append(event)
 	return event

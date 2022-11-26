@@ -20,20 +20,17 @@ offset_bottom = 596.0
 
 [node name="Tree" type="Tree" parent="VBoxContainer"]
 unique_name_in_owner = true
-layout_mode = 2
 offset_right = 592.0
 offset_bottom = 557.0
 size_flags_vertical = 3
 
 [node name="ButtonContainer" type="HBoxContainer" parent="VBoxContainer"]
 unique_name_in_owner = true
-layout_mode = 2
 offset_top = 561.0
 offset_right = 592.0
 offset_bottom = 592.0
 
 [node name="Confirm" type="Button" parent="VBoxContainer/ButtonContainer"]
-layout_mode = 2
 offset_left = 111.0
 offset_right = 182.0
 offset_bottom = 31.0
@@ -41,7 +38,6 @@ size_flags_horizontal = 6
 text = "Confirm"
 
 [node name="Cancel" type="Button" parent="VBoxContainer/ButtonContainer"]
-layout_mode = 2
 offset_left = 415.0
 offset_right = 475.0
 offset_bottom = 31.0

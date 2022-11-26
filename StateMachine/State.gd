@@ -98,16 +98,20 @@ func connect_connexions_events(listener: Node, disconnect: bool = false) -> void
 			var trigger = event.trigger
 			var emitter = get_node_or_null(event.emitter_path)
 			
+			if trigger == "process":
+				continue
+			
 			if emitter == null:
 				push_error("event emitter can't be found at path %s" % event.emitter_path)
+			
 			else:
-				if trigger.get_object() != emitter:
-					push_error("The emitter %s found at path %s has no signal named %s" % [emitter.name, event.emitter_path, str(trigger.get_name())])
+				if !emitter.has_signal(trigger):
+					push_error("The emitter %s found at path %s has no signal named %s" % [emitter.name, event.emitter_path, trigger])
 				else:
 					if disconnect:
-						trigger.disconnect(listener._on_current_state_event)
+						emitter.disconnect(trigger, listener._on_current_state_event)
 					else:
-						trigger.connect(listener._on_current_state_event.bind(self, connexion, event), CONNECT_REFERENCE_COUNTED)
+						emitter.connect(trigger, listener._on_current_state_event.bind(self, connexion, event), CONNECT_REFERENCE_COUNTED)
 
 
 func add_connexion(to: State, connexion : StateConnexion = null) -> void:
@@ -116,7 +120,8 @@ func add_connexion(to: State, connexion : StateConnexion = null) -> void:
 	
 	var conn : StateConnexion = connexion
 	if conn == null:
-		conn = StateConnexion.new(str(owner.get_path_to(to)), [])
+		conn = StateConnexion.new()
+		conn.to = owner.get_path_to(to)
 	
 	connexions_array.append(conn)
 

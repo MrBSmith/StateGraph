@@ -38,7 +38,7 @@ var selected_trigger_control : Control = null :
 	set(value):
 		if value != selected_trigger_control:
 			selected_trigger_control = value
-			emit_signal("selected_trigger_changed", selected_trigger_control)
+			emit_signal("selected_trigger_control_changed", selected_trigger_control)
 var selected_trigger : StateTrigger :
 	get:
 		return selected_trigger
@@ -47,13 +47,13 @@ var selected_trigger : StateTrigger :
 		if value != selected_trigger:
 			if logs: print_debug("selected_trigger changed:" + str(value))
 			selected_trigger = value
-			emit_signal("selected_trigger_dict_changed", selected_trigger)
+			emit_signal("selected_trigger_changed", selected_trigger)
 
 var edited_state : State
 
 signal inspect_node_query(node)
-signal selected_trigger_changed(con)
-signal selected_trigger_dict_changed(dict)
+signal selected_trigger_changed(trigger)
+signal selected_trigger_control_changed(trigger)
 signal selected_node_changed()
 
 
@@ -66,15 +66,16 @@ func get_class() -> String: return "FSM_Editor"
 #### BUILT-IN ####
 
 func _ready() -> void:
-	connect("selected_trigger_changed", Callable(self,"_on_selected_trigger_changed"))
-	connect("selected_trigger_dict_changed", Callable(self,"_on_selected_trigger_dict_changed"))
-	connect("selected_node_changed", Callable(self,"_on_selected_node_changed"))
-	connect("visibility_changed", Callable(self,"_on_visibility_changed"))
+	OS.low_processor_usage_mode = true
+	
+	selected_trigger_changed.connect(_on_selected_trigger_changed)
+	selected_trigger_control_changed.connect(_on_selected_trigger_control_changed)
+	selected_node_changed.connect(_on_selected_node_changed)
+	visibility_changed.connect(_on_visibility_changed)
 	
 	graph_edit.connect("item_rect_changed",Callable(self,"_on_GraphEdit_item_rect_changed"))
 	graph_edit.connect("scroll_offset_changed",Callable(self,"_on_GraphEdit_scroll_offset_changed"))
 	graph_edit.connect("gui_input",Callable(self,"_on_GraphEdit_gui_input"))
-	OS.low_processor_usage_mode = true
 	
 	$Panel.add_theme_stylebox_override("panel", get_theme_stylebox("Content", "EditorStyles"))
 
@@ -83,13 +84,13 @@ func _ready() -> void:
 	condition_editor.connect("connexion_path_changed_query",Callable(self,"_on_connexion_path_changed_query"))
 
 	for button in node_editor_header.get_children():
-		button.connect("pressed",Callable(self,"_on_node_editor_header_button_pressed").bind(button))
+		button.connect("pressed", _on_node_editor_header_button_pressed.bind(button))
 
 	for button in toolbar.get_children():
-		button.connect("pressed",Callable(self,"_on_toolbar_button_pressed").bind(button))
+		button.connect("pressed", _on_toolbar_button_pressed.bind(button))
 
 	for button in footer.get_children():
-		button.connect("pressed",Callable(self,"_on_footer_button_pressed").bind(button))
+		button.connect("pressed", _on_footer_button_pressed.bind(button))
 
 
 
@@ -479,6 +480,7 @@ func _on_connection_selected(connexion: FSM_Connexion) -> void:
 	selected_trigger_control = connexion
 
 	condition_editor.animation_handler = fsm.get_animation_handler()
+	print("_on_connection_selected")
 
 
 func _on_connection_unselected(connexion: FSM_Connexion) -> void:
@@ -486,15 +488,21 @@ func _on_connection_unselected(connexion: FSM_Connexion) -> void:
 		selected_trigger_control = null
 
 
-func _on_selected_trigger_changed(fsm_connexion: FSM_Connexion) -> void:
-	selected_trigger = fsm_connexion_get_connexion(fsm_connexion)
+func _on_selected_trigger_control_changed(trigger_control: Control) -> void:
+	selected_trigger = fsm_connexion_get_connexion(trigger_control)
+	print_stack()
+	print("selected_trigger_control_changed: %s" % str(trigger_control.name))
+
+
+func _on_selected_trigger_changed(trigger: StateTrigger) -> void:
+	update_connexion_editor()
 
 
 func _on_toolbar_button_pressed(button: Button) -> void:
 	if logs: print_debug("toolbar button pressed %s" % str(button.name))
 	var is_connexion : bool = selected_trigger is StateConnexion
 
-	var from_state_name = selected_trigger_control.from.name
+	var from_state_name = selected_trigger_control.from.name if is_connexion else ""
 	var from_state = fsm.get_state_by_name(from_state_name) if is_connexion else edited_state
 	
 	if from_state == null:
@@ -506,9 +514,7 @@ func _on_toolbar_button_pressed(button: Button) -> void:
 	match(str(button.name)):
 		"AddCondition":
 			var edited_event : StateEvent = condition_editor.edited_event
-			print(str(edited_event))
-			var add_cond_func = edited_event.add_condition
-			add_cond_func.call("", from_state.get_path_to(from_state.owner))
+			edited_event.add_condition("", from_state.get_path_to(from_state.owner))
 
 		"AddEvent":
 			selected_trigger.add_event("process", from_state.get_path_to(from_state.owner))
@@ -620,10 +626,6 @@ func _on_selected_node_changed() -> void:
 	
 	if selected_node != null:
 		unselect_all_connexions()
-
-
-func _on_selected_trigger_dict_changed(_trigger: StateTrigger) -> void:
-	update_connexion_editor()
 
 
 func _on_connexion_path_changed_query(key: String, path: NodePath) -> void:

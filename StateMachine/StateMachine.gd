@@ -81,15 +81,15 @@ func _ready():
 	# Connect all state's standalone triggers
 	for child in get_children():
 		if child is State:
-			if !child.standalone_trigger.has("events"):
+			if child.standalone_trigger == null:
 				continue
 			
-			for event in child.standalone_trigger["events"]:
-				if event["trigger"] == "process":
+			for event in child.standalone_trigger.events:
+				if event.trigger == "process":
 					standalone_triggers_states.append(child)
 				else:
-					var emitter = child.get_node_or_null(event["emitter_path"])
-					__ = emitter.connect(event["trigger"],Callable(self,"_on_standalone_trigger_event").bind(child, event))
+					var emitter = child.get_node_or_null(event.emitter_path)
+					__ = emitter.connect(event.trigger, _on_standalone_trigger_event.bind(child, event))
 
 
 # Call for the current state process at every frame of the physic process
@@ -101,13 +101,13 @@ func _physics_process(delta):
 		current_state.update_state(delta)
 	
 	for state in standalone_triggers_states:
-		for event in state.standalone_trigger["events"]:
-			if event["trigger"] == "process" && state.are_all_conditions_verified(event):
+		for event in state.standalone_trigger.events:
+			if event.trigger == "process" && state.are_all_conditions_verified(event):
 				set_state(state)
 				return
 	
 	if current_state != null:
-		var new_state = current_state.check_exit_conditions()
+		var new_state = current_state.check_exit_conditions("process")
 		if new_state != null:
 			set_state(new_state)
 
@@ -288,9 +288,9 @@ func _on_State_state_entered_recursive(_state: Node) -> void:
 	emit_signal("state_entered_recursive", current_state)
 
 
-func _on_current_state_event(state: State, connexion: Dictionary, event: Dictionary) -> void:
-	if state.are_all_conditions_verified(event):
-		var dest_state = owner.get_node_or_null(connexion["to"])
+func _on_current_state_event(state: State, connexion: StateConnexion, event: StateEvent) -> void:
+	if event.are_all_conditions_verified(state):
+		var dest_state = owner.get_node_or_null(connexion.to)
 		
 		if dest_state == null:
 			push_error("The connexion event & conditions are fullfiled, but the destination state couldn't be find, aborting")
@@ -298,8 +298,8 @@ func _on_current_state_event(state: State, connexion: Dictionary, event: Diction
 			set_state(dest_state)
 
 
-func _on_standalone_trigger_event(state: State, event: Dictionary) -> void:
-	if state.are_all_conditions_verified(event):
+func _on_standalone_trigger_event(state: State, event: StateEvent) -> void:
+	if event.are_all_conditions_verified(state):
 		set_state(state)
 
 
