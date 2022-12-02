@@ -65,11 +65,11 @@ func _ready():
 		set_physics_process(false)
 		return
 	
-	var __ = connect("state_entered", Callable(self, "_on_state_entered"))
-	__ = owner.connect("ready", Callable(self, "_on_owner_ready"))
+	var __ = state_entered.connect(_on_state_entered)
+	__ = owner.ready.connect(_on_owner_ready)
 	
-	if get_parent().is_class("StateMachine"):
-		__ = connect("state_entered_recursive",Callable(get_parent(),"_on_State_state_entered_recursive"))
+	if get_parent() is StateMachine:
+		__ = state_entered_recursive.connect(get_parent()._on_State_state_entered_recursive)
 	
 	# Set the state to be the default one, unless we are in a nested StateMachine
 	# Nested StateMachines shouldn't have a current_state if they are not the current_state of its parent
@@ -162,7 +162,11 @@ func set_state(new_state):
 	previous_state = current_state
 	current_state = new_state
 	
-	emit_signal("state_changing", previous_state, current_state)
+	if print_logs:
+		var previous_state_name = str(previous_state.name) if previous_state else "null" 
+		var current_state_name = str(current_state.name) if current_state else "null" 
+		print("%s state_changed from %s to %s" % [str(owner.name), previous_state_name, current_state_name])
+		emit_signal("state_changing", previous_state, current_state)
 	
 	# Use the enter_state function of the current state
 	if new_state != null && (!is_nested() or new_state.is_current_state()):

@@ -19,6 +19,8 @@ class_name State
 # Defines the position of the StateNode in the StateGraph. Expressed in ratio of the container size.
 @export var graph_position := Vector2.ZERO
 
+@export var print_logs : bool = false
+
 signal standalone_trigger_added
 signal standalone_trigger_removed
 signal entered
@@ -111,7 +113,7 @@ func connect_connections_events(listener: Node, disconnect: bool = false) -> voi
 					if disconnect:
 						emitter.disconnect(trigger, listener._on_current_state_event)
 					else:
-						emitter.connect(trigger, listener._on_current_state_event.bind(self, connection, event), CONNECT_REFERENCE_COUNTED)
+						emitter.connect(trigger, listener._on_current_state_event.bind(self, connection, event))
 
 
 func add_connection(to: State, connection : StateConnection = null) -> void:
