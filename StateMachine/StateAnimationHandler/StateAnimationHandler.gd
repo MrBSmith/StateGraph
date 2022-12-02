@@ -195,7 +195,7 @@ func get_anim_name(state: Object) -> String:
 	if anim_name_mode == ANIM_NAME_MODE.PARENT_MOST_STATE_NAME:
 		return str(state.name)
 	
-	if state.is_class("StateMachine"):
+	if state is StateMachine:
 		var child_state = state.get_state()
 		
 		if child_state != null:

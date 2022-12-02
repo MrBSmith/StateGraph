@@ -59,6 +59,8 @@ func get_class() -> String: return "StateMachine"
 
 
 func _ready():
+	super._ready()
+	
 	if Engine.is_editor_hint():
 		set_physics_process(false)
 		return

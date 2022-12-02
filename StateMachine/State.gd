@@ -11,7 +11,7 @@ class_name State
 # the update_state method of the currrent state is called every physics tick,  
 # by the physics_process of the StateMachine 
 
-@onready var states_machine = get_parent() if get_parent().is_class("StateMachine") else null
+@onready var states_machine = get_parent() if get_parent() is StateMachine else null
 
 @export var connections_array : Array[StateConnection]
 @export var standalone_trigger : StateTrigger
