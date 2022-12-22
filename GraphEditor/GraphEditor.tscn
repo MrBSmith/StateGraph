@@ -5,7 +5,7 @@
 [ext_resource type="Theme" uid="uid://bo0y8ggcj7tnh" path="res://addons/StateGraph/GraphEditor/Theme/GraphEditorTheme.tres" id="3"]
 [ext_resource type="PackedScene" uid="uid://cbnkrus0hlyun" path="res://addons/StateGraph/GraphEditor/TreePopup/TreePopup.tscn" id="4_wsmei"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tu4fl"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ttfdd"]
 content_margin_left = 4.0
 content_margin_top = 4.0
 content_margin_right = 4.0
@@ -18,7 +18,7 @@ border_width_right = 2
 border_width_bottom = 2
 corner_detail = 1
 
-[sub_resource type="Image" id="Image_3j1x7"]
+[sub_resource type="Image" id="Image_pcgm5"]
 data = {
 "data": PackedByteArray(255, 255, 255, 0, 255, 255, 255, 0, 255, 128, 128, 4, 255, 128, 128, 4, 255, 128, 128, 4, 255, 128, 128, 4, 255, 128, 128, 4, 255, 128, 128, 4, 255, 128, 128, 4, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 255, 255, 0, 255, 93, 93, 131, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 255, 255, 0, 255, 93, 93, 255, 255, 93, 93, 131, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 255, 255, 0, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 131, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 255, 255, 0, 255, 93, 93, 252, 255, 93, 93, 252, 255, 93, 93, 252, 255, 94, 94, 127, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 128, 128, 4, 255, 128, 128, 4, 255, 128, 128, 4, 255, 128, 128, 4, 255, 128, 128, 4, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 93, 93, 231, 255, 93, 93, 55, 255, 97, 97, 58, 255, 93, 93, 233, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 231, 255, 94, 94, 54, 255, 94, 94, 57, 255, 93, 93, 233, 255, 93, 93, 255, 255, 93, 93, 255, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 97, 97, 42, 255, 255, 255, 0, 255, 255, 255, 0, 255, 97, 97, 42, 255, 93, 93, 233, 255, 93, 93, 232, 255, 93, 93, 41, 255, 255, 255, 0, 255, 255, 255, 0, 255, 97, 97, 42, 255, 93, 93, 233, 255, 93, 93, 232, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 96, 96, 45, 255, 97, 97, 42, 255, 255, 255, 0, 255, 97, 97, 42, 255, 97, 97, 42, 255, 255, 255, 0, 255, 98, 98, 47, 255, 97, 97, 42, 255, 255, 255, 0, 255, 97, 97, 42, 255, 97, 97, 42, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 96, 96, 45, 255, 93, 93, 235, 255, 93, 93, 233, 255, 97, 97, 42, 255, 255, 255, 0, 255, 255, 255, 0, 255, 94, 94, 46, 255, 93, 93, 236, 255, 93, 93, 233, 255, 97, 97, 42, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 93, 93, 235, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 233, 255, 95, 95, 59, 255, 96, 96, 61, 255, 93, 93, 235, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 233, 255, 95, 95, 59, 255, 96, 96, 61, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 93, 93, 252, 255, 93, 93, 252, 255, 93, 93, 252, 255, 93, 93, 252, 255, 93, 93, 252, 255, 93, 93, 252, 255, 93, 93, 252, 255, 93, 93, 252, 255, 93, 93, 252, 255, 93, 93, 252, 255, 93, 93, 252, 255, 93, 93, 252, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0),
 "format": "RGBA8",
@@ -27,8 +27,8 @@ data = {
 "width": 16
 }
 
-[sub_resource type="ImageTexture" id="ImageTexture_b7614"]
-image = SubResource("Image_3j1x7")
+[sub_resource type="ImageTexture" id="ImageTexture_56vgl"]
+image = SubResource("Image_pcgm5")
 
 [node name="GraphEditor" type="Control"]
 clip_contents = true
@@ -47,15 +47,17 @@ script = ExtResource("1")
 logs = true
 
 [node name="Panel" type="Panel" parent="."]
+layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_tu4fl")
+theme_override_styles/panel = SubResource("StyleBoxFlat_ttfdd")
 
 [node name="HSplitContainer" type="HSplitContainer" parent="."]
+layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -64,39 +66,32 @@ grow_vertical = 2
 split_offset = 237
 
 [node name="NodesEditor" type="PanelContainer" parent="HSplitContainer"]
-offset_right = 807.0
-offset_bottom = 648.0
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 mouse_filter = 2
 
 [node name="Panel" type="Panel" parent="HSplitContainer/NodesEditor"]
-offset_right = 807.0
-offset_bottom = 648.0
+layout_mode = 2
 mouse_filter = 2
 
 [node name="VBoxContainer" type="VBoxContainer" parent="HSplitContainer/NodesEditor"]
-offset_right = 807.0
-offset_bottom = 648.0
+layout_mode = 2
 
 [node name="Header" type="HBoxContainer" parent="HSplitContainer/NodesEditor/VBoxContainer"]
 custom_minimum_size = Vector2(0, 32)
-offset_right = 807.0
-offset_bottom = 32.0
+layout_mode = 2
 
 [node name="AddStandaloneTrigger" type="Button" parent="HSplitContainer/NodesEditor/VBoxContainer/Header"]
 visible = false
-offset_right = 185.0
-offset_bottom = 32.0
+layout_mode = 2
 text = "Add standalone trigger"
 
 [node name="GraphEdit" type="GraphEdit" parent="HSplitContainer/NodesEditor/VBoxContainer"]
-offset_top = 36.0
-offset_right = 807.0
-offset_bottom = 648.0
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-scroll_offset = Vector2(-185, -265)
+scroll_offset = Vector2(-398, -288)
 use_snap = false
 minimap_enabled = false
 
@@ -104,9 +99,7 @@ minimap_enabled = false
 unique_name_in_owner = true
 
 [node name="ConditionEditor" type="PanelContainer" parent="HSplitContainer"]
-offset_left = 819.0
-offset_right = 1152.0
-offset_bottom = 648.0
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("2")
@@ -114,119 +107,88 @@ logs = true
 tree_popup_scene = ExtResource("4_wsmei")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="HSplitContainer/ConditionEditor"]
-offset_right = 333.0
-offset_bottom = 648.0
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 size_flags_stretch_ratio = 0.3
 
 [node name="Toolbar" type="HBoxContainer" parent="HSplitContainer/ConditionEditor/VBoxContainer"]
-offset_right = 333.0
-offset_bottom = 31.0
+layout_mode = 2
 
 [node name="AddEvent" type="Button" parent="HSplitContainer/ConditionEditor/VBoxContainer/Toolbar"]
-offset_right = 87.0
-offset_bottom = 31.0
+layout_mode = 2
 text = "Add event"
 
 [node name="AddCondition" type="Button" parent="HSplitContainer/ConditionEditor/VBoxContainer/Toolbar"]
 visible = false
-offset_left = 81.0
-offset_right = 182.0
-offset_bottom = 20.0
+layout_mode = 2
 text = "Add condition"
 
 [node name="AddAnimFinishedEvent" type="Button" parent="HSplitContainer/ConditionEditor/VBoxContainer/Toolbar"]
 visible = false
-offset_right = 77.0
-offset_bottom = 20.0
+layout_mode = 2
 text = "Add Animation Finished Event"
 
 [node name="Panel" type="PanelContainer" parent="HSplitContainer/ConditionEditor/VBoxContainer"]
-offset_top = 35.0
-offset_right = 333.0
-offset_bottom = 644.0
+layout_mode = 2
 size_flags_vertical = 3
 
 [node name="VBoxContainer" type="VBoxContainer" parent="HSplitContainer/ConditionEditor/VBoxContainer/Panel"]
-offset_right = 333.0
-offset_bottom = 609.0
+layout_mode = 2
 
 [node name="StatePathContainer" type="VBoxContainer" parent="HSplitContainer/ConditionEditor/VBoxContainer/Panel/VBoxContainer"]
 unique_name_in_owner = true
-offset_right = 333.0
-offset_bottom = 66.0
+layout_mode = 2
 
 [node name="OriginState" type="HBoxContainer" parent="HSplitContainer/ConditionEditor/VBoxContainer/Panel/VBoxContainer/StatePathContainer"]
-offset_right = 333.0
-offset_bottom = 31.0
+layout_mode = 2
 
 [node name="Label" type="Label" parent="HSplitContainer/ConditionEditor/VBoxContainer/Panel/VBoxContainer/StatePathContainer/OriginState"]
-offset_top = 2.0
-offset_right = 154.0
-offset_bottom = 28.0
+layout_mode = 2
 size_flags_horizontal = 3
 text = "Origin State:"
 
 [node name="LineEdit" type="LineEdit" parent="HSplitContainer/ConditionEditor/VBoxContainer/Panel/VBoxContainer/StatePathContainer/OriginState"]
-offset_left = 158.0
-offset_right = 313.0
-offset_bottom = 31.0
+layout_mode = 2
 size_flags_horizontal = 3
 text = "../.."
 editable = false
 
 [node name="EditButton" type="TextureButton" parent="HSplitContainer/ConditionEditor/VBoxContainer/Panel/VBoxContainer/StatePathContainer/OriginState"]
-offset_left = 317.0
-offset_right = 333.0
-offset_bottom = 31.0
-texture_normal = SubResource("ImageTexture_b7614")
+layout_mode = 2
+texture_normal = SubResource("ImageTexture_56vgl")
 
 [node name="DestState" type="HBoxContainer" parent="HSplitContainer/ConditionEditor/VBoxContainer/Panel/VBoxContainer/StatePathContainer"]
-offset_top = 35.0
-offset_right = 333.0
-offset_bottom = 66.0
+layout_mode = 2
 
 [node name="Label" type="Label" parent="HSplitContainer/ConditionEditor/VBoxContainer/Panel/VBoxContainer/StatePathContainer/DestState"]
-offset_top = 2.0
-offset_right = 154.0
-offset_bottom = 28.0
+layout_mode = 2
 size_flags_horizontal = 3
 text = "Destination State:"
 
 [node name="LineEdit" type="LineEdit" parent="HSplitContainer/ConditionEditor/VBoxContainer/Panel/VBoxContainer/StatePathContainer/DestState"]
-offset_left = 158.0
-offset_right = 313.0
-offset_bottom = 31.0
+layout_mode = 2
 size_flags_horizontal = 3
 text = "../.."
 editable = false
 
 [node name="EditButton" type="TextureButton" parent="HSplitContainer/ConditionEditor/VBoxContainer/Panel/VBoxContainer/StatePathContainer/DestState"]
-offset_left = 317.0
-offset_right = 333.0
-offset_bottom = 31.0
-texture_normal = SubResource("ImageTexture_b7614")
+layout_mode = 2
+texture_normal = SubResource("ImageTexture_56vgl")
 
 [node name="Tree" type="Tree" parent="HSplitContainer/ConditionEditor/VBoxContainer/Panel/VBoxContainer"]
-offset_top = 70.0
-offset_right = 333.0
-offset_bottom = 609.0
+layout_mode = 2
 size_flags_vertical = 3
 
 [node name="Footer" type="HBoxContainer" parent="HSplitContainer/ConditionEditor/VBoxContainer"]
-offset_top = 648.0
-offset_right = 333.0
-offset_bottom = 648.0
+layout_mode = 2
 
 [node name="DeleteConnection" type="Button" parent="HSplitContainer/ConditionEditor/VBoxContainer/Footer"]
 visible = false
-offset_right = 126.0
-offset_bottom = 20.0
+layout_mode = 2
 text = "Delete Connexion"
 
 [node name="DeleteStandaloneTrigger" type="Button" parent="HSplitContainer/ConditionEditor/VBoxContainer/Footer"]
 visible = false
-offset_right = 176.0
-offset_bottom = 20.0
+layout_mode = 2
 text = "Delete Standalone Trigger"

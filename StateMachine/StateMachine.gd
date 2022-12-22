@@ -51,9 +51,6 @@ signal state_removed(state)
 
 #### ACCESSORS ####
 
-func is_class(value: String): return value == "StateMachine" or super.is_class(value)
-func get_class() -> String: return "StateMachine"
-
 
 #### BUILT-IN ####
 
@@ -68,12 +65,16 @@ func _ready():
 	var __ = state_entered.connect(_on_state_entered)
 	__ = owner.ready.connect(_on_owner_ready)
 	
-	if get_parent() is StateMachine:
-		__ = state_entered_recursive.connect(get_parent()._on_State_state_entered_recursive)
+	if states_machine:
+		__ = state_entered_recursive.connect(states_machine._on_State_state_entered_recursive)
 	
 	# Set the state to be the default one, unless we are in a nested StateMachine
 	# Nested StateMachines shouldn't have a current_state if they are not the current_state of its parent
-	default_state = get_child(0) if default_state_path.is_empty() else get_node_or_null(default_state_path)
+	if default_state_path.is_empty():
+		if get_child_count() > 0:
+			default_state = get_child(0) 
+	else:
+		get_node_or_null(default_state_path)
 	
 	if is_nested() or no_default_state:
 		set_state(null)
@@ -117,12 +118,16 @@ func _physics_process(delta):
 #### LOGIC ####
 
 # Returns the current state
-func get_state() -> Object:
+func get_state() -> State:
 	return current_state
 
 
-func get_state_recursive() -> Object:
-	if current_state.is_class("StateMachine"):
+func get_state_recursive() -> State:
+	if current_state == null:
+		push_warning("The current_state is null")
+		return null
+	
+	if current_state is StateMachine:
 		return current_state.get_state_recursive()
 	else: 
 		return current_state
@@ -133,7 +138,7 @@ func get_state_name() -> String:
 	if current_state == null:
 		return ""
 	else:
-		return String(current_state.name)
+		return str(current_state.name)
 
 
 # Set current_state at a new state, also set previous state, 
@@ -182,13 +187,10 @@ func set_state(new_state):
 
 # Set the state based checked the id of the state (id of the node, ie position in the hierachy)
 func set_state_by_id(state_id: int):
-	var state = get_child(state_id)
+	var state : State = get_child(state_id)
 	if state == null:
 		if state_id >= get_child_count() or state_id < 0:
 			push_error("The given state_id is out of bound")
-		
-		elif !state.is_class("State"):
-			push_error("The child of the statemachine pointed by the state_id: %d does not inherit State" % state_id)
 	else:
 		set_state(state)
 
@@ -214,12 +216,11 @@ func fetch_states(array: Array, recursive: bool = false) -> void:
 		if child is State && not child in array:
 			array.append(child)
 			
-			if recursive && child.is_class("StateMachine"):
+			if recursive && child is StateMachine:
 				child.fetch_states(array, true)
 
 
-func is_nested() -> bool:
-	return get_parent().is_class("StateMachine")
+func is_nested() -> bool: return states_machine != null
 
 
 # Set state by incrementing its id (id of the node, ie position in the hierachy)
@@ -277,11 +278,10 @@ func update_state(delta: float) -> void:
 
 
 func is_current_state() -> bool:
-	var parent = get_parent()
-	if parent is State or (parent.is_class("StateMachine") && parent.is_nested()):
-		return parent.current_state == self && parent.is_current_state()
+	if states_machine.is_nested():
+		return states_machine.current_state == self && states_machine.is_current_state()
 	else:
-		return true
+		return states_machine.current_state == self
 
 
 #### SIGNAL RESPONSES ####
