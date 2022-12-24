@@ -68,7 +68,7 @@ func is_current_state() -> bool:
 		push_warning("The State: ", name, " has no StateMachine parent")
 		return false
 	
-	if states_machine != null:
+	if states_machine != null && states_machine.is_nested():
 		return states_machine.current_state == self && states_machine.is_current_state()
 	else:
 		return states_machine.current_state == self

@@ -278,6 +278,9 @@ func update_state(delta: float) -> void:
 
 
 func is_current_state() -> bool:
+	if states_machine == null:
+		return false
+	
 	if states_machine.is_nested():
 		return states_machine.current_state == self && states_machine.is_current_state()
 	else:
