@@ -2,17 +2,17 @@
 extends State
 class_name StateMachine
 
-# An implementation of the Finite State Machine design pattern
-# Each state must inherit State and be a child node of a StateMachine node
+## An implementation of the Finite State Machine design pattern[br]
+## Each state must inherit State and be a child node of a StateMachine node[br]
 
-# Each state defines the behaviour of the entity possesing this StateMachine when the StateMachine is in this state
-# You can refer to the main node using the keyword owner
-# In that case the main node must be the root of the scene
+## Each state defines the behaviour of the entity possesing this StateMachine when the StateMachine is in this state[br]
+## You can refer to the main node using the keyword owner[br]
+## In that case the main node must be the root of the scene[br]
 
-# The default state is always the first child of this node, unless default_state_path has a value
+## The default state is always the first child of this node, unless default_state_path has a value[br]
 
-# StatesMachines can also be nested
-# In that case the StateMachine behave also as a state, and the enter_state callback is called recursivly
+## StatesMachines can also be nested[br]
+## In that case the StateMachine behave also as a state, and the enter_state callback is called recursivly
 
 @export var default_state_path : NodePath
 
@@ -124,7 +124,6 @@ func get_state() -> State:
 
 func get_state_recursive() -> State:
 	if current_state == null:
-		push_warning("The current_state is null")
 		return null
 	
 	if current_state is StateMachine:
@@ -141,21 +140,41 @@ func get_state_name() -> String:
 		return str(current_state.name)
 
 
-# Set current_state at a new state, also set previous state, 
-# and emit a signal to notify the change, to anybody needing it
-# The new_state argument can either be a State or a String representing the name of the targeted State
-func set_state(new_state):
+## Set [member current_state]
+##
+## Emit a signal to notify the change, to anybody needing it
+## The new_state argument can either be a [State] a [String], or a [NodePath] representing path to the state (relative to this [StateMachine]).[br]
+## You can also pass it state paths, in that case, every member of the path exept for the last one must inherit [StateMachine].[br]
+## For exemple: if you pass it [code]Attack/ComboA[/code] then Attack must be a [StateMachine].[br]
+## Then it will set the [member current_state] to the one designated by the path, recursively if needed
+func set_state(new_state) -> void:
 	# This method can handle only String and States
-	if not new_state is State and not new_state is String and new_state != null:
+	if not new_state is State and not new_state is String and not new_state is NodePath and new_state != null:
 		return 
 	
-	# If the given argument is a string, get the node that has the name that correspond
-	if new_state is String:
-		new_state = get_node_or_null(new_state)
+	if new_state is NodePath: new_state = String(new_state)
+	
+	# If the given argument is a path, set the passed state to the one designated by the path, recursively if needed
+	if new_state is String or new_state is NodePath:
+		var path_elem_array = new_state.split("/")
+		var state_name = path_elem_array[0]
+		path_elem_array.remove_at(0)
+		
+		var state = get_node_or_null(state_name)
+		set_state(state)
+		
+		if !path_elem_array.is_empty() && state is StateMachine:
+			state.set_state("/".join(path_elem_array))
+		
+		return
 	
 	# Discard the method if the new_state is the current_state
 	if new_state == current_state:
 		return
+	
+	if new_state != null && new_state.get_parent() != self:
+		var state_path = get_path_to(new_state)
+		push_error("The current state at path %s is not a direct child of %s" % [str(state_path), name])
 	
 	# Use the exit state function of the current state
 	if current_state != null:

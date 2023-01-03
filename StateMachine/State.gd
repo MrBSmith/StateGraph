@@ -2,21 +2,20 @@
 extends Node
 class_name State
 
-# Abstract base class for a State in a StateMachine
-
-# Defines the behaviour of the entity possesing the statemachine 
-# when the entity is in this state
-
-# The enter_state is called every time the state is entered and exit_state when it's exited
-# the update_state method of the currrent state is called every physics tick,  
-# by the physics_process of the StateMachine 
+## Abstract base class for a State in a StateMachine
+##
+## Defines the behaviour of the entity possesing the StateMachine when the entity is in this state
+##
+## The enter_state callback is called every time the state is entered and exit_state when it's exited
+## the update_state method of the currrent state is called every physics tick,  
+## by the physics_process of the StateMachine 
 
 @onready var states_machine : StateMachine = get_parent() if get_parent() is StateMachine else null
 
 @export var connections_array : Array[StateConnection]
 @export var standalone_trigger : StateTrigger
 
-# Defines the position of the StateNode in the StateGraph. Expressed in ratio of the container size.
+## Defines the position of the StateNode in the StateGraph. Expressed in ratio of the container size.
 @export var graph_position := Vector2.ZERO
 
 @export var print_logs : bool = false
@@ -44,16 +43,16 @@ func _exit_tree() -> void:
 #### CALLBACKS ####
 
 
-# Called when the current state of the state machine is set to this node
+## Called when the current state of the state machine is set to this node
 func enter_state() -> void:
 	pass
 
-# Called when the current state of the state machine is switched to another one
+## Called when the current state of the state machine is switched to another one
 func exit_state() -> void:
 	pass
 
-# Called every frames, for real time behaviour
-# Use a return "State_node_name" or return Node_reference to change the current state of the state machine at a given time
+## Called every frames, for real time behaviour
+## Use a return "State_node_name" or return Node_reference to change the current state of the state machine at a given time
 func update_state(_delta: float) -> void:
 	pass
 
