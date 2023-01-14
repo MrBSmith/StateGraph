@@ -263,9 +263,9 @@ func increment_state(increment: int = 1, wrapping : bool = true) -> void:
 				break
 	
 	if state == null:
-		push_error("There is no node at the given id: " + String(id))
+		push_error("There is no node at the given id: " + str(id))
 	elif !(state is State):
-		push_error("The node found at the id: " + String(id) + " does not inherit State")
+		push_error("The node found at the id: " + str(id) + " does not inherit State")
 	else:
 		set_state(state)
 
