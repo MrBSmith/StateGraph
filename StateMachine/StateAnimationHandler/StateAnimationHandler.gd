@@ -3,6 +3,7 @@ extends Node
 class_name StateAnimationHandler
 
 enum FLIP {
+	NONE = 0
 	H = 1,
 	V = 2
 	ISO = 4
@@ -102,11 +103,11 @@ func trigger_state_sound() -> void:
 
 
 func _update_animation() -> void:
-	if state == null:
+	if state == null or animated_sprite == null:
 		return
 	
 	# Handles flipping the sprites if necesary
-	if flip_mode != 0:
+	if flip_mode != FLIP.NONE:
 		if flip_mode & FLIP.ISO:
 			var flip_h = direction in [Vector2.DOWN, Vector2.LEFT] 
 			animated_sprite.set_flip_h(flip_h)
