@@ -144,7 +144,13 @@ func set_state(new_state):
 	
 	# If the given argument is a string, get the node that has the name that correspond
 	if new_state is String:
+		var state_name = new_state
+		
 		new_state = get_node_or_null(new_state)
+		
+		if new_state == null and state_name != "":
+			push_error("The given state %s couldn't be found" % state_name)
+	
 	
 	# Discard the method if the new_state is the current_state
 	if new_state == current_state:

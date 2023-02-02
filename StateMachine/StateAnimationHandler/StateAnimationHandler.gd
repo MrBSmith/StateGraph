@@ -63,6 +63,8 @@ export(MODE) var finished_trigger_mode : int = MODE.ANIMATED_SPRITE
 export(DIRECTION_MODE) var direction_mode : int = DIRECTION_MODE.NONE
 
 export var direction := Vector2.DOWN
+export var debug_logs : bool = false
+
 var state : State = null
 
 #### ACCESSORS ####
@@ -84,8 +86,8 @@ func _ready() -> void:
 	if animated_sprite && finished_trigger_mode == MODE.ANIMATED_SPRITE:
 		__ = animated_sprite.connect("animation_finished", self, "_on_animation_finished")
 	
-	elif animation_player && finished_trigger_mode == MODE.ANIMATION_PLAYER:
-		__ = animation_player.connect("animation_finished", self, "_on_animation_finished")
+#	elif animation_player && finished_trigger_mode == MODE.ANIMATION_PLAYER:
+#		__ = animation_player.connect("animation_finished", self, "_on_animation_finished")
 		
 
 
@@ -103,7 +105,7 @@ func trigger_state_sound() -> void:
 
 
 func _update_animation() -> void:
-	if state == null or animated_sprite == null:
+	if state == null or (animated_sprite == null && animation_player == null):
 		return
 	
 	# Handles flipping the sprites if necesary
@@ -128,25 +130,30 @@ func _update_animation() -> void:
 	var start_anim_name = "Start" + anim_name
 	var trans_anim_name = previous_state.name + "To" + anim_name if previous_state else ""
 	
-	var sprite_frames = animated_sprite.get_sprite_frames()
+	var sprite_frames = animated_sprite.get_sprite_frames() if animated_sprite else null
 	
 	# Play the animation
-
 	for target in [animated_sprite, animation_player]:
 		if target == null: continue
 		
 		var target_anim_owner = target if target is AnimationPlayer else sprite_frames
+		var animation_to_play = ""
+		if debug_logs: print("%s searched for an animation for state %s in %s" % [owner.name, state.name, target.name])
+		
 		
 		if target_anim_owner.has_animation(start_anim_name):
-			target.play(start_anim_name)
+			animation_to_play = start_anim_name
 		
 		elif previous_state && target_anim_owner.has_animation(trans_anim_name):
-			target.play(trans_anim_name)
+			animation_to_play = trans_anim_name
 
 		else:
 			if target_anim_owner.has_animation(anim_name):
-				target.play(anim_name)
-
+				animation_to_play = anim_name
+		
+		if target_anim_owner.has_animation(animation_to_play):
+			target.play(animation_to_play)
+			if debug_logs: print("StateAnimationHandler trigger %s animation in %s" % [animation_to_play, target.name])
 
 
 #### LOGIC ####
