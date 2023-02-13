@@ -65,6 +65,8 @@ export(DIRECTION_MODE) var direction_mode : int = DIRECTION_MODE.NONE
 export var direction := Vector2.DOWN
 export var debug_logs : bool = false
 
+export var interupts_animations : bool = false
+
 var state : State = null
 
 #### ACCESSORS ####
@@ -152,6 +154,9 @@ func _update_animation() -> void:
 				animation_to_play = anim_name
 		
 		if target_anim_owner.has_animation(animation_to_play):
+			if interupts_animations and target is AnimationPlayer: 
+				target.stop(true)
+			
 			target.play(animation_to_play)
 			if debug_logs: print("StateAnimationHandler trigger %s animation in %s" % [animation_to_play, target.name])
 
