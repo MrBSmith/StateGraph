@@ -18,6 +18,7 @@ export var default_state_path : NodePath
 
 # Set this to true if you want the default state to be null, no matter what the default_state_path value is
 export var no_default_state : bool = false
+export var only_explicit_state_change : bool = false
 
 # If this propery is true, the first enter_state call will be deffered after the scene owner  ready
 export var deffer_first_enter_state : bool = false
@@ -100,6 +101,9 @@ func _physics_process(delta):
 	if !is_nested() or (is_nested() && is_current_state()):
 		current_state.update_state(delta)
 	
+	if only_explicit_state_change:
+		return
+	
 	for state in standalone_triggers_states:
 		for event in state.standalone_trigger["events"]:
 			if event["trigger"] == "process" && state.are_all_conditions_verified(event):
@@ -138,8 +142,12 @@ func get_state_name() -> String:
 # and emit a signal to notify the change, to anybody needing it
 # The new_state argument can either be a State or a String representing the name of the targeted State
 func set_state(new_state):
+	if new_state is NodePath:
+		new_state = str(new_state)
+	
 	# This method can handle only String and States
 	if not new_state is State and not new_state is String and new_state != null:
+		push_error("The given argument isn't of the right type, the state must be given either as a NodePath, a String or a State")
 		return 
 	
 	# If the given argument is a string, get the node that has the name that correspond
@@ -296,6 +304,9 @@ func _on_State_state_entered_recursive(_state: Node) -> void:
 
 
 func _on_current_state_event(state: State, connexion: Dictionary, event: Dictionary) -> void:
+	if only_explicit_state_change:
+		return
+	
 	if state.are_all_conditions_verified(event):
 		var dest_state = owner.get_node_or_null(connexion["to"])
 		
@@ -306,6 +317,9 @@ func _on_current_state_event(state: State, connexion: Dictionary, event: Diction
 
 
 func _on_standalone_trigger_event(state: State, event: Dictionary) -> void:
+	if only_explicit_state_change:
+		return
+	
 	if state.are_all_conditions_verified(event):
 		set_state(state)
 
