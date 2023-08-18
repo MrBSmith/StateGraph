@@ -62,6 +62,10 @@ func update_state(_delta: float) -> void:
 
 #### LOGIC ###
 
+func set_as_current() -> void:
+	states_machine.set_state(self)
+
+
 # Returns true if the StateMachine is in this state. 
 # Check reccursivly in case of nested StateMachines/PushdownAutomata
 func is_current_state() -> bool:
