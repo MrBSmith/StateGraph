@@ -238,3 +238,12 @@ func is_condition_verified(condition_dict: Dictionary) -> bool:
 		return result
 
 
+func get_every_connexions_with_trigger(trigger: String) -> Array:
+	var array = []
+	
+	for connexion in connexions_array:
+		for event in connexion["events"]:
+			if event["trigger"] == trigger:
+				array.append(connexion)
+	
+	return array

@@ -235,14 +235,25 @@ func _on_animation_finished() -> void:
 	
 	var sprite_frames = animated_sprite.get_sprite_frames()
 	var current_animation = animated_sprite.get_animation()
+	var current_frame = animated_sprite.frame
 	
 	if !state_name.is_subsequence_ofi(current_animation):
 		return
 	
+	var max_frame_id = sprite_frames.get_frame_count(current_animation) - 1
+	
 	var anim_name = get_anim_name(state)
 	
 	if current_animation == "Start" + anim_name or ("To" + anim_name).is_subsequence_ofi(current_animation):
+		if current_frame == 0 and max_frame_id != 0:
+			return
+		
 		if sprite_frames != null and sprite_frames.has_animation(anim_name):
+			
+			if debug_logs: 
+				print("Current state %s, current anim: %s, frame id: %d" % [state_name, current_animation, current_frame])
+				print("StateAnimationHandler: Anim trigger %s animation in %s" % [anim_name, animated_sprite.name])
+			
 			animated_sprite.play(anim_name)
 
 

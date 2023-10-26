@@ -72,7 +72,7 @@ func _ready():
 	
 	# Set the state to be the default one, unless we are in a nested StateMachine
 	# Nested StateMachines shouldn't have a current_state if they are not the current_state of its parent
-	default_state = get_child(0) if default_state_path.is_empty() else get_node_or_null(default_state_path)
+	default_state = _get_first_state() if default_state_path.is_empty() else get_node_or_null(default_state_path)
 	
 	if is_nested() or no_default_state:
 		set_state(null)
@@ -136,6 +136,13 @@ func get_state_name() -> String:
 		return ""
 	else:
 		return current_state.name
+
+
+func _get_first_state() -> State:
+	for child in get_children():
+		if child is State:
+			return child
+	return null
 
 
 # Set current_state at a new state, also set previous state, 
@@ -306,14 +313,22 @@ func _on_State_state_entered_recursive(_state: Node) -> void:
 func _on_current_state_event(state: State, connexion: Dictionary, event: Dictionary) -> void:
 	if only_explicit_state_change:
 		return
+
+	var trigger = event["trigger"]
 	
-	if state.are_all_conditions_verified(event):
-		var dest_state = owner.get_node_or_null(connexion["to"])
-		
-		if dest_state == null:
-			push_error("The connexion event & conditions are fullfiled, but the destination state couldn't be find, aborting")
-		else:
-			set_state(dest_state)
+	for conn in state.get_every_connexions_with_trigger(trigger):
+		for ev in conn["events"]:
+			if ev["trigger"] != trigger:
+				continue
+			
+			if state.are_all_conditions_verified(ev):
+				var dest_state = owner.get_node_or_null(conn["to"])
+				
+				if dest_state == null:
+					push_error("The connexion event & conditions are fullfiled, but the destination state couldn't be find, aborting")
+				else:
+					set_state(dest_state)
+					return
 
 
 func _on_standalone_trigger_event(state: State, event: Dictionary) -> void:
