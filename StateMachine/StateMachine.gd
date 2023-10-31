@@ -124,6 +124,9 @@ func get_state() -> Object:
 
 
 func get_state_recursive() -> Object:
+	if current_state == null:
+		return null
+	
 	if current_state.is_class("StateMachine"):
 		return current_state.get_state_recursive()
 	else: 
