@@ -317,7 +317,7 @@ func _on_State_state_entered_recursive(_state: Node) -> void:
 
 
 func _on_current_state_event(state: State, connexion: Dictionary, event: Dictionary) -> void:
-	if only_explicit_state_change:
+	if only_explicit_state_change or state != current_state:
 		return
 
 	var trigger = event["trigger"]
