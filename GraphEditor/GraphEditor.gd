@@ -141,8 +141,8 @@ func clear() -> void:
 
 func clear_fsm() -> void:
 	if fsm != null && is_instance_valid(fsm):
-		var __ = fsm.disconnect("state_added", Callable(self,"_on_fsm_state_added"))
-		__ = fsm.disconnect("state_removed", Callable(self,"_on_fsm_state_removed"))
+		fsm.disconnect("state_added", Callable(self,"_on_fsm_state_added"))
+		fsm.disconnect("state_removed", Callable(self,"_on_fsm_state_removed"))
 	
 	fsm = null
 
