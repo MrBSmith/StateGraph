@@ -206,7 +206,7 @@ func find_dir_name(dir: Vector2) -> String:
 # 	it will recursively add the children state's name together
 func get_anim_name(state: Object) -> String:
 	if anim_name_mode == ANIM_NAME_MODE.PARENT_MOST_STATE_NAME:
-		return state.name
+		return state.get_anim_name()
 	
 	if state.is_class("StateMachine"):
 		var child_state = state.get_state()
@@ -216,8 +216,9 @@ func get_anim_name(state: Object) -> String:
 				ANIM_NAME_MODE.CHILD_MOST_STATE_NAME:
 					return get_anim_name(child_state)
 				ANIM_NAME_MODE.RECURSIVE_NAME_COMPOSITION:
-					return state.name + get_anim_name(child_state)
-	return state.name
+					return state.get_anim_name() + get_anim_name(child_state)
+	
+	return state.get_anim_name()
 
 
 #### SIGNAL RESPONSES #####
