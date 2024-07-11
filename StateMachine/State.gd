@@ -16,6 +16,8 @@ onready var states_machine = get_parent() if get_parent().is_class("StateMachine
 export var connexions_array : Array
 export var standalone_trigger : Dictionary
 
+export var animation_name_override := ""
+
 # Defines the position of the StateNode in the StateGraph. Expressed in ratio of the container size.
 export var graph_position := Vector2.ZERO
 
@@ -61,6 +63,13 @@ func update_state(_delta: float) -> void:
 
 
 #### LOGIC ###
+
+func get_anim_name() -> String:
+	if animation_name_override != "":
+		return animation_name_override
+	else:
+		return name
+
 
 func set_as_current() -> void:
 	states_machine.set_state(self)
