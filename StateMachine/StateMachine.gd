@@ -136,6 +136,39 @@ func get_state_recursive() -> Object:
 		return current_state
 
 
+# Return the path to the current recursive state, relative to this state machine
+func get_state_path_recursive() -> NodePath:
+	return get_path_to_state(get_state_recursive())
+
+
+# Return the path to the current state, relative to this state machine
+func get_current_state_path() -> NodePath:
+	return get_path_to_state(current_state)
+
+
+# Return the path to the given state, relative to this state machine
+func get_path_to_state(state: State) -> NodePath:
+	if state:
+		return get_path_to(state)
+	else:
+		return NodePath()
+
+
+# Set the state to the state located by the given path recursively (If the state is nested)
+func set_state_path_recursive(path: NodePath) -> void:
+	var state = get_node_or_null(path)
+	
+	state.set_as_current()
+	
+	var str_path = str(path)
+	var path_array = str_path.split("/")
+	path_array.resize(path_array.size() - 1)
+	
+	if !path_array.empty():
+		var new_path = path_array.join("/")
+		set_state_path_recursive(new_path)
+
+
 # Returns the name of the current state
 func get_state_name() -> String:
 	if current_state == null:
