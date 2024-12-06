@@ -174,21 +174,22 @@ func _update() -> void:
 		var state_name = str(state.name)
 		
 		if !_has_state_node(state_name):
-			var node = state_node_scene.instantiate()
-			node.name = state_name
-			node.set_title(state_name)
-			node.has_standalone_trigger = state.standalone_trigger != null
-			graph_edit.add_child(node)
+			var graphNode : GraphNode = state_node_scene.instantiate()
+			graphNode.name = state_name
+			graphNode.set_title(state_name)
+			graphNode.has_standalone_trigger = state.standalone_trigger != null
+			graph_edit.add_child(graphNode)
 			if logs: print_debug("Add state node %s to the graph" % state_name)
 			
-			var __ = node.connect("item_rect_changed", Callable(self,"_on_state_node_item_rect_changed").bind(node))
-			__ = node.connect("connection_attempt", Callable(self,"_on_state_node_connection_attempt").bind(node))
-			__ = node.connect("trigger_selected", Callable(self,"_on_node_trigger_selected").bind(node))
-			__ = node.connect("selected", Callable(self, "_on_node_selected_changed").bind(node))
-			__ = node.deselected.connect(Callable(self, "_on_node_selected_changed").bind(node))
-			__ = state.connect("standalone_trigger_added",Callable(node,"_on_standalone_trigger_added"))
-			__ = state.connect("standalone_trigger_removed",Callable(node,"_on_standalone_trigger_removed"))
-			__ = state.connect("renamed",Callable(node,"_on_state_renamed").bind(state))
+			var __ = graphNode.item_rect_changed.connect(_on_state_node_item_rect_changed.bind(graphNode))
+			__ = graphNode.connection_attempt.connect(_on_state_node_connection_attempt.bind(graphNode))
+			__ = graphNode.trigger_selected.connect(_on_node_trigger_selected.bind(graphNode))
+			__ = graphNode.node_selected.connect(_on_node_selected_changed.bind(graphNode))
+			__ = graphNode.node_deselected.connect(_on_node_selected_changed.bind(graphNode))
+			
+			__ = state.standalone_trigger_added.connect(Callable(graphNode,"_on_standalone_trigger_added"))
+			__ = state.standalone_trigger_removed.connect(Callable(graphNode,"_on_standalone_trigger_removed"))
+			__ = state.renamed.connect(Callable(graphNode,"_on_state_renamed").bind(state))
 
 	# Update connections
 	for state in states_array:
