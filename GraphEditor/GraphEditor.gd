@@ -181,15 +181,15 @@ func _update() -> void:
 			graph_edit.add_child(graph_node)
 			if logs: print_debug("Add state node %s to the graph" % state_name)
 			
-			var __ = graph_node.item_rect_changed.connect(_on_state_node_item_rect_changed.bind(graph_node))
-			__ = graph_node.connection_attempt.connect(_on_state_node_connection_attempt.bind(graph_node))
-			__ = graph_node.trigger_selected.connect(_on_node_trigger_selected.bind(graph_node))
-			__ = graph_node.node_selected.connect(_on_node_selected_changed.bind(graph_node))
-			__ = graph_node.node_deselected.connect(_on_node_selected_changed.bind(graph_node))
+			graph_node.item_rect_changed.connect(_on_state_node_item_rect_changed.bind(graph_node))
+			graph_node.connection_attempt.connect(_on_state_node_connection_attempt.bind(graph_node))
+			graph_node.trigger_selected.connect(_on_node_trigger_selected.bind(graph_node))
+			graph_node.node_selected.connect(_on_node_selected_changed.bind(graph_node))
+			graph_node.node_deselected.connect(_on_node_selected_changed.bind(graph_node))
 			
-			__ = state.standalone_trigger_added.connect(Callable(graph_node,"_on_standalone_trigger_added"))
-			__ = state.standalone_trigger_removed.connect(Callable(graph_node,"_on_standalone_trigger_removed"))
-			__ = state.renamed.connect(Callable(graph_node,"_on_state_renamed").bind(state))
+			state.standalone_trigger_added.connect(Callable(graph_node,"_on_standalone_trigger_added"))
+			state.standalone_trigger_removed.connect(Callable(graph_node,"_on_standalone_trigger_removed"))
+			state.renamed.connect(Callable(graph_node,"_on_state_renamed").bind(state))
 
 	# Update connections
 	for state in states_array:
