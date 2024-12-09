@@ -3,7 +3,7 @@ extends GraphNode
 class_name StateGraphNode
 
 @onready var line = $Line2D
-@onready var trigger_button = $TriggerButton
+@onready var trigger_button : Button = $TriggerButton
 
 var drawing_line : bool = false :
 	get:
@@ -37,12 +37,12 @@ func is_selected() -> bool: return selected
 #### BUILT-IN ####
 
 func _ready() -> void:
-	connect("drawing_line_changed", Callable(self,"_on_drawing_line_changed"))
-	connect("selected", Callable(self,"_on_selected_changed"))
-	connect("deselected", Callable(self,"_on_selected_changed"))
-	connect("has_standalone_trigger_changed", Callable(self,"_on_has_standalone_trigger_changed"))
-	trigger_button.connect("pressed", Callable(self,"_on_trigger_button_pressed"))
+	drawing_line_changed.connect(_on_drawing_line_changed)
+	node_selected.connect(_on_selected_changed)
+	node_deselected.connect(_on_selected_changed)
+	has_standalone_trigger_changed.connect(_on_has_standalone_trigger_changed)
 	
+	trigger_button.pressed.connect(_on_trigger_button_pressed)
 	trigger_button.set_button_icon(get_theme_icon("Signals", "EditorIcons"))
 	trigger_button.set_visible(has_standalone_trigger)
 
