@@ -187,9 +187,9 @@ func _update() -> void:
 			graph_node.node_selected.connect(_on_node_selected_changed.bind(graph_node))
 			graph_node.node_deselected.connect(_on_node_selected_changed.bind(graph_node))
 			
-			state.standalone_trigger_added.connect(Callable(graph_node,"_on_standalone_trigger_added"))
-			state.standalone_trigger_removed.connect(Callable(graph_node,"_on_standalone_trigger_removed"))
-			state.renamed.connect(Callable(graph_node,"_on_state_renamed").bind(state))
+			state.standalone_trigger_added.connect(graph_node._on_standalone_trigger_added)
+			state.standalone_trigger_removed.connect(graph_node._on_standalone_trigger_removed)
+			state.renamed.connect(graph_node._on_state_renamed.bind(state))
 
 	# Update connections
 	for state in states_array:
