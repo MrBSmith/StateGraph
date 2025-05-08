@@ -220,20 +220,20 @@ func set_state(new_state):
 	previous_state = current_state
 	current_state = new_state
 	
-	emit_signal("state_changing", previous_state, current_state)
+	emit_signal("state_changing", previous_state, new_state)
 	
 	# Use the enter_state function of the current state
-	if current_state and (!is_nested() or current_state.is_current_state()):
-		current_state.connect_connexions_events(self)
+	if new_state and (!is_nested() or new_state.is_current_state()):
+		new_state.connect_connexions_events(self)
 		
 		if !owner_ready and deffer_first_enter_state:
 			yield(owner, "ready")
 		
-		current_state.enter_state()
-		emit_signal("state_entered", current_state)
+		new_state.enter_state()
+		emit_signal("state_entered", new_state)
 		
-		if current_state and current_state.is_current_state():
-			current_state.emit_signal("entered")
+		if new_state and new_state.is_current_state():
+			new_state.emit_signal("entered")
 
 
 # Set the state based on the id of the state (id of the node, ie position in the hierachy)

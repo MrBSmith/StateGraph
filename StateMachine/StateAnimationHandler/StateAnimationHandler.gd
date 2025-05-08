@@ -157,6 +157,10 @@ func _update_animation() -> void:
 			if interupts_animations and target is AnimationPlayer: 
 				target.stop(true)
 			
+			if target is AnimatedSprite:
+				target.set_animation(animation_to_play)
+				target.set_frame(0)
+			
 			target.play(animation_to_play)
 			if debug_logs: print("StateAnimationHandler trigger %s animation in %s" % [animation_to_play, target.name])
 
