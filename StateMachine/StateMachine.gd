@@ -180,8 +180,8 @@ func set_state(new_state) -> void:
 	if current_state != null:
 		current_state.connect_connections_events(self, true)
 		current_state.exit_state()
-		emit_signal("state_exited", current_state)
-		current_state.emit_signal("exited")
+		state_exited.emit(current_state)
+		current_state.exited.emit()
 	
 	previous_state = current_state
 	current_state = new_state
@@ -190,18 +190,18 @@ func set_state(new_state) -> void:
 		var previous_state_name = str(previous_state.name) if previous_state else "null" 
 		var current_state_name = str(current_state.name) if current_state else "null" 
 		print("%s state_changed from %s to %s" % [str(owner.name), previous_state_name, current_state_name])
-		emit_signal("state_changing", previous_state, current_state)
+		state_changing.emit(previous_state, current_state)
 	
 	# Use the enter_state function of the current state
 	if new_state != null && (!is_nested() or new_state.is_current_state()):
-		current_state.connect_connections_events(self)
+		new_state.connect_connections_events(self)
 		
 		if !owner_ready && deffer_first_enter_state:
 			await owner.ready
 		
-		current_state.enter_state()
-		emit_signal("state_entered", current_state)
-		current_state.emit_signal("entered")
+		new_state.enter_state()
+		state_entered.emit(new_state)
+		new_state.entered.emit()
 
 
 # Set the state based checked the id of the state (id of the node, ie position in the hierachy)
@@ -309,11 +309,11 @@ func is_current_state() -> bool:
 #### SIGNAL RESPONSES ####
 
 func _on_state_entered(_state: Node) -> void:
-	emit_signal("state_entered_recursive", current_state)
+	state_entered_recursive.emit(current_state)
 
 
 func _on_State_state_entered_recursive(_state: Node) -> void:
-	emit_signal("state_entered_recursive", current_state)
+	state_entered_recursive.emit(current_state)
 
 
 func _on_current_state_event(state: State, connection: StateConnection, event: StateEvent) -> void:
