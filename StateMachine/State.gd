@@ -157,6 +157,3 @@ func find_connection(to: State) -> StateConnection:
 func find_connection_id(to: State) -> int:
 	var connection = find_connection(to)
 	return connections_array.find(connection)
-
-
-

@@ -14,7 +14,7 @@ class_name StateMachine
 ## StatesMachines can also be nested[br]
 ## In that case the StateMachine behave also as a state, and the enter_state callback is called recursivly
 
-@export var default_state_path : NodePath
+@export var default_state : State
 
 # Set this to true if you want the default state to be null, no matter what the default_state_path value is
 @export var no_default_state : bool = false
@@ -25,7 +25,6 @@ var owner_ready : bool = false
 
 var current_state : State = null
 var previous_state : State = null
-var default_state : State = null
 
 # Contains the reference of the states that have a standalone trigger
 var standalone_triggers_states : Array[State]
@@ -67,14 +66,6 @@ func _ready():
 	
 	if states_machine:
 		__ = state_entered_recursive.connect(states_machine._on_State_state_entered_recursive)
-	
-	# Set the state to be the default one, unless we are in a nested StateMachine
-	# Nested StateMachines shouldn't have a current_state if they are not the current_state of its parent
-	if default_state_path.is_empty():
-		if get_child_count() > 0:
-			default_state = get_child(0) 
-	else:
-		get_node_or_null(default_state_path)
 	
 	if is_nested() or no_default_state:
 		set_state(null)
@@ -333,4 +324,3 @@ func _on_standalone_trigger_event(state: State, event: StateEvent) -> void:
 
 func _on_owner_ready() -> void:
 	owner_ready = true
-
