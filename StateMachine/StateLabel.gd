@@ -5,15 +5,12 @@ class_name StateLabel
 
 #### ACCESSORS ####
 
-func is_class(value: String): return value == "StateLabel" or super.is_class(value)
-func get_class() -> String: return "StateLabel"
-
 
 #### BUILT-IN ####
 
 func _ready() -> void:
 	await get_parent().ready
-	var __ = get_parent().connect("state_entered_recursive", Callable(self,"_on_StateMachine_state_entered_recursive"))
+	states_machine.state_entered_recursive.connect(_on_StateMachine_state_entered_recursive)
 	
 	_update_text(get_parent().current_state)
 
